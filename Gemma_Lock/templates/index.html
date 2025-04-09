@@ -16,10 +16,11 @@
                         <h2 class="text-center">Mood Tracker</h2>
                     </div>
                     <div class="card-body">
-                        <form id="moodForm">
+                        <form id="moodForm" novalidate>
                             <div class="mb-3">
                                 <label for="userId" class="form-label">Your Unique Identifier</label>
                                 <input type="text" class="form-control" id="userId" required>
+                                <div class="invalid-feedback">Please enter your unique identifier</div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">How are you feeling?</label>
@@ -30,6 +31,8 @@
                                     <button type="button" class="btn btn-mood" data-mood="tired">Tired</button>
                                     <button type="button" class="btn btn-mood" data-mood="scared">Scared</button>
                                 </div>
+                                <div class="invalid-feedback">Please select your mood</div>
+                                <input type="hidden" id="selectedMood" name="mood" required>
                             </div>
                             <div class="text-center">
                                 <button type="submit" class="btn btn-primary">Submit</button>
