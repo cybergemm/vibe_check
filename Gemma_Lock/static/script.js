@@ -1,26 +1,47 @@
 $(document).ready(function() {
     let selectedMood = null;
+    const form = $('#moodForm');
+    const userIdInput = $('#userId');
+    const moodInput = $('#selectedMood');
+    const moodButtons = $('.btn-mood');
 
     // Handle mood button clicks
-    $('.btn-mood').click(function() {
-        $('.btn-mood').removeClass('selected');
+    moodButtons.click(function() {
+        moodButtons.removeClass('selected');
         $(this).addClass('selected');
         selectedMood = $(this).data('mood');
+        moodInput.val(selectedMood);
+        
+        // Clear any validation errors for mood selection
+        moodInput.removeClass('is-invalid');
     });
 
     // Handle form submission
-    $('#moodForm').submit(function(e) {
+    form.submit(function(e) {
         e.preventDefault();
         
-        const userId = $('#userId').val().trim();
+        // Reset validation state
+        userIdInput.removeClass('is-invalid');
+        moodInput.removeClass('is-invalid');
         
+        let isValid = true;
+        const userId = userIdInput.val().trim();
+        
+        // Validate user ID
         if (!userId) {
-            showMessage('Please enter your unique identifier', 'error');
-            return;
+            userIdInput.addClass('is-invalid');
+            isValid = false;
         }
         
+        // Validate mood selection
         if (!selectedMood) {
-            showMessage('Please select your mood', 'error');
+            moodInput.addClass('is-invalid');
+            isValid = false;
+        }
+        
+        // If form is not valid, stop submission
+        if (!isValid) {
+            showMessage('Please fill in all required fields', 'error');
             return;
         }
 
@@ -36,8 +57,8 @@ $(document).ready(function() {
             success: function(response) {
                 showMessage('Mood recorded successfully!', 'success');
                 // Reset the form
-                $('#userId').val('');
-                $('.btn-mood').removeClass('selected');
+                form[0].reset();
+                moodButtons.removeClass('selected');
                 selectedMood = null;
             },
             error: function(xhr) {
