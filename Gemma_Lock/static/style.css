@@ -1,0 +1,62 @@
+.mood-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.btn-mood {
+    min-width: 100px;
+    transition: all 0.3s ease;
+}
+
+.btn-mood[data-mood="happy"] {
+    background-color: #ffd700;
+    border-color: #ffd700;
+    color: #000;
+}
+
+.btn-mood[data-mood="sad"] {
+    background-color: #4169e1;
+    border-color: #4169e1;
+    color: #fff;
+}
+
+.btn-mood[data-mood="angry"] {
+    background-color: #ff4500;
+    border-color: #ff4500;
+    color: #fff;
+}
+
+.btn-mood[data-mood="tired"] {
+    background-color: #808080;
+    border-color: #808080;
+    color: #fff;
+}
+
+.btn-mood[data-mood="scared"] {
+    background-color: #800080;
+    border-color: #800080;
+    color: #fff;
+}
+
+.btn-mood.selected {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+#message {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#message.success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+#message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+} 
