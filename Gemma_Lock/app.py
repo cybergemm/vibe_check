@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, date
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mood_tracker.db'
@@ -28,6 +28,28 @@ with app.app_context():
 def index():
     return render_template('index.html')
 
+@app.route('/check_today_entry/<user_id>')
+def check_today_entry(user_id):
+    today = date.today()
+    today_start = datetime.combine(today, datetime.min.time())
+    today_end = datetime.combine(today, datetime.max.time())
+    
+    existing_entry = MoodEntry.query.filter(
+        MoodEntry.user_id == user_id,
+        MoodEntry.timestamp >= today_start,
+        MoodEntry.timestamp <= today_end
+    ).first()
+    
+    if existing_entry:
+        return jsonify({
+            'has_entry': True,
+            'entry': existing_entry.to_dict()
+        })
+    else:
+        return jsonify({
+            'has_entry': False
+        })
+
 @app.route('/submit_mood', methods=['POST'])
 def submit_mood():
     data = request.get_json()
@@ -37,6 +59,23 @@ def submit_mood():
     if not user_id or not mood:
         return jsonify({'error': 'Missing user_id or mood'}), 400
     
+    # Check if user has already submitted a mood entry today
+    today = date.today()
+    today_start = datetime.combine(today, datetime.min.time())
+    today_end = datetime.combine(today, datetime.max.time())
+    
+    existing_entry = MoodEntry.query.filter(
+        MoodEntry.user_id == user_id,
+        MoodEntry.timestamp >= today_start,
+        MoodEntry.timestamp <= today_end
+    ).first()
+    
+    if existing_entry:
+        return jsonify({
+            'error': "You've already tracked today's mood!"
+        }), 409
+    
+    # If no entry exists for today, create a new one
     entry = MoodEntry(user_id=user_id, mood=mood)
     db.session.add(entry)
     db.session.commit()
