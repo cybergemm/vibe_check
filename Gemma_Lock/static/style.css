@@ -88,4 +88,41 @@ button[type="submit"]:disabled {
     margin-top: 0.25rem;
     font-size: 0.875em;
     color: #dc3545;
+}
+
+/* Reasons styling */
+.reasons-container {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 10px;
+    margin-top: 5px;
+}
+
+.form-check {
+    margin-bottom: 5px;
+}
+
+.form-check-input:checked + .form-check-label {
+    font-weight: bold;
+}
+
+/* Scrollbar styling for reasons container */
+.reasons-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.reasons-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+.reasons-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+.reasons-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
 } 

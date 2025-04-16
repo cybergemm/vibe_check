@@ -3,7 +3,9 @@ $(document).ready(function() {
     const form = $('#moodForm');
     const userIdInput = $('#userId');
     const moodInput = $('#selectedMood');
+    const reasonsInput = $('#selectedReasons');
     const moodButtons = $('.btn-mood');
+    const reasonCheckboxes = $('.reason-checkbox');
     const messageDiv = $('#message');
     const submitButton = $('button[type="submit"]');
 
@@ -17,6 +19,24 @@ $(document).ready(function() {
         // Clear any validation errors for mood selection
         moodInput.removeClass('is-invalid');
     });
+
+    // Handle reason checkbox changes
+    reasonCheckboxes.change(function() {
+        updateSelectedReasons();
+    });
+
+    // Function to update the hidden input with selected reasons
+    function updateSelectedReasons() {
+        const selectedReasons = [];
+        reasonCheckboxes.each(function() {
+            if ($(this).is(':checked')) {
+                selectedReasons.push($(this).val());
+            }
+        });
+        
+        // Join the reasons with commas and spaces
+        reasonsInput.val(selectedReasons.join(', '));
+    }
 
     // Check for existing entry when user ID changes
     let checkTimeout;
@@ -93,6 +113,9 @@ $(document).ready(function() {
             return;
         }
 
+        // Update selected reasons before submission
+        updateSelectedReasons();
+
         // Submit the mood entry
         $.ajax({
             url: '/submit_mood',
@@ -100,7 +123,8 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: JSON.stringify({
                 user_id: userId,
-                mood: selectedMood
+                mood: selectedMood,
+                reasons: reasonsInput.val()
             }),
             success: function(response) {
                 showMessage('Mood recorded successfully!', 'success');
@@ -108,6 +132,8 @@ $(document).ready(function() {
                 form[0].reset();
                 moodButtons.removeClass('selected');
                 selectedMood = null;
+                reasonCheckboxes.prop('checked', false);
+                reasonsInput.val('');
                 
                 // Disable form after successful submission
                 submitButton.prop('disabled', true);
