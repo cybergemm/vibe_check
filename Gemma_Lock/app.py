@@ -11,6 +11,7 @@ class MoodEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(50), nullable=False)
     mood = db.Column(db.String(20), nullable=False)
+    reasons = db.Column(db.String(500), nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     def to_dict(self):
@@ -18,6 +19,7 @@ class MoodEntry(db.Model):
             'id': self.id,
             'user_id': self.user_id,
             'mood': self.mood,
+            'reasons': self.reasons,
             'timestamp': self.timestamp.isoformat()
         }
 
@@ -55,6 +57,7 @@ def submit_mood():
     data = request.get_json()
     user_id = data.get('user_id')
     mood = data.get('mood')
+    reasons = data.get('reasons', '')  # Get reasons, default to empty string if not provided
     
     if not user_id or not mood:
         return jsonify({'error': 'Missing user_id or mood'}), 400
@@ -76,7 +79,7 @@ def submit_mood():
         }), 409
     
     # If no entry exists for today, create a new one
-    entry = MoodEntry(user_id=user_id, mood=mood)
+    entry = MoodEntry(user_id=user_id, mood=mood, reasons=reasons)
     db.session.add(entry)
     db.session.commit()
     
