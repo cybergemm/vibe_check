@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
+from dateutil.relativedelta import relativedelta
+from collections import Counter
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mood_tracker.db'
@@ -29,6 +31,11 @@ with app.app_context():
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/weekly_recap')
+@app.route('/weekly_recap/<user_id>')
+def weekly_recap(user_id=None):
+    return render_template('weekly_recap.html', user_id=user_id)
 
 @app.route('/check_today_entry/<user_id>')
 def check_today_entry(user_id):
@@ -89,6 +96,124 @@ def submit_mood():
 def get_moods(user_id):
     entries = MoodEntry.query.filter_by(user_id=user_id).all()
     return jsonify([entry.to_dict() for entry in entries])
+
+@app.route('/get_weekly_analysis/<user_id>')
+def get_weekly_analysis(user_id):
+    # Get the date range for the current week
+    today = date.today()
+    start_of_week = today - timedelta(days=today.weekday())
+    end_of_week = start_of_week + timedelta(days=6)
+    
+    # Convert to datetime for database query
+    start_datetime = datetime.combine(start_of_week, datetime.min.time())
+    end_datetime = datetime.combine(end_of_week, datetime.max.time())
+    
+    # Get all mood entries for the user in the current week
+    entries = MoodEntry.query.filter(
+        MoodEntry.user_id == user_id,
+        MoodEntry.timestamp >= start_datetime,
+        MoodEntry.timestamp <= end_datetime
+    ).all()
+    
+    if not entries:
+        return jsonify({
+            'error': 'No mood entries found for this week',
+            'has_data': False
+        })
+    
+    # Convert entries to dictionaries
+    entries_dict = [entry.to_dict() for entry in entries]
+    
+    # Analyze the data
+    analysis = analyze_weekly_mood(entries_dict)
+    
+    return jsonify({
+        'has_data': True,
+        'entries': entries_dict,
+        'analysis': analysis
+    })
+
+def analyze_weekly_mood(entries):
+    # Map of mood to numeric value for comparison
+    mood_values = {
+        'happy': 5,
+        'sad': 1,
+        'angry': 2,
+        'tired': 3,
+        'scared': 2
+    }
+    
+    # Group entries by day of week
+    entries_by_day = {}
+    for entry in entries:
+        entry_date = datetime.fromisoformat(entry['timestamp']).date()
+        day_name = entry_date.strftime('%A')
+        
+        if day_name not in entries_by_day:
+            entries_by_day[day_name] = []
+        
+        entries_by_day[day_name].append(entry)
+    
+    # Find best and worst days
+    best_day = None
+    worst_day = None
+    best_mood_value = 0
+    worst_mood_value = 6  # Higher than any mood value
+    
+    for day, day_entries in entries_by_day.items():
+        # Calculate average mood value for the day
+        if day_entries:
+            total_mood_value = sum(mood_values.get(entry['mood'], 3) for entry in day_entries)
+            avg_mood_value = total_mood_value / len(day_entries)
+            
+            if avg_mood_value > best_mood_value:
+                best_mood_value = avg_mood_value
+                best_day = day
+            
+            if avg_mood_value < worst_mood_value:
+                worst_mood_value = avg_mood_value
+                worst_day = day
+    
+    # Count mood frequencies
+    mood_counts = Counter(entry['mood'] for entry in entries)
+    most_common_mood = mood_counts.most_common(1)[0][0] if mood_counts else None
+    
+    # Find reasons for the most common mood
+    most_common_reasons = []
+    if most_common_mood:
+        # Get all entries with the most common mood
+        common_mood_entries = [entry for entry in entries if entry['mood'] == most_common_mood]
+        
+        # Extract all reasons from these entries
+        all_reasons = []
+        for entry in common_mood_entries:
+            if entry['reasons']:
+                reasons = [reason.strip() for reason in entry['reasons'].split(',')]
+                all_reasons.extend(reasons)
+        
+        # Count reason frequencies
+        reason_counts = Counter(all_reasons)
+        most_common_reasons = [reason for reason, _ in reason_counts.most_common(3)]
+    
+    # Prepare daily mood data for charts
+    daily_mood_data = {}
+    for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']:
+        if day in entries_by_day:
+            day_entries = entries_by_day[day]
+            total_mood_value = sum(mood_values.get(entry['mood'], 3) for entry in day_entries)
+            avg_mood_value = total_mood_value / len(day_entries)
+            daily_mood_data[day] = avg_mood_value
+        else:
+            daily_mood_data[day] = None
+    
+    return {
+        'best_day': best_day,
+        'worst_day': worst_day,
+        'most_common_mood': most_common_mood,
+        'most_common_reasons': most_common_reasons,
+        'mood_counts': dict(mood_counts),
+        'daily_mood_data': daily_mood_data
+    }
 
 if __name__ == '__main__':
     app.run(debug=True) 
