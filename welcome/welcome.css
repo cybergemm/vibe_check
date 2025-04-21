@@ -6,33 +6,18 @@ body {
     flex-direction: column;
     height: 100vh;
 }
-nav {
+.navbar {
     background-color: #114B5F;
-    color: white;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
 }
-nav a {
-    color: white;
-    text-decoration: none;
-    margin: 0 10px;
-}
-nav a:hover {
+.nav-link:hover {
     text-decoration: underline;
 }
-.container {
-    display: flex;
-    flex: 1;
+
+.nav-link.active {
+    font-weight: bold;
 }
-.sidebar {
-    width: 200px;
+.sidebar > nav {
     background-color: #028090;
-    padding: 15px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-}
-.sidebar h3 {
-    margin-top: 0;
 }
 .main-content {
     flex: 1;

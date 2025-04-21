@@ -4,95 +4,142 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="welcome.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
 
     <title>Welcome Page</title>
 
 </head>
 <body>
-    <nav>
-        <div>
-            <a href="#">Homepage</a>
-            <a href="#">Dashboard</a>
-            <a href="#">Log Out</a>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Logo</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link text-white active" aria-current="page" href="#">Homepage</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="#">Log Out</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
-    <div class="container">
+    <div class="container-fluid d-flex">
         <div class="sidebar">
-            <h3>Friends</h3>
-            <ul>
-                <li>Friend 1</li>
-                <li>Friend 2</li>
-                <li>Friend 3</li>
-                <li>Friend 4</li>
-            </ul>
+            <nav class="nav flex-column p-3" style="height: 100vh;">
+            <a class="nav-link text-white" aria-current="page" href="#">User1</a>
+            <a class="nav-link text-white" href="#">User2</a>
+            <a class="nav-link text-white" href="#">User3</a>
+            <a class="nav-link text-white" href="#">User4</a>
+            </nav>
         </div>
         <div class="main-content">
             <h1>Welcome back, User!</h1>
             <h2>Mood Calendar</h2>
-            <div id="calendar"></div>
-            <script>
-                function generateCalendar() {
-                    const calendar = document.getElementById('calendar');
-                    const now = new Date();
-                    const month = now.getMonth();
-                    const year = now.getFullYear();
-                    const today = now.getDate();
-
-                    const firstDayOfMonth = new Date(year, month, 1).getDay();
-                    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-                    const monthNames = [
-                        "January", "February", "March", "April", "May", "June",
-                        "July", "August", "September", "October", "November", "December"
-                    ];
-
-                    const emojis = ["😊", "😢", "😡", "😴", "😂", "😍", "😎"]; // Example emojis
-
-                    let calendarHTML = `<h3>${monthNames[month]} ${year}</h3>`;
-                    calendarHTML += `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Sun</th>
-                                    <th>Mon</th>
-                                    <th>Tue</th>
-                                    <th>Wed</th>
-                                    <th>Thu</th>
-                                    <th>Fri</th>
-                                    <th>Sat</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                    `;
-
-                    const startOfWeek = today - now.getDay(); // Calculate the start of the current week
-                    let day = startOfWeek;
-
-                    calendarHTML += '<tr>';
-                    for (let i = 0; i < 7; i++) {
-                        if (day < 1 || day > daysInMonth) {
-                            calendarHTML += '<td></td>';
-                        } else {
-                            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-                            const isToday = day === today ? 'style="background-color: #E4FDE1;"' : '';
-                            calendarHTML += `<td ${isToday}>${day}<br>${emoji}</td>`;
-                        }
-                        day++;
-                    }
-                    calendarHTML += '</tr>';
-
-                    calendarHTML += `
-                            </tbody>
-                        </table>
-                    `;
-
-                    calendar.innerHTML = calendarHTML;
-                }
-
-                document.addEventListener('DOMContentLoaded', generateCalendar);
-            </script>
-            </div>
+            <ul class="nav nav-tabs" id="calendarTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="week-tab" data-bs-toggle="tab" data-bs-target="#week" type="button" role="tab">Week</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="month-tab" data-bs-toggle="tab" data-bs-target="#month" type="button" role="tab">Month</button>
+                </li>
+              </ul>
+              
+              <div class="tab-content p-3">
+                <div class="tab-pane fade show active" id="week" role="tabpanel">
+                  <div id="calendar-week"></div>
+                </div>
+                <div class="tab-pane fade" id="month" role="tabpanel">
+                  <div id="calendar-month"></div>
+                </div>
+              </div>
+            
         </div>
     </div>
 </body>
+<script>
+  const emojis = ["😊", "😢", "😡", "😴", "😂", "😍", "😎"];
+
+  function generateWeekCalendar() {
+    const calendar = document.getElementById('calendar-week');
+    const now = new Date();
+    const today = now.getDate();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const startOfWeek = today - now.getDay();
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"];
+
+    let html = `<h3>${monthNames[month]} ${year}</h3><table><tr>`;
+    for (let i = 0; i < 7; i++) {
+      let day = startOfWeek + i;
+      if (day < 1 || day > daysInMonth) html += "<td></td>";
+      else {
+        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+        const highlight = day === today ? 'style="background-color: #E4FDE1;"' : '';
+        html += `<td ${highlight}>${day}<br>${emoji}</td>`;
+      }
+    }
+    html += "</tr></table>";
+    calendar.innerHTML = html;
+  }
+
+  function generateMonthCalendar() {
+    const calendar = document.getElementById('calendar-month');
+    const now = new Date();
+    const today = now.getDate();
+    const month = now.getMonth();
+    const year = now.getFullYear();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"];
+
+    let html = `<h3>${monthNames[month]} ${year}</h3><table><tr>
+    <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+    </tr><tr>`;
+
+    let day = 1;
+    for (let i = 0; i < firstDay; i++) html += "<td></td>";
+
+    for (let i = firstDay; i < 7; i++) {
+      const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+      const highlight = day === today ? 'style="background-color: #E4FDE1;"' : '';
+      html += `<td ${highlight}>${day}<br>${emoji}</td>`;
+      day++;
+    }
+    html += "</tr>";
+
+    while (day <= daysInMonth) {
+      html += "<tr>";
+      for (let i = 0; i < 7 && day <= daysInMonth; i++) {
+        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+        const highlight = day === today ? 'style="background-color: #E4FDE1;"' : '';
+        html += `<td ${highlight}>${day}<br>${emoji}</td>`;
+        day++;
+      }
+      html += "</tr>";
+    }
+
+    html += "</table>";
+    calendar.innerHTML = html;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    generateWeekCalendar(); // default on page load
+
+    document.getElementById('week-tab').addEventListener('click', generateWeekCalendar);
+    document.getElementById('month-tab').addEventListener('click', generateMonthCalendar);
+  });
+
+</script>
 </html>
