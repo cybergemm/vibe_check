@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Page</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        nav {
+            background-color: #114B5F;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            display: flex;
+            flex: 1;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #028090;
+            padding: 15px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar h3 {
+            margin-top: 0;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .mood-calendar {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        #calendar table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        #calendar th, #calendar td {
+            border: 1px solid #ddd;
+            text-align: center;
+            padding: 10px;
+        }
+        #calendar th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+        #calendar td {
+            height: 80px;
+            vertical-align: top;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div>
+            <a href="#">Homepage</a>
+            <a href="#">Dashboard</a>
+            <a href="#">Log Out</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="sidebar">
+            <h3>Friends</h3>
+            <ul>
+                <li>Friend 1</li>
+                <li>Friend 2</li>
+                <li>Friend 3</li>
+                <li>Friend 4</li>
+            </ul>
+        </div>
+        <div class="main-content">
+            <h1>Welcome back, User!</h1>
+            <h2>Mood Calendar</h2>
+            <div id="calendar"></div>
+            <script>
+                function generateCalendar() {
+                    const calendar = document.getElementById('calendar');
+                    const now = new Date();
+                    const month = now.getMonth();
+                    const year = now.getFullYear();
+                    const today = now.getDate();
+
+                    const firstDayOfMonth = new Date(year, month, 1).getDay();
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                    const monthNames = [
+                        "January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"
+                    ];
+
+                    const emojis = ["😊", "😢", "😡", "😴", "😂", "😍", "😎"]; // Example emojis
+
+                    let calendarHTML = `<h3>${monthNames[month]} ${year}</h3>`;
+                    calendarHTML += `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Sun</th>
+                                    <th>Mon</th>
+                                    <th>Tue</th>
+                                    <th>Wed</th>
+                                    <th>Thu</th>
+                                    <th>Fri</th>
+                                    <th>Sat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    const startOfWeek = today - now.getDay(); // Calculate the start of the current week
+                    let day = startOfWeek;
+
+                    calendarHTML += '<tr>';
+                    for (let i = 0; i < 7; i++) {
+                        if (day < 1 || day > daysInMonth) {
+                            calendarHTML += '<td></td>';
+                        } else {
+                            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                            const isToday = day === today ? 'style="background-color: #E4FDE1;"' : '';
+                            calendarHTML += `<td ${isToday}>${day}<br>${emoji}</td>`;
+                        }
+                        day++;
+                    }
+                    calendarHTML += '</tr>';
+
+                    calendarHTML += `
+                            </tbody>
+                        </table>
+                    `;
+
+                    calendar.innerHTML = calendarHTML;
+                }
+
+                document.addEventListener('DOMContentLoaded', generateCalendar);
+            </script>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
