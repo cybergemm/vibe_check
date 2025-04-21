@@ -22,16 +22,7 @@
     margin-bottom: 10px;
 }
 
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    opacity: 0.8; 
-    /* Fix: the opacity only for 
-    form-box background/background colour */
 
-}
 
 .form-box {
     align-items: center;
