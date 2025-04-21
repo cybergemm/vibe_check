@@ -1,35 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Vibe Check</title>
+
     <link rel="stylesheet" href="login_stylesheet.css">
-    <title>Login page</title>
 </head>
 <body>
-    <div class="form-box">
-        <form>
-            <img src="vibecheck.png" alt="VibeCheck logo" width="80px">
-            <h1>Welcome back, Log in!</h1>
-            <h2>New to VibeCheck? <a href="">Sign up</a>.</h2>
+    <main class="form-box">
+        <form action="/login" method="post">
+            <img src="vibecheck.png" alt="Vibe Check logo" width="80" height="80">
+            
+            <h1 class="form-heading">Welcome back</h1>
+            <p class="signup-text">
+                New to VibeCheck? <a href="/signup">Sign up</a>
+            </p>
 
             <div class="form-field">
-                <img src=user_icon.png width="18">
-                <input placeholder="Username">
+                <label for="username">
+                    <img src="user_icon.png" width="18" alt="User icon">
+                </label>
+                <input type="text" id="username" name="username" placeholder="Username" required>
             </div>
 
             <div class="form-field">
-                <img src=password_icon.png width="18">
-                <input placeholder="Password">
+                <label for="password">
+                    <img src="password_icon.png" width="18" alt="Password icon">
+                </label>
+                <input type="password" id="password" name="password" placeholder="Password" required>
             </div>
 
-            <div>
-                <button>Login</button>
+            <div class="form-actions">
+                <button type="submit">Log in</button>
             </div>
 
-            <div>
-                <a href="">Forgot password?</a>
+            <div class="forgot-password">
+                <a href="/forgot-password">Forgot password?</a>
             </div>
         </form>
-    </div>
-
+    </main>
 </body>
 </html>
