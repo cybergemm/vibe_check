@@ -67,7 +67,7 @@
     border-radius: 10px;
     transition: background-color 0.3s ease;
   }
-  
-.login-button:hover {
+
+  .login-button:hover {
     background-color: #244fc5;
   }
