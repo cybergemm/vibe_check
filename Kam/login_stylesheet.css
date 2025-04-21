@@ -57,3 +57,17 @@
 .forgot-link:hover {
     text-decoration: underline;
   }
+
+.login-button {
+    background-color: #2C6BED;
+    color: white;
+    font-size: 16px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
+.login-button:hover {
+    background-color: #244fc5;
+  }
