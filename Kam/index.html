@@ -5,16 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Vibe Check</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <link rel="stylesheet" href="login_stylesheet.css">
 </head>
 <body>
-    <main class="form-box">
+    <div class="background-wrapper d-flex justify-content-center align-items-center min-vh-100"></div> <!-- This is for centreing elements of the webpage.-->
+    <main class="w-100 d-flex justify-content-center align-items-center"> <!-- This is for centreing the content of the webpage (form).-->
+        <div class="login-card card p-4 shadow-lg">
         <form action="/login" method="post">
             <img src="vibecheck.png" alt="Vibe Check logo" width="80" height="80">
             
             <h1 class="form-heading">Welcome back</h1>
             <p class="signup-text">
-                New to VibeCheck? <a href="/signup">Sign up</a>
+                New to Vibe Check? <a href="/signup">Sign up</a>
             </p>
 
             <div class="form-field">
@@ -39,6 +42,7 @@
                 <a href="/forgot-password">Forgot password?</a>
             </div>
         </form>
+    </div>
     </main>
 </body>
 </html>
