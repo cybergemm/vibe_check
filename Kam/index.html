@@ -28,18 +28,16 @@
                 </div>
                 <div class="mb-3 text-start">
                     <label for="password" class="form-label">Password (8 characters minimum):</label>
-                    <input type="text" class="form-control" id="username" placeholder="Enter your username" required/>
+                    <input type="password" class="form-control" id="password" placeholder="Enter your password" required/>
                 </div>
 
-
-
-            <div class="form-actions">
-                <button type="submit">Log in</button>
-            </div>
-
-            <div class="forgot-password">
-                <a href="/forgot-password">Forgot password?</a>
-            </div>
+                <div class="mb-3 text-end">
+                    <a href="/forgot-password" class="forgot-link">Forgot password?</a>
+                </div>
+                
+                <div class="d-grid">
+                    <button type="submit" class="btn login-button">Log in</button>
+                </div>
         </form>
     </main>
 </div>
