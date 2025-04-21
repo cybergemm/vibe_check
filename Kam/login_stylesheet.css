@@ -41,6 +41,11 @@
     color: #333;
 }
 
+.icon-box {
+    background-color: #f8f9fa;
+    padding: 10px;
+}
+
 .form-input {
     font-size: 15px;
     padding: 12px 14px;
@@ -61,3 +66,4 @@
   .login-button:hover {
     background-color: #244fc5;
   }
+
