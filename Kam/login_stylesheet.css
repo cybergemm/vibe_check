@@ -27,12 +27,12 @@
     color: #555;
 }
 
-.signup-text a {
+.link-blue {
     color: #2C6BED;
     text-decoration: none;
 }
 
-.signup-text a:hover {
+.link-blue a:hover {
     text-decoration: underline;
 }
 
@@ -47,16 +47,6 @@
     border-radius: 8px;
     border: 1px solid #ccc;
 }
-
-.forgot-link {
-    font-size: 13px;
-    color: #2C6BED;
-    text-decoration: none;
-}
-
-.forgot-link:hover {
-    text-decoration: underline;
-  }
 
 .login-button {
     background-color: #2C6BED;
