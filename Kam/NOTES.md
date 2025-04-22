@@ -13,6 +13,6 @@ Features I want to include:
 Javascript funcitonalities I want to add:
 1. link javascript file to index.html
 2. Username and password validation / form validation (client side. We can do both javascript and server end validation)
-3. Error messages if username and password do not meet the criteria
-4. Toggle hide/view password
+3. Error messages if username and password do not meet the criteria. NOTE: CSS formatting for error messages to be done.
+4. Toggle hide/view password. include the eye icon and eye icon with a slash.
 5. After clicking submit button, a loading spinner should appear. (this also improves accessibility as it prevents double form submissions from the user end.)
