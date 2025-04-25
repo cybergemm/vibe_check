@@ -44,3 +44,41 @@ body {
     color: #fff;
     margin-bottom: 15px;
 }
+
+.landing-description {
+    font-size: 18px;
+    color: #f1f1f1;
+    max-width: 600px;
+    margin: 0 auto 40px auto;
+}
+
+.features-section {
+    background-color: #fff;
+    color: #222;
+    padding: 40px 20px;
+    border-radius: 20px;
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+.features-heading {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.features-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.features-list li {
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.landing-footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+    color: #ccc;
+}
