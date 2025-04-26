@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>{{ user.name }}'s Mood Calendar</h4>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-primary" id="weekView">Week</button>
+                        <button type="button" class="btn btn-outline-primary active" id="monthView">Month</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Week View -->
+                    <div id="weekCalendar" style="display: none;">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        {% for day in week_dates %}
+                                        <th>{{ day.strftime('%a, %b %d') }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        {% for day in week_dates %}
+                                        <td class="mood-cell" data-date="{{ day.strftime('%Y-%m-%d') }}">
+                                            {% set mood = week_moods.get(day.strftime('%Y-%m-%d')) %}
+                                            {% if mood %}
+                                            <div class="mood-indicator bg-{{ mood.mood }}-subtle">
+                                                {{ mood.mood }}
+                                                <div class="reasons-list">
+                                                    {% for reason in mood.get_reasons() %}
+                                                    <span class="badge bg-secondary">{{ reason }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                            <div class="text-muted">No mood recorded</div>
+                                            {% endif %}
+                                        </td>
+                                        {% endfor %}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Month View -->
+                    <div id="monthCalendar">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        {% for day in month_dates %}
+                                        <th>{{ day.strftime('%b %d') }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        {% for day in month_dates %}
+                                        <td class="mood-cell" data-date="{{ day.strftime('%Y-%m-%d') }}">
+                                            {% set mood = month_moods.get(day.strftime('%Y-%m-%d')) %}
+                                            {% if mood %}
+                                            <div class="mood-indicator bg-{{ mood.mood }}-subtle">
+                                                {{ mood.mood }}
+                                                <div class="reasons-list">
+                                                    {% for reason in mood.get_reasons() %}
+                                                    <span class="badge bg-secondary">{{ reason }}</span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            {% else %}
+                                            <div class="text-muted">No mood recorded</div>
+                                            {% endif %}
+                                        </td>
+                                        {% endfor %}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.mood-cell {
+    height: 100px;
+    padding: 8px;
+    vertical-align: top;
+}
+
+.mood-indicator {
+    font-size: 1.1em;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.reasons-list {
+    font-size: 0.8em;
+}
+
+.reasons-list .badge {
+    margin: 2px;
+    display: inline-block;
+}
+
+.bg-happy-subtle { background-color: #d1e7dd; color: #0f5132; }
+.bg-sad-subtle { background-color: #f8d7da; color: #842029; }
+.bg-excited-subtle { background-color: #fff3cd; color: #664d03; }
+.bg-calm-subtle { background-color: #cff4fc; color: #055160; }
+.bg-anxious-subtle { background-color: #e2e3e5; color: #41464b; }
+</style>
+
+<script>
+document.getElementById('weekView').addEventListener('click', function() {
+    document.getElementById('weekCalendar').style.display = 'block';
+    document.getElementById('monthCalendar').style.display = 'none';
+    this.classList.add('active');
+    document.getElementById('monthView').classList.remove('active');
+});
+
+document.getElementById('monthView').addEventListener('click', function() {
+    document.getElementById('weekCalendar').style.display = 'none';
+    document.getElementById('monthCalendar').style.display = 'block';
+    this.classList.add('active');
+    document.getElementById('weekView').classList.remove('active');
+});
+</script>
+{% endblock %} 

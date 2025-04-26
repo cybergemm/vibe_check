@@ -1,148 +1,154 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/css/home_stylesheet.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
-    <title>Home Page</title>
+{% extends "base.html" %}
 
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Logo</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link text-white active" aria-current="page" href="#">Homepage</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-danger" href="#">Log Out</a>
-                    </li>
-                </ul>
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Main content -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>How are you feeling today?</h4>
+                </div>
+                <div class="card-body">
+                    <form id="moodForm">
+                        <div class="mb-3">
+                            <label class="form-label">Mood</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="mood" id="happy" value="happy" required>
+                                <label class="btn btn-outline-success" for="happy">Happy</label>
+                                
+                                <input type="radio" class="btn-check" name="mood" id="sad" value="sad">
+                                <label class="btn btn-outline-danger" for="sad">Sad</label>
+                                
+                                <input type="radio" class="btn-check" name="mood" id="excited" value="excited">
+                                <label class="btn btn-outline-warning" for="excited">Excited</label>
+                                
+                                <input type="radio" class="btn-check" name="mood" id="calm" value="calm">
+                                <label class="btn btn-outline-info" for="calm">Calm</label>
+                                
+                                <input type="radio" class="btn-check" name="mood" id="anxious" value="anxious">
+                                <label class="btn btn-outline-secondary" for="anxious">Anxious</label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Reasons</label>
+                            <div class="row">
+                                {% for reason in reasons %}
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="reasons" value="{{ reason }}" id="reason{{ loop.index }}">
+                                        <label class="form-check-label" for="reason{{ loop.index }}">
+                                            {{ reason }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Submit Mood</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h4>Your Mood History</h4>
+                </div>
+                <div class="card-body">
+                    <div id="moodHistory">
+                        <!-- Mood history will be populated here -->
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
-    <div class="container-fluid d-flex">
-        <div class="sidebar">
-            <!-- <nav class="nav flex-column p-3" style="height: 100vh;">
-            <a class="nav-link text-white" aria-current="page" href="#">User1</a>
-            <a class="nav-link text-white" href="#">User2</a>
-            <a class="nav-link text-white" href="#">User3</a>
-            <a class="nav-link text-white" href="#">User4</a>
-            </nav> -->
-            <ul id="friendsList" class="space-y-2"></ul>
-        </div>
-        <div class="main-content">
-            <h1>Welcome back, {{ user.username }}!</h1>
-            <h2>Mood Calendar</h2>
-            <ul class="nav nav-tabs" id="calendarTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                  <button class="nav-link active" id="week-tab" data-bs-toggle="tab" data-bs-target="#week" type="button" role="tab">Week</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                  <button class="nav-link" id="month-tab" data-bs-toggle="tab" data-bs-target="#month" type="button" role="tab">Month</button>
-                </li>
-              </ul>
-              
-              <div class="tab-content p-3">
-                <div class="tab-pane fade show active" id="week" role="tabpanel">
-                  <div id="calendar-week"></div>
+        
+        <!-- Friends sidebar -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Friends' Moods</h4>
                 </div>
-                <div class="tab-pane fade" id="month" role="tabpanel">
-                  <div id="calendar-month"></div>
+                <div class="card-body">
+                    {% if friends %}
+                        <div class="list-group">
+                            {% for friend in friends %}
+                            <div class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0">
+                                            <a href="{{ url_for('main.calendar_view', user_id=friend.id) }}" class="text-decoration-none">
+                                                {{ friend.name }}
+                                            </a>
+                                        </h6>
+                                        {% if friend.today_mood %}
+                                            <small class="text-muted">
+                                                {{ friend.today_mood.mood }} - 
+                                                {{ friend.today_mood.timestamp.strftime('%I:%M %p') }}
+                                            </small>
+                                        {% else %}
+                                            <small class="text-muted">No mood recorded today</small>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        {% if friend.today_mood %}
+                                            <span class="badge bg-{{ friend.today_mood.mood }}-subtle">
+                                                {{ friend.today_mood.mood }}
+                                            </span>
+                                        {% endif %}
+                                        <a href="{{ url_for('main.analysis', user_id=friend.id) }}" class="btn btn-sm btn-outline-primary ms-2">
+                                            Analysis
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No friends added yet.</p>
+                    {% endif %}
                 </div>
-                <ul id="moodList" class="space-y-2"></ul>
-              </div>
-            
+            </div>
         </div>
     </div>
-</body>
+</div>
+
+<style>
+.bg-happy-subtle { background-color: #d1e7dd; color: #0f5132; }
+.bg-sad-subtle { background-color: #f8d7da; color: #842029; }
+.bg-excited-subtle { background-color: #fff3cd; color: #664d03; }
+.bg-calm-subtle { background-color: #cff4fc; color: #055160; }
+.bg-anxious-subtle { background-color: #e2e3e5; color: #41464b; }
+</style>
+
 <script>
-  const emojis = ["😊", "😢", "😡", "😴", "😂", "😍", "😎"];
-
-  function generateWeekCalendar() {
-    const calendar = document.getElementById('calendar-week');
-    const now = new Date();
-    const today = now.getDate();
-    const month = now.getMonth();
-    const year = now.getFullYear();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const startOfWeek = today - now.getDay();
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-                        "July", "August", "September", "October", "November", "December"];
-
-    let html = `<h3>${monthNames[month]} ${year}</h3><table><tr>`;
-    for (let i = 0; i < 7; i++) {
-      let day = startOfWeek + i;
-      if (day < 1 || day > daysInMonth) html += "<td></td>";
-      else {
-        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-        const highlight = day === today ? 'style="background-color: #E4FDE1;"' : '';
-        html += `<td ${highlight}>${day}<br>${emoji}</td>`;
-      }
+document.getElementById('moodForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const mood = formData.get('mood');
+    const reasons = formData.getAll('reasons');
+    
+    try {
+        const response = await fetch('/submit_mood', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ mood, reasons })
+        });
+        
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            const data = await response.json();
+            alert(data.error || 'Failed to submit mood');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to submit mood');
     }
-    html += "</tr></table>";
-    calendar.innerHTML = html;
-  }
-
-  function generateMonthCalendar() {
-    const calendar = document.getElementById('calendar-month');
-    const now = new Date();
-    const today = now.getDate();
-    const month = now.getMonth();
-    const year = now.getFullYear();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstDay = new Date(year, month, 1).getDay();
-    const monthNames = ["January", "February", "March", "April", "May", "June",
-                        "July", "August", "September", "October", "November", "December"];
-
-    let html = `<h3>${monthNames[month]} ${year}</h3><table><tr>
-    <th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
-    </tr><tr>`;
-
-    let day = 1;
-    for (let i = 0; i < firstDay; i++) html += "<td></td>";
-
-    for (let i = firstDay; i < 7; i++) {
-      const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-      const highlight = day === today ? 'style="background-color: #E4FDE1;"' : '';
-      html += `<td ${highlight}>${day}<br>${emoji}</td>`;
-      day++;
-    }
-    html += "</tr>";
-
-    while (day <= daysInMonth) {
-      html += "<tr>";
-      for (let i = 0; i < 7 && day <= daysInMonth; i++) {
-        const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-        const highlight = day === today ? 'style="background-color: #E4FDE1;"' : '';
-        html += `<td ${highlight}>${day}<br>${emoji}</td>`;
-        day++;
-      }
-      html += "</tr>";
-    }
-
-    html += "</table>";
-    calendar.innerHTML = html;
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    generateWeekCalendar(); // default on page load
-
-    document.getElementById('week-tab').addEventListener('click', generateWeekCalendar);
-    document.getElementById('month-tab').addEventListener('click', generateMonthCalendar);
-  });
-
+});
 </script>
-</html>
+{% endblock %}
