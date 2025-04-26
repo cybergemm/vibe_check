@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../static/css/home.css">
+    <link rel="stylesheet" href="../static/css/home_stylesheet.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
     <title>Home Page</title>
 
 </head>
@@ -34,15 +35,16 @@
     </nav>
     <div class="container-fluid d-flex">
         <div class="sidebar">
-            <nav class="nav flex-column p-3" style="height: 100vh;">
+            <!-- <nav class="nav flex-column p-3" style="height: 100vh;">
             <a class="nav-link text-white" aria-current="page" href="#">User1</a>
             <a class="nav-link text-white" href="#">User2</a>
             <a class="nav-link text-white" href="#">User3</a>
             <a class="nav-link text-white" href="#">User4</a>
-            </nav>
+            </nav> -->
+            <ul id="friendsList" class="space-y-2"></ul>
         </div>
         <div class="main-content">
-            <h1>Welcome back, User!</h1>
+            <h1>Welcome back, {{ user.username }}!</h1>
             <h2>Mood Calendar</h2>
             <ul class="nav nav-tabs" id="calendarTabs" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -60,6 +62,7 @@
                 <div class="tab-pane fade" id="month" role="tabpanel">
                   <div id="calendar-month"></div>
                 </div>
+                <ul id="moodList" class="space-y-2"></ul>
               </div>
             
         </div>
