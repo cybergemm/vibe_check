@@ -1,13 +1,35 @@
 from flask import Flask
-from .models import db
-from .routes import main
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+from config import Config
+import os
 
-def create_app():
+db = SQLAlchemy()
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+
+def create_app(config_class=Config):
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vibecheck.sqlite'
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.secret_key = 'dev'
+    app.config.from_object(config_class)
+    
+    # Initialize extensions
     db.init_app(app)
-    app.register_blueprint(main)
+    login_manager.init_app(app)
+    
+    # Register blueprints
+    from app.auth import bp as auth_bp
+    app.register_blueprint(auth_bp)
+    
+    from app.main import bp as main_bp
+    app.register_blueprint(main_bp)
+    
+    # Create instance directory for database
+    os.makedirs(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'instance'), exist_ok=True)
+    
+    from app.models import User, Mood, Friendship
+
+    @login_manager.user_loader
+    def load_user(id):
+        return User.query.get(int(id))
 
     return app
