@@ -1,0 +1,71 @@
+## Installation
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/mood-tracker.git
+   cd mood-tracker
+   ```
+
+2. **Create and activate a virtual environment**:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # On Windows, use: venv\Scripts\activate
+   ```
+
+3. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Create the database**:
+   ```bash
+   python3 create_db.py
+   ```
+
+5. **Add test data** (optional):
+   ```bash
+   python3 app/test_data.py
+   ```
+
+## Running the Application
+
+1. **Start the Flask server**:
+   ```bash
+   flask run
+   ```
+
+2. **Access the application**:
+   - Open your browser and go to: http://127.0.0.1:5000/
+
+## Test Accounts
+
+You can use these test accounts to explore the application:
+
+1. First test account:
+   - Email: test1@example.com
+   - Password: password123
+
+2. Second test account:
+   - Email: test2@example.com
+   - Password: password123
+
+## Project Structure
+
+```
+mood-tracker/
+├── app/
+│   ├── __init__.py
+│   ├── auth.py
+│   ├── main.py
+│   ├── models.py
+│   ├── test_data.py
+│   └── templates/
+│       ├── base.html
+│       ├── calendar.html
+│       ├── home.html
+│       ├── login.html
+│       └── analysis.html
+├── create_db.py
+├── config.py
+├── requirements.txt
+└── README.md
