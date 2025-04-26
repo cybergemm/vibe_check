@@ -2,6 +2,9 @@ from flask import Blueprint, render_template, session, jsonify, redirect, reques
 from .models import db, User, Mood
 
 main = Blueprint('main', __name__)
+@main.route('/')
+def intro():
+    return render_template('intro.html')
 
 @main.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -42,3 +45,34 @@ def get_friends():
     user_id = 1 # For testing, we are hardcoding the user_id to 1. In a real app, this would come from session or auth.
     user = User.query.get(user_id)
     return jsonify([friend.username for friend in user.friends])
+
+@main.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        print(username)
+        password = request.form.get('password')
+        print(password)
+
+        user = User.query.filter_by(username=username).first()
+        print("3")
+
+        if user and user.password == password:
+            session['user_id'] = user.id
+            print("4")
+            session['username'] = user.username
+            print("5")
+            flash('Logged in successfully!', 'success')
+            print("6")
+            return redirect("home")
+        else:
+            flash('Invalid username or password.', 'danger')
+            print("7")
+
+    return render_template('login.html')
+
+@main.route('/logout')
+def logout():
+    session.clear()
+    flash('You have been logged out.', 'info')
+    return redirect("intro.html")
