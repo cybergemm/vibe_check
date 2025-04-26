@@ -27,49 +27,44 @@ def signup():
 
     return render_template('signup.html')
 
+@main.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.password == password:
+            session['user_id'] = user.id
+            session['username'] = user.username
+            flash('Logged in successfully!', 'success')
+            return redirect("home")
+        else:
+            flash('Invalid username or password.', 'danger')
+
+    return render_template('login.html')
+
+
 @main.route('/home')
 def home():
-    user_id = 1 # For testing, we are hardcoding the user_id to 1. In a real app, this would come from session or auth.
+    user_id = session.get('user_id')
     user = User.query.get(user_id)
 
     return render_template('home.html', user=user)
 
 @main.route('/api/user_moods')
 def get_user_moods():
-    user_id = 1 # For testing, we are hardcoding the user_id to 1. In a real app, this would come from session or auth.
+    user_id = session.get('user_id')
     moods = Mood.query.filter_by(user_id=user_id).order_by(Mood.timestamp.desc()).limit(5).all()
     return jsonify([{'mood': m.mood, 'timestamp': m.timestamp.isoformat()} for m in moods])
 
 @main.route('/api/friends')
 def get_friends():
-    user_id = 1 # For testing, we are hardcoding the user_id to 1. In a real app, this would come from session or auth.
+    user_id = session.get('user_id')
     user = User.query.get(user_id)
     return jsonify([friend.username for friend in user.friends])
 
-@main.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        print(username)
-        password = request.form.get('password')
-        print(password)
-
-        user = User.query.filter_by(username=username).first()
-        print("3")
-
-        if user and user.password == password:
-            session['user_id'] = user.id
-            print("4")
-            session['username'] = user.username
-            print("5")
-            flash('Logged in successfully!', 'success')
-            print("6")
-            return redirect("home")
-        else:
-            flash('Invalid username or password.', 'danger')
-            print("7")
-
-    return render_template('login.html')
 
 @main.route('/logout')
 def logout():

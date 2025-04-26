@@ -5,9 +5,9 @@ from datetime import datetime
 app = create_app()
 
 with app.app_context():
-    user1 = User(username="alice123")
-    user2 = User(username="bob123")
-    user3 = User(username="charlie123")
+    user1 = User(username="alice123", email="alice123@xmail.com", full_name="Alice Smith", phone="1234567890", password="password123")
+    user2 = User(username="bob123", email="bob123@xmail.com", full_name="Bob Johnson", phone="0987654321", password="password123")
+    user3 = User(username="charlie123", email="charlie123@xmail.com", full_name="Charlie Brown", phone="1122334455", password="password123")
     db.session.add_all([user1, user2, user3])
     db.session.commit()
 
