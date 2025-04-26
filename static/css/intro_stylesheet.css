@@ -1,0 +1,30 @@
+/* Base */
+body {
+    background: linear-gradient(135deg, #114b5f, #2C6BED);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Feature Cards */
+.feature-card {
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.feature-card:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.feature-icon {
+    background-color: #2C6BED;
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.text-pink {
+    color: #ffc0cb;
+}
