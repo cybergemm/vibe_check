@@ -1,84 +1,30 @@
-* {
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
+/* Base */
 body {
-    background-color: #114b5f;
+    background: linear-gradient(135deg, #114b5f, #2C6BED);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Feature Cards */
+.feature-card {
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.feature-card:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.feature-icon {
+    background-color: #2C6BED;
     color: #fff;
-    line-height: 1.6;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.landing-header {
-    padding: 20px;
-    text-align: right;
-    background-color: transparent;
-}
-
-.landing-nav .nav-link {
-    margin-left: 20px;
-    color: #2C6BED;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.landing-nav .nav-link:hover {
-    text-decoration: underline;
-}
-
-.landing-main {
-    text-align: center;
-    padding: 60px 20px;
-}
-
-.logo {
-    width: 100px;
-    margin-bottom: 20px;
-}
-
-.landing-heading {
-    font-size: 32px;
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 15px;
-}
-
-.landing-description {
-    font-size: 18px;
-    color: #f1f1f1;
-    max-width: 600px;
-    margin: 0 auto 40px auto;
-}
-
-.features-section {
-    background-color: #fff;
-    color: #222;
-    padding: 40px 20px;
-    border-radius: 20px;
-    margin: 20px auto;
-    max-width: 800px;
-}
-
-.features-heading {
-    font-size: 24px;
-    margin-bottom: 20px;
-}
-
-.features-list {
-    list-style: none;
-    padding-left: 0;
-}
-
-.features-list li {
-    margin-bottom: 12px;
-    font-size: 16px;
-}
-
-.landing-footer {
-    text-align: center;
-    padding: 20px;
-    font-size: 14px;
-    color: #ccc;
+.text-pink {
+    color: #ffc0cb;
 }

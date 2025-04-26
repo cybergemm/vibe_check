@@ -1,64 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Vibe Check</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome to Vibe Check</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../dstatic/css/intro_stylesheet.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"/>
+  <link rel="stylesheet" href="../static/css/intro_stylesheet.css"/>
 </head>
-<body>
-    <header class="landing-header">
-        <nav class="landing-nav">
-            <a href="/login">Log In</a>
-            <a href="/signup">Sign Up</a>
-        </nav>
-    </header>
+<body class="d-flex flex-column min-vh-100 text-white">
 
-    <main class="landing-main">
-        <section class="hero-section">
-            <img src="../static/images/logo-placeholder.png" alt="Vibe Check Logo" class="logo">
-            <h2 class="landing-heading">Vibe Check: Feel. Reflect. Thrive.</h2>
-            <p class="landing-description">
-                Your personal companion for emotional wellness. Reflect on your moods, discover patterns, and take charge of your mental wellbeing—one check-in at a time.
-            </p>
-        </section>
+  <header class="py-3 text-end px-4">
+    <nav>
+      <a href="login.html" class="text-white fw-bold text-decoration-none me-3">Log In</a>
+      <a href="signup.html" class="text-white fw-bold text-decoration-none">Sign Up</a>
+    </nav>
+  </header>
 
-        <section class="features">
-            <h3>Features</h3>
-            <div class="features-grid">
-                <div class="feature-item">
-                    <div class="feature-icon"><i class="bi bi-emoji-smile"></i></div>
-                    <div class="feature-title">Quick Mood Check-ins</div>
-                    <div class="feature-description">
-                        Capture your emotions in seconds and start building your wellbeing journey.
-                    </div>
-                </div>
+  <main class="flex-grow-1 text-center px-3 py-5">
+    <section class="mb-4">
+      <img src="../static/images/logo.png" alt="Vibe Check Logo" class="mb-3" style="width: 80px; height: 80px;">
+    </section>
 
-                <div class="feature-item">
-                    <div class="feature-icon"><i class="bi bi-people-fill"></i></div>
-                    <div class="feature-title">Share with Friends</div>
-                    <div class="feature-description">
-                        See how your friends are feeling and support each other through the ups and downs.
-                    </div>
-                </div>
+    <section class="mb-5">
+      <h2 class="display-5 fw-bold">Vibe Check: Feel. Reflect. Thrive.</h2>
+      <p class="lead mx-auto" style="max-width: 700px;">
+        Your personal companion for emotional wellness. Reflect on your moods, discover patterns, and take charge of your mental wellbeing—one check-in at a time.
+      </p>
+    </section>
 
-                <div class="feature-item">
-                    <div class="feature-icon"><i class="bi bi-bar-chart-line"></i></div>
-                    <div class="feature-title">Track Your Trends</div>
-                    <div class="feature-description">
-                        Discover patterns in your moods over time with easy-to-read graphs and insights.
-                    </div>
-                </div>
+    <section class="container">
+      <h3 class="mb-4 fs-3">Features</h3>
+      <div class="row justify-content-center g-4">
+        <div class="col-md-4">
+          <div class="feature-card p-4 rounded text-center h-100">
+            <div class="feature-icon mx-auto mb-3">
+              <i class="bi bi-emoji-smile fs-4"></i>
             </div>
-        </section>
-    </main>
+            <h5 class="fw-bold">Quick Mood Check-ins</h5>
+            <p class="text-light">Capture your emotions in seconds and start building your wellbeing journey.</p>
+          </div>
+        </div>
 
-    <footer class="main-footer">
-        <p>&copy; 2025 Vibe Check. All rights reserved.</p>
-        <p>Made with &#10084 by Team Vibe Check.</p>
-    </footer>
+        <div class="col-md-4">
+          <div class="feature-card p-4 rounded text-center h-100">
+            <div class="feature-icon mx-auto mb-3">
+              <i class="bi bi-people-fill fs-4"></i>
+            </div>
+            <h5 class="fw-bold">Share with Friends</h5>
+            <p class="text-light">See how your friends are feeling and support each other through the ups and downs.</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="feature-card p-4 rounded text-center h-100">
+            <div class="feature-icon mx-auto mb-3">
+              <i class="bi bi-bar-chart-line fs-4"></i>
+            </div>
+            <h5 class="fw-bold">Track Your Trends</h5>
+            <p class="text-light">Discover patterns in your moods over time with easy-to-read graphs and insights.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center py-3 bg-dark text-white-50 mt-auto">
+    <p class="mb-1">&copy; 2025 Vibe Check. All rights reserved.</p>
+    <p class="text-pink mb-0">Made with &#10084; by Team Vibe Check.</p>
+  </footer>
+
 </body>
 </html>
