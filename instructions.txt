@@ -29,5 +29,5 @@ VIBE_CHECK/
 4. Access the application.
    a. Open a browser and go to 'http://127.0.0.1:5000'.
    b. Login with either test account:
-      Account 1: test1@example.com / password123
-      Account 2: test2@example.com / password123
+      Account 1: testuser1 / password123
+      Account 2: testuser2 / password123
