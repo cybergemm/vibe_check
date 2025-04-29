@@ -12,17 +12,17 @@ def login():
         return redirect(url_for('main.index'))
     
     if request.method == 'POST':
-        email = request.form.get('email')
+        username = request.form.get('username')
         password = request.form.get('password')
         remember = bool(request.form.get('remember'))
         
-        if not email or not password:
+        if not username or not password:
             flash('Please fill in all fields.')
             return redirect(url_for('auth.login'))
         
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(username=username).first()
         if user is None or not user.check_password(password):
-            flash('Invalid email or password')
+            flash('Invalid username or password')
             return redirect(url_for('auth.login'))
         
         login_user(user, remember=remember)
@@ -39,29 +39,18 @@ def signup():
         return redirect(url_for('main.index'))
     
     if request.method == 'POST':
-        email = request.form.get('email')
-        name = request.form.get('name')
-        phone = request.form.get('phone')
         username = request.form.get('username')
         password = request.form.get('password')
         
-        if not email or not name or not phone or not username or not password:
-            flash('Please fill in all fields.')
-            return redirect(url_for('auth.signup'))
-        
-        if User.query.filter_by(email=email).first():
-            flash('Email already registered.')
+        if not username or not password:
+            flash('Please fill in all required fields.')
             return redirect(url_for('auth.signup'))
         
         if User.query.filter_by(username=username).first():
             flash('Username already taken.')
             return redirect(url_for('auth.signup'))
         
-        if User.query.filter_by(phone=phone).first():
-            flash('Phone number already registered.')
-            return redirect(url_for('auth.signup'))
-        
-        user = User(email=email, name=name, phone=phone, username=username)
+        user = User(username=username)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
