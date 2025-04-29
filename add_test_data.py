@@ -8,21 +8,11 @@ app = create_app()
 def add_test_data():
     with app.app_context():
         # Create test users
-        test_user1 = User(
-            email='test1@example.com',
-            password=generate_password_hash('password123'),
-            name='Test User 1',
-            phone='1234567890',
-            username='testuser1'
-        )
+        test_user1 = User(username='testuser1')
+        test_user1.set_password('password123')
         
-        test_user2 = User(
-            email='test2@example.com',
-            password=generate_password_hash('password123'),
-            name='Test User 2',
-            phone='0987654321',
-            username='testuser2'
-        )
+        test_user2 = User(username='testuser2')
+        test_user2.set_password('password123')
         
         # Add users to database
         db.session.add_all([test_user1, test_user2])
