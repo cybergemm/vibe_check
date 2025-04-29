@@ -10,10 +10,8 @@ class Friendship(db.Model):
     
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
-    name = db.Column(db.String(100), nullable=False)
-    phone = db.Column(db.String(20), nullable=False, unique=True)
+    name = db.Column(db.String(100), nullable=True)
     username = db.Column(db.String(30), nullable=False, unique=True)
     moods = db.relationship('Mood', backref='user', lazy=True)
     friends = db.relationship(
