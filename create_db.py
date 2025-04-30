@@ -7,8 +7,8 @@ def create_database():
     os.makedirs('instance', exist_ok=True)
     
     # Delete existing database file
-    if os.path.exists('instance/app.db'):
-        os.remove('instance/app.db')
+    if os.path.exists('instance/mood_tracker.db'):
+        os.remove('instance/mood_tracker.db')
     
     # Create new database
     app = create_app()
