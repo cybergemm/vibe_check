@@ -23,15 +23,15 @@
                         </div>
                         
                         <div>
-                            <h5>Most Frequent Activities</h5>
-                            {% if weekly_analysis.most_frequent_reasons %}
+                            <h5>Frequent Activities (>3 times)</h5>
+                            {% if weekly_analysis.frequent_activities %}
                                 <ul class="list-group">
-                                    {% for reason in weekly_analysis.most_frequent_reasons %}
-                                        <li class="list-group-item">{{ reason }}</li>
+                                    {% for activity in weekly_analysis.frequent_activities %}
+                                        <li class="list-group-item">{{ activity }}</li>
                                     {% endfor %}
                                 </ul>
                             {% else %}
-                                <p class="text-muted">No activities recorded this week.</p>
+                                <p class="text-muted">No frequent activities this week.</p>
                             {% endif %}
                         </div>
                     {% else %}
@@ -48,21 +48,20 @@
                 <div class="card-body">
                     {% if monthly_analysis.mood_days %}
                         <div class="mb-4">
-                            <h5>Mood Distribution</h5>
+                            <h5>Mood Distribution by Day (>3 occurrences)</h5>
                             <div class="accordion" id="moodAccordion">
                                 {% for mood, days in monthly_analysis.mood_days.items() %}
                                     <div class="accordion-item">
                                         <h2 class="accordion-header" id="heading{{ loop.index }}">
                                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
                                                 <span class="badge bg-{{ mood }}-subtle me-2">{{ mood|capitalize }}</span>
-                                                <span>{{ days|length }} day{% if days|length != 1 %}s{% endif %}</span>
                                             </button>
                                         </h2>
                                         <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#moodAccordion">
                                             <div class="accordion-body">
                                                 <ul class="list-group">
-                                                    {% for day in days %}
-                                                        <li class="list-group-item">{{ day }}</li>
+                                                    {% for day, count in days.items() %}
+                                                        <li class="list-group-item">{{ day }}: {{ count }} times</li>
                                                     {% endfor %}
                                                 </ul>
                                             </div>
@@ -73,15 +72,15 @@
                         </div>
                         
                         <div>
-                            <h5>Most Frequent Activities</h5>
-                            {% if monthly_analysis.most_frequent_reasons %}
+                            <h5>Frequent Activities (>3 times)</h5>
+                            {% if monthly_analysis.frequent_activities %}
                                 <ul class="list-group">
-                                    {% for reason in monthly_analysis.most_frequent_reasons %}
-                                        <li class="list-group-item">{{ reason }}</li>
+                                    {% for activity in monthly_analysis.frequent_activities %}
+                                        <li class="list-group-item">{{ activity }}</li>
                                     {% endfor %}
                                 </ul>
                             {% else %}
-                                <p class="text-muted">No activities recorded this month.</p>
+                                <p class="text-muted">No frequent activities this month.</p>
                             {% endif %}
                         </div>
                     {% else %}
@@ -96,8 +95,8 @@
 <style>
 .bg-happy-subtle { background-color: #d1e7dd; color: #0f5132; }
 .bg-sad-subtle { background-color: #f8d7da; color: #842029; }
-.bg-excited-subtle { background-color: #fff3cd; color: #664d03; }
-.bg-calm-subtle { background-color: #cff4fc; color: #055160; }
-.bg-anxious-subtle { background-color: #e2e3e5; color: #41464b; }
+.bg-angry-subtle { background-color: #f8d7da; color: #842029; }
+.bg-tired-subtle { background-color: #e2e3e5; color: #41464b; }
+.bg-scared-subtle { background-color: #e2e3e5; color: #41464b; }
 </style>
 {% endblock %} 
