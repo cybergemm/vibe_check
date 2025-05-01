@@ -24,7 +24,6 @@ def add_test_data():
         db.session.add(friendship)
         
         # Create comprehensive mood data for test_user1
-        mood_types = ['happy', 'sad', 'angry', 'tired', 'scared']
         reasons = [
             "Went outside", "Took care of their health", "Played video games",
             "School/work/study/productivity", "Had good food or drinks",
@@ -33,25 +32,47 @@ def add_test_data():
             "Read", "Did art", "Rested", "Did errands"
         ]
         
-        # Generate moods for the last 30 days
+        # Generate moods for the last 30 days with focused patterns
         end_date = datetime.now()
         start_date = end_date - timedelta(days=30)
         
+        # Define mood patterns for days of the week
+        mood_patterns = {
+            'Monday': 'tired',    # Tired on Mondays
+            'Tuesday': 'happy',   # Happy on Tuesdays
+            'Wednesday': 'sad',   # Sad on Wednesdays
+            'Thursday': 'angry',  # Angry on Thursdays
+            'Friday': 'happy',    # Happy on Fridays
+            'Saturday': 'happy',  # Happy on Saturdays
+            'Sunday': 'tired'     # Tired on Sundays
+        }
+        
+        # Define activity patterns
+        activity_patterns = {
+            'happy': ["Went outside", "Had good food or drinks", "Socialised", "Listened to music"],
+            'sad': ["Rested", "Had bad food or drinks", "School/work/study/productivity"],
+            'angry': ["School/work/study/productivity", "Did errands", "Had bad food or drinks"],
+            'tired': ["Rested", "Did errands", "School/work/study/productivity"],
+            'scared': ["Rested", "Read", "Did art"]
+        }
+        
         current_date = start_date
         while current_date <= end_date:
-            # Add 3-5 moods per day
-            num_moods = random.randint(3, 5)
-            for _ in range(num_moods):
+            day_name = current_date.strftime('%A')
+            if day_name in mood_patterns:
+                # Get the mood for this day
+                mood_type = mood_patterns[day_name]
+                
                 # Random time during the day
                 mood_time = current_date + timedelta(
                     hours=random.randint(8, 22),
                     minutes=random.randint(0, 59)
                 )
                 
-                # Random mood and reasons
-                mood_type = random.choice(mood_types)
+                # Get activities for this mood type
+                mood_activities = activity_patterns[mood_type]
                 num_reasons = random.randint(1, 3)
-                selected_reasons = random.sample(reasons, num_reasons)
+                selected_reasons = random.sample(mood_activities, min(num_reasons, len(mood_activities)))
                 
                 mood = Mood(
                     mood=mood_type,
