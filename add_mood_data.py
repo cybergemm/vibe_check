@@ -8,8 +8,8 @@ app = create_app()
 def add_mood_data():
     with app.app_context():
         # Get our test users
-        user1 = User.query.filter_by(email='test1@example.com').first()
-        user2 = User.query.filter_by(email='test2@example.com').first()
+        user1 = User.query.filter_by(username='test1').first()
+        user2 = User.query.filter_by(username='test2').first()
         
         if not user1 or not user2:
             print("Test users not found. Please run add_test_data.py first.")
@@ -17,34 +17,39 @@ def add_mood_data():
 
         # Define possible moods and their associated reasons
         mood_data = {
-            'Happy': [
+            'happy': [
                 "Went outside",
                 "Had good food or drinks",
                 "Socialised",
                 "Listened to music",
-                "Watched a film or television show"
+                "Watched a film or television show",
+                "Took care of their health",
+                "Played video games"
             ],
-            'Calm': [
+            'sad': [
+                "Rested",
+                "Had bad food or drinks",
+                "School/work/study/productivity",
+                "Did errands"
+            ],
+            'angry': [
+                "School/work/study/productivity",
+                "Did errands",
+                "Had bad food or drinks",
+                "Travelled"
+            ],
+            'tired': [
+                "Rested",
+                "Did errands",
+                "School/work/study/productivity",
+                "Watched a film or television show",
+                "Read"
+            ],
+            'scared': [
                 "Rested",
                 "Read",
                 "Did art",
                 "Listened to music"
-            ],
-            'Energetic': [
-                "Went outside",
-                "Took care of their health",
-                "Played video games",
-                "School/work/study/productivity"
-            ],
-            'Tired': [
-                "Rested",
-                "Did errands",
-                "School/work/study/productivity"
-            ],
-            'Stressed': [
-                "School/work/study/productivity",
-                "Did errands",
-                "Had bad food or drinks"
             ]
         }
 
@@ -54,9 +59,9 @@ def add_mood_data():
 
         current_date = start_date
         while current_date <= end_date:
-            # Add 1-3 moods per day for each user
+            # Add 2-4 moods per day for each user
             for user in [user1, user2]:
-                num_moods = random.randint(1, 3)
+                num_moods = random.randint(2, 4)
                 for _ in range(num_moods):
                     # Random time during the day
                     mood_time = current_date + timedelta(
