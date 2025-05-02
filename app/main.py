@@ -36,7 +36,7 @@ def home():
         ).first()
         friends.append({
             'id': friend.id,
-            'name': friend.name,
+            'username': friend.username,
             'today_mood': friend_mood
         })
     
@@ -252,11 +252,11 @@ def analysis(user_id):
                          monthly_analysis=monthly_analysis)
 
 def analyze_weekly_moods(moods):
-    """Analyze weekly mood data to find most frequent mood and reasons."""
+    """Analyze weekly mood data to find most frequent mood and activities occurring more than 3 times."""
     if not moods:
         return {
             'most_frequent_mood': None,
-            'most_frequent_reasons': []
+            'frequent_activities': []
         }
     
     # Count mood frequencies
@@ -268,60 +268,69 @@ def analyze_weekly_moods(moods):
             mood_counts[mood.mood] = 1
     
     # Find most frequent mood
-    most_frequent_mood = max(mood_counts.items(), key=lambda x: x[1])[0]
+    most_frequent_mood = max(mood_counts.items(), key=lambda x: x[1])[0] if mood_counts else None
     
-    # Count reason frequencies
-    reason_counts = {}
+    # Count activity frequencies
+    activity_counts = {}
     for mood in moods:
         for reason in mood.get_reasons():
-            if reason in reason_counts:
-                reason_counts[reason] += 1
+            if reason in activity_counts:
+                activity_counts[reason] += 1
             else:
-                reason_counts[reason] = 1
+                activity_counts[reason] = 1
     
-    # Find top 3 most frequent reasons
-    most_frequent_reasons = sorted(reason_counts.items(), key=lambda x: x[1], reverse=True)[:3]
-    most_frequent_reasons = [reason for reason, count in most_frequent_reasons]
+    # Find activities occurring more than 3 times
+    frequent_activities = [activity for activity, count in activity_counts.items() if count > 3]
     
     return {
         'most_frequent_mood': most_frequent_mood,
-        'most_frequent_reasons': most_frequent_reasons
+        'frequent_activities': frequent_activities if frequent_activities else ['none']
     }
 
 def analyze_monthly_moods(moods):
-    """Analyze monthly mood data to find days for each mood and most frequent reasons."""
+    """Analyze monthly mood data to find days for each mood and frequent activities."""
     if not moods:
         return {
             'mood_days': {},
-            'most_frequent_reasons': []
+            'frequent_activities': []
         }
     
-    # Group moods by type
+    # Group moods by type and day of week
     mood_days = {}
+    days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    
     for mood in moods:
         mood_type = mood.mood
-        day = mood.timestamp.strftime('%Y-%m-%d')
+        day_of_week = days_of_week[mood.timestamp.weekday()]
         
         if mood_type not in mood_days:
-            mood_days[mood_type] = []
+            mood_days[mood_type] = {}
         
-        if day not in mood_days[mood_type]:
-            mood_days[mood_type].append(day)
+        if day_of_week not in mood_days[mood_type]:
+            mood_days[mood_type][day_of_week] = 0
+        
+        mood_days[mood_type][day_of_week] += 1
     
-    # Count reason frequencies
-    reason_counts = {}
+    # Filter to only include days with more than 3 occurrences
+    filtered_mood_days = {}
+    for mood_type, days in mood_days.items():
+        filtered_days = {day: count for day, count in days.items() if count > 3}
+        if filtered_days:
+            filtered_mood_days[mood_type] = filtered_days
+    
+    # Count activity frequencies
+    activity_counts = {}
     for mood in moods:
         for reason in mood.get_reasons():
-            if reason in reason_counts:
-                reason_counts[reason] += 1
+            if reason in activity_counts:
+                activity_counts[reason] += 1
             else:
-                reason_counts[reason] = 1
+                activity_counts[reason] = 1
     
-    # Find top 3 most frequent reasons
-    most_frequent_reasons = sorted(reason_counts.items(), key=lambda x: x[1], reverse=True)[:3]
-    most_frequent_reasons = [reason for reason, count in most_frequent_reasons]
+    # Find activities occurring more than 3 times
+    frequent_activities = [activity for activity, count in activity_counts.items() if count > 3]
     
     return {
-        'mood_days': mood_days,
-        'most_frequent_reasons': most_frequent_reasons
+        'mood_days': filtered_mood_days,
+        'frequent_activities': frequent_activities if frequent_activities else ['none']
     } 
