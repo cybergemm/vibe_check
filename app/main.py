@@ -240,16 +240,79 @@ def analysis(user_id):
         Mood.timestamp <= month_end
     ).all()
     
-    # Analyze weekly data
-    weekly_analysis = analyze_weekly_moods(week_moods)
+    # Prepare data for weekly mood distribution chart
+    weekly_mood_data = {}
+    for mood in week_moods:
+        if mood.mood in weekly_mood_data:
+            weekly_mood_data[mood.mood] += 1
+        else:
+            weekly_mood_data[mood.mood] = 1
     
-    # Analyze monthly data
-    monthly_analysis = analyze_monthly_moods(month_moods)
+    # Prepare data for weekly activities chart
+    weekly_activities = {}
+    for mood in week_moods:
+        for reason in mood.get_reasons():
+            if reason in weekly_activities:
+                weekly_activities[reason] += 1
+            else:
+                weekly_activities[reason] = 1
+    
+    # Prepare data for monthly mood distribution chart
+    monthly_mood_data = {}
+    for mood in month_moods:
+        if mood.mood in monthly_mood_data:
+            monthly_mood_data[mood.mood] += 1
+        else:
+            monthly_mood_data[mood.mood] = 1
+    
+    # Prepare data for monthly activities chart
+    monthly_activities = {}
+    for mood in month_moods:
+        for reason in mood.get_reasons():
+            if reason in monthly_activities:
+                monthly_activities[reason] += 1
+            else:
+                monthly_activities[reason] = 1
+    
+    # Prepare data for monthly days chart (total moods per day)
+    monthly_days_data = {
+        'Monday': 0,
+        'Tuesday': 0,
+        'Wednesday': 0,
+        'Thursday': 0,
+        'Friday': 0,
+        'Saturday': 0,
+        'Sunday': 0
+    }
+    for mood in month_moods:
+        day_name = mood.timestamp.strftime('%A')
+        monthly_days_data[day_name] += 1
+
+    # Prepare data for grouped bar chart: moods per day of week
+    all_moods = set([m.mood for m in month_moods])
+    moods_per_day = {mood: {day: 0 for day in monthly_days_data.keys()} for mood in all_moods}
+    for mood in month_moods:
+        day_name = mood.timestamp.strftime('%A')
+        moods_per_day[mood.mood][day_name] += 1
+    
+    # Ensure all dictionaries have at least one entry to prevent chart errors
+    if not weekly_mood_data:
+        weekly_mood_data = {'No Data': 1}
+    if not weekly_activities:
+        weekly_activities = {'No Activities': 1}
+    if not monthly_mood_data:
+        monthly_mood_data = {'No Data': 1}
+    if not monthly_activities:
+        monthly_activities = {'No Activities': 1}
     
     return render_template('analysis.html',
                          user=user,
-                         weekly_analysis=weekly_analysis,
-                         monthly_analysis=monthly_analysis)
+                         weekly_mood_data=weekly_mood_data,
+                         weekly_activities=weekly_activities,
+                         monthly_mood_data=monthly_mood_data,
+                         monthly_activities=monthly_activities,
+                         monthly_days_data=monthly_days_data,
+                         moods_per_day=moods_per_day)
 
 def analyze_weekly_moods(moods):
     """Analyze weekly mood data to find most frequent mood and activities occurring more than 3 times."""
