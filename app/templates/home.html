@@ -69,6 +69,12 @@
             <div class="card">
                 <div class="card-header">
                     <h4>Friends' Moods</h4>
+                    <div id="friend-requests-tab">
+                        <!-- <h3>Friend Requests</h3>
+                        <ul id="friend-requests-list"></ul> -->
+                        <button id="openFriendModal">👥 Friend Requests</button>
+                        <p>DEBUG USER ID: {{ user_id }}</p>
+                      </div>
                 </div>
                 <div class="card-body">
                     {% if friends %}
@@ -112,6 +118,27 @@
             </div>
         </div>
     </div>
+    <!-- /* Modal for Friend Requests */ -->
+    <div id="friendModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="mb-3">
+                <ul id="friend-requests-list" class="list-group"></ul>
+                <!-- <button id="viewRequestsBtn">View Requests</button> -->
+                <!-- <button id="addFriendBtn">Add Friend</button> -->
+            </div>
+        </div>
+            <div id="viewRequestsPage" class="hidden">
+                <ul id="friend-requests-list" class="list-group"></ul>
+            
+            </div>
+        <!-- <div id="addFriendPage" class="hidden">
+            <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search username...">
+            <button class="btn btn-sm btn-primary mb-2" onclick="searchUsers()">Search</button>
+            <ul id="searchResults" class="list-group"></ul>
+    
+          </div> -->
+    </div>
 </div>
 
 <style>
@@ -120,6 +147,34 @@
 .bg-excited-subtle { background-color: #fff3cd; color: #664d03; }
 .bg-calm-subtle { background-color: #cff4fc; color: #055160; }
 .bg-anxious-subtle { background-color: #e2e3e5; color: #41464b; }
+.modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: none; /* Hidden by default */
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 24px;
+      cursor: pointer;
+    }
 </style>
 
 <script>
@@ -150,5 +205,89 @@ document.getElementById('moodForm').addEventListener('submit', async (e) => {
         alert('Failed to submit mood');
     }
 });
+// Load friend requests when the page loads
+
+
+// const userId = {{user_id}};
+const userId = "{{user_id}}";
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (userId !== null) {
+      loadFriendRequests();
+    }
+  });
+
+  function loadFriendRequests() {
+    fetch(`/api/friend_requests/${userId}`)
+      .then(response => {
+        if (!response.ok) throw new Error("Failed to load requests");
+        return response.json();
+      })
+      .then(data => {
+        console.log("Friend Requests:", data);
+        const list = document.getElementById('friend-requests-list');
+        list.innerHTML = ''; // Clear previous entries
+
+        if (data.length === 0) {
+          list.innerHTML = '<li>No friend requests</li>';
+          return;
+        }
+
+        data.forEach(req => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <strong>${req.sender_username}</strong>
+            <button onclick="respondToRequest(${req.request_id}, true)">✅ Accept</button>
+            <button onclick="respondToRequest(${req.request_id}, false)">❌ Decline</button>
+          `;
+          list.appendChild(li);
+        });
+      })
+      .catch(err => {
+        console.error('Error loading friend requests:', err);
+      });
+  }
+
+  function respondToRequest(requestId, accept) {
+    fetch(`/api/friend_request/${accept ? 'accept' : 'decline'}/${requestId}`, {
+      method: 'POST' 
+    })
+    .then(response => {
+      if (!response.ok) throw new Error("Failed to respond to request");
+      return response.json();
+    })
+    .then(result => {
+      console.log(result.message); // Optionally show toast or alert
+      loadFriendRequests(); // Refresh list
+    })
+    .catch(err => {
+      console.error('Error responding to request:', err);
+    });
+  }
+
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const openModalBtn = document.getElementById("openFriendModal");
+      const modal = document.getElementById("friendModal");
+      const closeBtn = modal.querySelector(".close");
+    
+
+        openModalBtn.addEventListener("click", function() {
+        modal.style.display = "flex";  // Show the modal
+      });
+    
+
+
+        closeBtn.addEventListener("click", function() {
+        modal.style.display = "none";  // Hide the modal
+      });
+    
+      // Optional: ESC key to close modal
+      document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") {modal.style.display = "none"; };
+      });
+    });
+</script>
+    
 {% endblock %}
