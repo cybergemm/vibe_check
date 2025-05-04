@@ -73,6 +73,7 @@
                         <!-- <h3>Friend Requests</h3>
                         <ul id="friend-requests-list"></ul> -->
                         <button id="openFriendModal">👥 Friend Requests</button>
+                        <p>DEBUG USER ID: {{ user_id }}</p>
                       </div>
                 </div>
                 <div class="card-body">
@@ -122,21 +123,22 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <div class="mb-3">
-                <button id="viewRequestsBtn">View Requests</button>
-                <button id="addFriendBtn">Add Friend</button>
+                <ul id="friend-requests-list" class="list-group"></ul>
+                <!-- <button id="viewRequestsBtn">View Requests</button> -->
+                <!-- <button id="addFriendBtn">Add Friend</button> -->
             </div>
         </div>
-        <div id="viewRequestsPage">
-            <ul id="friend-requests-list" class="list-group"></ul>
-        
-        </div>
-        <div id="addFriendPage" class="hidden">
+            <div id="viewRequestsPage" class="hidden">
+                <ul id="friend-requests-list" class="list-group"></ul>
+            
+            </div>
+        <!-- <div id="addFriendPage" class="hidden">
             <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search username...">
             <button class="btn btn-sm btn-primary mb-2" onclick="searchUsers()">Search</button>
             <ul id="searchResults" class="list-group"></ul>
     
-          </div>
-      </div>
+          </div> -->
+    </div>
 </div>
 
 <style>
@@ -206,8 +208,8 @@ document.getElementById('moodForm').addEventListener('submit', async (e) => {
 // Load friend requests when the page loads
 
 
-const userId = "{{ user_id | tojson }}";
-console.log("User ID:", userId);
+// const userId = {{user_id}};
+const userId = "{{user_id}}";
 
 document.addEventListener('DOMContentLoaded', () => {
     if (userId !== null) {
@@ -222,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return response.json();
       })
       .then(data => {
+        console.log("Friend Requests:", data);
         const list = document.getElementById('friend-requests-list');
         list.innerHTML = ''; // Clear previous entries
 
@@ -247,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function respondToRequest(requestId, accept) {
     fetch(`/api/friend_request/${accept ? 'accept' : 'decline'}/${requestId}`, {
-      method: 'POST'
+      method: 'POST' 
     })
     .then(response => {
       if (!response.ok) throw new Error("Failed to respond to request");
