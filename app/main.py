@@ -105,7 +105,7 @@ def accept_friend_request(request_id):
     fr.status = 'accepted'
 
     db.session.execute("""
-        INSERT INTO friends (user_id, friend_id) VALUES (:u1, :u2), (:u2, :u1)
+        INSERT INTO friendships (user_id, friend_id) VALUES (:u1, :u2), (:u2, :u1)
     """, {'u1': fr.sender_id, 'u2': fr.receiver_id})
 
     db.session.commit()
