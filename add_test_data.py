@@ -1,5 +1,5 @@
 from app import create_app
-from app.models import db, User, Mood, Friendship
+from app.models import db, User, Mood, Friendship, FriendRequest
 from werkzeug.security import generate_password_hash
 from datetime import datetime, timedelta
 import random
@@ -14,14 +14,25 @@ def add_test_data():
         
         test_user2 = User(username='test2')
         test_user2.set_password('password123')
+
+        test_user3 = User(username='test3')
+        test_user3.set_password('password123')
+
+        test_user4 = User(username='test4')
+        test_user4.set_password('password123')
         
         # Add users to database
-        db.session.add_all([test_user1, test_user2])
+        db.session.add_all([test_user1, test_user2, test_user3, test_user4])
         db.session.commit()
         
         # Create friendship between users
         friendship = Friendship(user_id=test_user1.id, friend_id=test_user2.id)
         db.session.add(friendship)
+
+        # Create friend request from test_user3 to test_user1
+        friend_request1 = FriendRequest(sender_id=test_user3.id, receiver_id=test_user1.id, status='pending')
+        friend_request2 = FriendRequest(sender_id=test_user4.id, receiver_id=test_user1.id, status='pending')
+        db.session.add_all([friend_request1, friend_request2])
         
         # Create comprehensive mood data for test_user1
         reasons = [
