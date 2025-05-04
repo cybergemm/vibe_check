@@ -14,6 +14,7 @@ def index():
 @bp.route('/home')
 @login_required
 def home():
+    
     # Get today's date
     today = datetime.now().date()
     today_start = datetime.combine(today, datetime.min.time())
@@ -43,7 +44,7 @@ def home():
     return render_template('home.html',
                          today_mood=today_mood,
                          friends=friends,
-                         reasons=Mood.get_all_reasons())
+                         reasons=Mood.get_all_reasons(), user_id=current_user.id)
 
 @bp.route('/search_users')
 @login_required
