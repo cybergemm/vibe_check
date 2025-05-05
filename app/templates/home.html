@@ -123,6 +123,10 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <div class="mb-3">
+                <div class="mb-3 d-flex gap-2">
+                    <button id="viewRequestsBtn" class="btn btn-outline-secondary">View Requests</button>
+                    <button id="addFriendBtn" class="btn btn-outline-secondary">Add Friend</button>
+                  </div>
                 <ul id="friend-requests-list" class="list-group"></ul>
                 <!-- <button id="viewRequestsBtn">View Requests</button> -->
                 <!-- <button id="addFriendBtn">Add Friend</button> -->
@@ -132,12 +136,14 @@
                 <ul id="friend-requests-list" class="list-group"></ul>
             
             </div>
-        <!-- <div id="addFriendPage" class="hidden">
-            <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search username...">
-            <button class="btn btn-sm btn-primary mb-2" onclick="searchUsers()">Search</button>
-            <ul id="searchResults" class="list-group"></ul>
-    
-          </div> -->
+            <div id="addFriendPage" class="hidden">
+                <div class="mb-3">
+                  <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search username...">
+                  <button class="btn btn-sm btn-primary mb-2" onclick="searchUsers()">Search</button>
+                </div>
+                <ul id="searchResults" class="list-group"></ul>
+              </div>
+              
     </div>
 </div>
 
@@ -175,6 +181,9 @@
       font-size: 24px;
       cursor: pointer;
     }
+  .hidden {
+    display: none;
+  }
 </style>
 
 <script>
@@ -289,5 +298,67 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 </script>
-    
+<script>
+    function searchUsers() {
+  const query = document.getElementById('searchInput').value;
+  console.log("Searching for users with query:", query);
+  if (!query) return;
+
+  fetch(`/api/search_users?q=${encodeURIComponent(query)}`)
+    .then(response => response.json())
+    .then(users => {
+      const results = document.getElementById('searchResults');
+      results.innerHTML = '';
+
+      if (users.length === 0) {
+        results.innerHTML = '<li class="list-group-item text-muted">No users found</li>';
+        return;
+      }
+
+      users.forEach(user => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.innerHTML = `
+          <span>${user.username}</span>
+          <button class="btn btn-sm btn-primary" onclick="sendFriendRequest(${user.id})">Send Request</button>
+        `;
+        results.appendChild(li);
+      });
+    });
+}
+
+function sendFriendRequest(userId) {
+  fetch(`/api/send_friend_request/${userId}`, {
+    method: 'POST'
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert(data.message || data.error);
+    searchUsers();  // Refresh search results
+  })
+  .catch(err => {
+    console.error('Error sending friend request:', err);
+  });
+}
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+  const viewRequestsBtn = document.getElementById("viewRequestsBtn");
+  const addFriendBtn = document.getElementById("addFriendBtn");
+  const viewRequestsPage = document.getElementById("viewRequestsPage");
+  const addFriendPage = document.getElementById("addFriendPage");
+
+  viewRequestsBtn.addEventListener("click", () => {
+    viewRequestsPage.classList.remove("hidden");
+    addFriendPage.classList.add("hidden");
+    loadFriendRequests();
+  });
+
+  addFriendBtn.addEventListener("click", () => {
+    viewRequestsPage.classList.add("hidden");
+    addFriendPage.classList.remove("hidden");
+  });
+});
+</script>
+
 {% endblock %}
