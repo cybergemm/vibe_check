@@ -137,11 +137,9 @@
             
             </div>
             <div id="addFriendPage" class="hidden">
-                <div class="mb-3">
-                  <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search username...">
-                  <button class="btn btn-sm btn-primary mb-2" onclick="searchUsers()">Search</button>
-                </div>
-                <ul id="searchResults" class="list-group"></ul>
+              <div class="mb-3 position-relative">
+                <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search username..." oninput="searchUsers()" autocomplete="off">
+                <ul id="searchResults" class="list-group position-absolute w-100" style="z-index: 1000;"></ul>
               </div>
               
     </div>
@@ -360,5 +358,43 @@ function sendFriendRequest(userId) {
   });
 });
 </script>
+<script>
+let searchTimeout;
+
+function searchUsers() {
+  clearTimeout(searchTimeout);
+  const query = document.getElementById('searchInput').value.trim();
+
+  if (!query) {
+    document.getElementById('searchResults').innerHTML = '';
+    return;
+  }
+
+  searchTimeout = setTimeout(() => {
+    fetch(`/api/search_users?q=${encodeURIComponent(query)}`)
+      .then(response => response.json())
+      .then(users => {
+        const results = document.getElementById('searchResults');
+        results.innerHTML = '';
+
+        if (users.length === 0) {
+          results.innerHTML = '<li class="list-group-item text-muted">No users found</li>';
+          return;
+        }
+
+        users.forEach(user => {
+          const li = document.createElement('li');
+          li.className = 'list-group-item d-flex justify-content-between align-items-center';
+          li.innerHTML = `
+            <span>${user.username}</span>
+            <button class="btn btn-sm btn-primary" onclick="sendFriendRequest(${user.id})">Send Request</button>
+          `;
+          results.appendChild(li);
+        });
+      });
+  }, 300); // debounce delay in ms
+}
+</script>
+
 
 {% endblock %}
