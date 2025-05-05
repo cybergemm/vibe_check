@@ -14,29 +14,20 @@
                     <h4>Weekly Analysis</h4>
                 </div>
                 <div class="card-body">
-                    {% if weekly_analysis.most_frequent_mood %}
-                        <div class="mb-4">
-                            <h5>Most Frequent Mood</h5>
-                            <div class="badge bg-{{ weekly_analysis.most_frequent_mood }}-subtle p-2 fs-5">
-                                {{ weekly_analysis.most_frequent_mood|capitalize }}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Mood Distribution</h5>
+                            <div class="chart-container-large">
+                                <canvas id="weeklyMoodChart"></canvas>
                             </div>
                         </div>
-                        
-                        <div>
-                            <h5>Frequent Activities (>3 times)</h5>
-                            {% if weekly_analysis.frequent_activities %}
-                                <ul class="list-group">
-                                    {% for activity in weekly_analysis.frequent_activities %}
-                                        <li class="list-group-item">{{ activity }}</li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <p class="text-muted">No frequent activities this week.</p>
-                            {% endif %}
+                        <div class="col-md-6">
+                            <h5>Activities Distribution</h5>
+                            <div class="chart-container-large">
+                                <canvas id="weeklyActivitiesChart"></canvas>
+                            </div>
                         </div>
-                    {% else %}
-                        <p class="text-muted">No mood data recorded this week.</p>
-                    {% endif %}
+                    </div>
                 </div>
             </div>
             
@@ -46,46 +37,26 @@
                     <h4>Monthly Analysis</h4>
                 </div>
                 <div class="card-body">
-                    {% if monthly_analysis.mood_days %}
-                        <div class="mb-4">
-                            <h5>Mood Distribution by Day (>3 occurrences)</h5>
-                            <div class="accordion" id="moodAccordion">
-                                {% for mood, days in monthly_analysis.mood_days.items() %}
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header" id="heading{{ loop.index }}">
-                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}">
-                                                <span class="badge bg-{{ mood }}-subtle me-2">{{ mood|capitalize }}</span>
-                                            </button>
-                                        </h2>
-                                        <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#moodAccordion">
-                                            <div class="accordion-body">
-                                                <ul class="list-group">
-                                                    {% for day, count in days.items() %}
-                                                        <li class="list-group-item">{{ day }}: {{ count }} times</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Mood Distribution</h5>
+                            <div class="chart-container-large">
+                                <canvas id="monthlyMoodChart"></canvas>
                             </div>
                         </div>
-                        
-                        <div>
-                            <h5>Frequent Activities (>3 times)</h5>
-                            {% if monthly_analysis.frequent_activities %}
-                                <ul class="list-group">
-                                    {% for activity in monthly_analysis.frequent_activities %}
-                                        <li class="list-group-item">{{ activity }}</li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <p class="text-muted">No frequent activities this month.</p>
-                            {% endif %}
+                        <div class="col-md-6">
+                            <h5>Activities Distribution</h5>
+                            <div class="chart-container-large">
+                                <canvas id="monthlyActivitiesChart"></canvas>
+                            </div>
                         </div>
-                    {% else %}
-                        <p class="text-muted">No mood data recorded this month.</p>
-                    {% endif %}
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5>Mood Frequency by Day of Week</h5>
+                            <div id="moodBarCharts"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -93,10 +64,221 @@
 </div>
 
 <style>
-.bg-happy-subtle { background-color: #d1e7dd; color: #0f5132; }
-.bg-sad-subtle { background-color: #f8d7da; color: #842029; }
-.bg-angry-subtle { background-color: #f8d7da; color: #842029; }
-.bg-tired-subtle { background-color: #e2e3e5; color: #41464b; }
-.bg-scared-subtle { background-color: #e2e3e5; color: #41464b; }
+.chart-container-large {
+    position: relative;
+    height: 420px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+.chart-container-bar {
+    position: relative;
+    height: 220px;
+    width: 100%;
+    margin-bottom: 40px;
+}
 </style>
+
+<!-- Store data in hidden elements -->
+<div id="chartData" style="display: none;"
+     data-weekly-mood='{{ weekly_mood_data|tojson }}'
+     data-weekly-activities='{{ weekly_activities|tojson }}'
+     data-monthly-mood='{{ monthly_mood_data|tojson }}'
+     data-monthly-activities='{{ monthly_activities|tojson }}'
+     data-monthly-days='{{ monthly_days_data|tojson }}'
+     data-moods-per-day='{{ moods_per_day|tojson }}'>
+</div>
+
+<script>
+// Color scheme for moods with higher contrast
+const moodColors = {
+    'happy': '#4CAF50',
+    'sad': '#F44336',
+    'angry': '#FF5722',
+    'tired': '#9E9E9E',
+    'scared': '#607D8B',
+    'excited': '#FFC107',
+    'calm': '#03A9F4',
+    'anxious': '#795548',
+    'No Data': '#e2e3e5'
+};
+
+// Color scheme for activities with higher contrast
+const activityColors = [
+    '#2196F3', '#4CAF50', '#FFC107', '#F44336', '#9C27B0',
+    '#00BCD4', '#FF5722', '#795548', '#3F51B5', '#CDDC39',
+    '#009688', '#E91E63', '#607D8B', '#FFB300'
+];
+
+// Helper function to create radial chart data
+function createRadialData(labels, data, colors) {
+    return {
+        labels: labels,
+        datasets: [{
+            data: data,
+            backgroundColor: colors,
+            borderWidth: 2,
+            borderColor: '#1a1a1a',
+            hoverBorderColor: '#ffffff',
+            hoverBorderWidth: 2,
+            borderRadius: 2,
+            spacing: 3,
+            offset: 3
+        }]
+    };
+}
+
+// Helper function to create radial chart options
+function createRadialOptions() {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: false // Hide legend
+            }
+        },
+        layout: {
+            padding: 20
+        },
+        elements: {
+            arc: {
+                borderWidth: 2
+            }
+        }
+    };
+}
+
+// Helper function to create single mood bar chart options
+function createSingleBarOptions(mood) {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            title: {
+                display: true,
+                text: mood.charAt(0).toUpperCase() + mood.slice(1),
+                color: moodColors[mood] || '#111',
+                font: { size: 18, weight: 'bold' },
+                padding: { top: 10, bottom: 10 }
+            },
+            tooltip: {
+                enabled: false // Disable tooltips
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1,
+                    color: '#111', // black font for y axis
+                    font: { size: 14, weight: 'bold' }
+                },
+                grid: { display: false }
+            },
+            x: {
+                grid: { display: false },
+                ticks: {
+                    color: '#111', // black font for x axis
+                    font: { size: 16, weight: 'bold' },
+                    autoSkip: false,
+                    maxRotation: 0,
+                    minRotation: 0,
+                    padding: 8
+                }
+            }
+        }
+    };
+}
+
+// Initialize charts when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Get data from hidden elements
+    const chartData = document.getElementById('chartData');
+    const weeklyMoodData = JSON.parse(chartData.dataset.weeklyMood);
+    const weeklyActivitiesData = JSON.parse(chartData.dataset.weeklyActivities);
+    const monthlyMoodData = JSON.parse(chartData.dataset.monthlyMood);
+    const monthlyActivitiesData = JSON.parse(chartData.dataset.monthlyActivities);
+    const moodsPerDay = JSON.parse(chartData.dataset.moodsPerDay);
+
+    // Set chart.js defaults
+    Chart.defaults.color = '#ffffff';
+    Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+
+    // Weekly Mood Chart
+    const weeklyMoodCtx = document.getElementById('weeklyMoodChart').getContext('2d');
+    const weeklyMoodLabels = Object.keys(weeklyMoodData);
+    const weeklyMoodValues = Object.values(weeklyMoodData);
+    const weeklyMoodColors = weeklyMoodLabels.map(mood => moodColors[mood] || '#e2e3e5');
+    
+    new Chart(weeklyMoodCtx, {
+        type: 'polarArea',
+        data: createRadialData(weeklyMoodLabels, weeklyMoodValues, weeklyMoodColors),
+        options: createRadialOptions()
+    });
+
+    // Weekly Activities Chart
+    const weeklyActivitiesCtx = document.getElementById('weeklyActivitiesChart').getContext('2d');
+    const weeklyActivityLabels = Object.keys(weeklyActivitiesData);
+    const weeklyActivityValues = Object.values(weeklyActivitiesData);
+    
+    new Chart(weeklyActivitiesCtx, {
+        type: 'polarArea',
+        data: createRadialData(weeklyActivityLabels, weeklyActivityValues, activityColors.slice(0, weeklyActivityLabels.length)),
+        options: createRadialOptions()
+    });
+
+    // Monthly Mood Chart
+    const monthlyMoodCtx = document.getElementById('monthlyMoodChart').getContext('2d');
+    const monthlyMoodLabels = Object.keys(monthlyMoodData);
+    const monthlyMoodValues = Object.values(monthlyMoodData);
+    const monthlyMoodColors = monthlyMoodLabels.map(mood => moodColors[mood] || '#e2e3e5');
+    
+    new Chart(monthlyMoodCtx, {
+        type: 'polarArea',
+        data: createRadialData(monthlyMoodLabels, monthlyMoodValues, monthlyMoodColors),
+        options: createRadialOptions()
+    });
+
+    // Monthly Activities Chart
+    const monthlyActivitiesCtx = document.getElementById('monthlyActivitiesChart').getContext('2d');
+    const monthlyActivityLabels = Object.keys(monthlyActivitiesData);
+    const monthlyActivityValues = Object.values(monthlyActivitiesData);
+    
+    new Chart(monthlyActivitiesCtx, {
+        type: 'polarArea',
+        data: createRadialData(monthlyActivityLabels, monthlyActivityValues, activityColors.slice(0, monthlyActivityLabels.length)),
+        options: createRadialOptions()
+    });
+
+    // Render a separate bar chart for each mood
+    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const moodNames = Object.keys(moodsPerDay).sort();
+    const moodBarChartsDiv = document.getElementById('moodBarCharts');
+    moodNames.forEach((mood, idx) => {
+        // Create a container and canvas for each mood
+        const container = document.createElement('div');
+        container.className = 'chart-container-bar';
+        const canvas = document.createElement('canvas');
+        canvas.id = `moodBarChart_${mood}`;
+        container.appendChild(canvas);
+        moodBarChartsDiv.appendChild(container);
+        // Render the chart
+        new Chart(canvas.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: daysOfWeek,
+                datasets: [{
+                    data: daysOfWeek.map(day => moodsPerDay[mood][day] || 0),
+                    backgroundColor: moodColors[mood] || activityColors[idx % activityColors.length],
+                    borderRadius: 5,
+                    borderWidth: 2,
+                    borderColor: '#1a1a1a',
+                }]
+            },
+            options: createSingleBarOptions(mood)
+        });
+    });
+});
+</script>
 {% endblock %} 
