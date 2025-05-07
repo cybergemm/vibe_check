@@ -379,7 +379,8 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 }
-
+-->
+<script>
 function sendFriendRequest(userId) {
   fetch(`/api/send_friend_request/${userId}`, {
     method: 'POST'
@@ -393,7 +394,7 @@ function sendFriendRequest(userId) {
     console.error('Error sending friend request:', err);
   });
 }
-</script> -->
+</script> 
 <script>
   let searchTimeout;
   
