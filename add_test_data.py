@@ -26,8 +26,9 @@ def add_test_data():
         db.session.commit()
         
         # Create friendship between users
-        friendship = Friendship(user_id=test_user1.id, friend_id=test_user2.id)
-        db.session.add(friendship)
+        friendship1 = Friendship(user_id=test_user1.id, friend_id=test_user2.id)
+        friendship2 = Friendship(user_id=test_user2.id, friend_id=test_user1.id)
+        db.session.add_all([friendship1, friendship2])
 
         # Create friend request from test_user3 to test_user1
         friend_request1 = FriendRequest(sender_id=test_user3.id, receiver_id=test_user1.id, status='pending')
