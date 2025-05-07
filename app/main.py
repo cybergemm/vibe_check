@@ -50,6 +50,21 @@ def home():
 @login_required
 def settings():
     return render_template('settings.html')
+
+@bp.route('/api/user_settings', methods=['GET', 'POST'])
+@login_required
+def user_settings():
+    if request.method == 'GET':
+        return jsonify({'privacy_setting': current_user.privacy_setting})
+    else:
+        data = request.get_json()
+        setting = data.get('privacy_setting')
+        if setting not in ['friends', 'nobody']:
+            return jsonify({'error': 'Invalid setting'}), 400
+
+        current_user.privacy_setting = setting
+        db.session.commit()
+        return jsonify({'message': 'Settings updated successfully'})
 # @bp.route('/search_users')
 # @login_required
 # def search_users():
@@ -268,6 +283,10 @@ def get_friend_moods(friend_id):
 def calendar_view(user_id):
     # Get the user
     user = User.query.get_or_404(user_id)
+
+    if user.privacy_setting == 'nobody' and user != current_user:
+        flash("This user's mood analysis is private.")
+        return redirect(url_for('main.home'))
     
     # Check if the user is a friend
     if user_id != current_user.id:
@@ -323,7 +342,7 @@ def analysis(user_id):
         if not friendship:
             flash("You can only view analysis of your friends")
             return redirect(url_for('main.home'))
-    
+        
     # Get the date ranges
     today = datetime.now().date()
     week_start = today - timedelta(days=today.weekday())

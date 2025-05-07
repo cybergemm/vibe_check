@@ -1,19 +1,43 @@
 {% extends "base.html" %}
-
 {% block content %}
+<div class="container mt-5">
+  <h3>Settings</h3>
+  <form id="settingsForm">
+    <div class="mb-3">
+      <label for="privacySelect" class="form-label">Who can see your mood analysis?</label>
+      <select id="privacySelect" name="privacy_setting" class="form-select">
+        <option value="friends">Friends</option>
+        <option value="nobody">Nobody</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Settings</button>
+  </form>
+</div>
 
-<div class="container mt-4">
-    <h1>Settings</h1>
-    <form>
-        <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" required>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Update Settings</button>
-    </form>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Pre-fill setting from server
+  fetch('/api/user_settings')
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('privacySelect').value = data.privacy_setting;
+    });
 
+  document.getElementById('settingsForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const setting = document.getElementById('privacySelect').value;
+
+    fetch('/api/user_settings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ privacy_setting: setting })
+    })
+    .then(res => res.json())
+    .then(data => alert(data.message || 'Saved!'))
+    .catch(err => console.error('Error saving setting', err));
+  });
+});
+</script>
 {% endblock %}
