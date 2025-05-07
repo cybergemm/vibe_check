@@ -46,6 +46,10 @@ def home():
                          friends=friends,
                          reasons=Mood.get_all_reasons(), user_id=current_user.id)
 
+@bp.route('/settings')
+@login_required
+def settings():
+    return render_template('settings.html')
 # @bp.route('/search_users')
 # @login_required
 # def search_users():
