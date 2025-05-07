@@ -72,7 +72,9 @@
                     <div id="friend-requests-tab">
                         <!-- <h3>Friend Requests</h3>
                         <ul id="friend-requests-list"></ul> -->
-                        <button id="openFriendModal">👥 Friend Requests</button>
+                        <button id="openFriendTab">
+                          👥 Friend Requests <span id="requestCount" class="badge bg-danger ms-1">0</span>
+                        </button>
                         
                       </div>
                 </div>
@@ -119,29 +121,81 @@
         </div>
     </div>
     <!-- /* Modal for Friend Requests */ -->
-    <div id="friendModal" class="modal">
+    <!-- <div id="friendModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <div class="mb-3">
+                <div class="mb-3 d-flex gap-2">
+                    <button id="viewRequestsBtn" class="btn btn-outline-secondary">View Requests</button>
+                    <button id="addFriendBtn" class="btn btn-outline-secondary">Add Friend</button>
+                  </div>
                 <ul id="friend-requests-list" class="list-group"></ul>
-                <!-- <button id="viewRequestsBtn">View Requests</button> -->
-                <!-- <button id="addFriendBtn">Add Friend</button> -->
+             
             </div>
         </div>
             <div id="viewRequestsPage" class="hidden">
                 <ul id="friend-requests-list" class="list-group"></ul>
             
             </div>
-        <!-- <div id="addFriendPage" class="hidden">
-            <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search username...">
-            <button class="btn btn-sm btn-primary mb-2" onclick="searchUsers()">Search</button>
-            <ul id="searchResults" class="list-group"></ul>
-    
-          </div> -->
+            <div id="addFriendPage" class="hidden">
+              <div class="mb-3 position-relative">
+                <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search username..." oninput="searchUsers()" autocomplete="off">
+                <ul id="searchResults" class="list-group position-absolute w-100" style="z-index: 1000;"></ul>
+              </div>
+              
     </div>
+</div> -->
+<div id="friendSection" class="mt-3">
+  <span class="close">&times;</span>
+  <!-- Tab Navigation -->
+  <ul class="nav nav-tabs">
+      <li class="nav-item">
+          <button class="nav-link active" id="viewRequestsTab" onclick="switchTab('viewRequestsPage')">View Requests</button>
+      </li>
+      <li class="nav-item">
+          <button class="nav-link" id="addFriendTab" onclick="switchTab('addFriendPage')">Add Friend</button>
+      </li>
+  </ul>
+
+  <!-- Tab Content -->
+  <div id="viewRequestsPage" class="tab-content mt-3">
+      <ul id="friend-requests-list" class="list-group"></ul>
+  </div>
+  <div id="addFriendPage" class="tab-content mt-3 hidden">
+      <div class="mb-3 position-relative">
+          <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search username..." oninput="searchUsers()" autocomplete="off">
+          
+          <ul id="searchResults" class="list-group position-absolute w-100" style="z-index: 1000;"></ul>
+      </div>
+  </div>
 </div>
 
+</div>
+
+
 <style>
+#friendSection {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1100;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  display: none;
+}
+
+#friendSection .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+}
 .bg-happy-subtle { background-color: #d1e7dd; color: #0f5132; }
 .bg-sad-subtle { background-color: #f8d7da; color: #842029; }
 .bg-excited-subtle { background-color: #fff3cd; color: #664d03; }
@@ -160,7 +214,7 @@
       align-items: center;
     }
 
-    .modal-content {
+    /* .modal-content {
       background-color: white;
       padding: 20px;
       border-radius: 5px;
@@ -175,6 +229,12 @@
       font-size: 24px;
       cursor: pointer;
     }
+  .hidden {
+    display: none;
+  } */
+  .hidden {
+  display: none;
+}
 </style>
 
 <script>
@@ -214,6 +274,8 @@ const userId = "{{user_id}}";
 document.addEventListener('DOMContentLoaded', () => {
     if (userId !== null) {
       loadFriendRequests();
+      updateRequestCount();      // for button badge
+  
     }
   });
 
@@ -266,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 </script>
-<script>
+<!-- <script>
     document.addEventListener('DOMContentLoaded', () => {
       const openModalBtn = document.getElementById("openFriendModal");
       const modal = document.getElementById("friendModal");
@@ -288,6 +350,172 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === "Escape") {modal.style.display = "none"; };
       });
     });
+</script> -->
+<!-- <script>
+    function searchUsers() {
+  const query = document.getElementById('searchInput').value;
+  console.log("Searching for users with query:", query);
+  if (!query) return;
+
+  fetch(`/api/search_users?q=${encodeURIComponent(query)}`)
+    .then(response => response.json())
+    .then(users => {
+      const results = document.getElementById('searchResults');
+      results.innerHTML = '';
+
+      if (users.length === 0) {
+        results.innerHTML = '<li class="list-group-item text-muted">No users found</li>';
+        return;
+      }
+
+      users.forEach(user => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.innerHTML = `
+          <span>${user.username}</span>
+          <button class="btn btn-sm btn-primary" onclick="sendFriendRequest(${user.id})">Send Request</button>
+        `;
+        results.appendChild(li);
+      });
+    });
+}
+
+function sendFriendRequest(userId) {
+  fetch(`/api/send_friend_request/${userId}`, {
+    method: 'POST'
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert(data.message || data.error);
+    searchUsers();  // Refresh search results
+  })
+  .catch(err => {
+    console.error('Error sending friend request:', err);
+  });
+}
+</script> -->
+<script>
+  let searchTimeout;
+  
+  function searchUsers() {
+    clearTimeout(searchTimeout);
+    const query = document.getElementById('searchInput').value.trim();
+  
+    if (!query) {
+      document.getElementById('searchResults').innerHTML = '';
+      return;
+    }
+  
+    searchTimeout = setTimeout(() => {
+      fetch(`/api/search_users?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(users => {
+          const results = document.getElementById('searchResults');
+          results.innerHTML = '';
+          console.log("Search results:", users);
+          if (users.length === 0) {
+            results.innerHTML = '<li class="list-group-item text-muted">No users found</li>';
+            return;
+          }
+  
+          users.forEach(user => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item d-flex justify-content-between align-items-center';
+            li.innerHTML = `
+              <span>${user.username}</span>
+              <button class="btn btn-sm btn-primary" onclick="sendFriendRequest(${user.id})">Send Request</button>
+            `;
+            results.appendChild(li);
+          });
+        });
+    }, 300); // debounce delay in ms
+  }
+  </script>
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', () => {
+  const viewRequestsBtn = document.getElementById("viewRequestsTab");
+  const addFriendBtn = document.getElementById("addFriendTab");
+  const viewRequestsPage = document.getElementById("viewRequestsPage");
+  const addFriendPage = document.getElementById("addFriendPage");
+
+  viewRequestsBtn.addEventListener("click", () => {
+    viewRequestsPage.classList.remove("hidden");
+    addFriendPage.classList.add("hidden");
+    loadFriendRequests();
+  });
+
+  addFriendBtn.addEventListener("click", () => {
+    viewRequestsPage.classList.add("hidden");
+    addFriendPage.classList.remove("hidden");
+    searchUsers();
+  });
+});
+</script> -->
+
+<!-- new code for tab instead of modal -->
+<script>
+  function switchTab(tabId) {
+    // Hide all tab content
+    document.getElementById('viewRequestsPage').classList.add('hidden');
+    document.getElementById('addFriendPage').classList.add('hidden');
+  
+    // Remove 'active' class from all tabs
+    document.getElementById('viewRequestsTab').classList.remove('active');
+    document.getElementById('addFriendTab').classList.remove('active');
+  
+    // Show the selected tab and activate its button
+    document.getElementById(tabId).classList.remove('hidden');
+    if (tabId === 'viewRequestsPage') {
+        document.getElementById('viewRequestsTab').classList.add('active');
+    } else {
+        document.getElementById('addFriendTab').classList.add('active');
+    }
+  }
+  </script>
+ <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const openTabBtn = document.getElementById("openFriendTab");
+  const friendSection = document.getElementById("friendSection");
+  const closeTabBtn = friendSection.querySelector(".close");
+
+  openTabBtn.addEventListener("click", () => {
+    friendSection.style.display = "block";  // Show the nav tab
+    switchTab('viewRequestsPage');          // Default tab
+    loadFriendRequests();                   // Load requests immediately
+  });
+
+  closeTabBtn.addEventListener("click", () => {
+    friendSection.style.display = "none";   // Hide the nav tab
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === "Escape") {
+      friendSection.style.display = "none";
+    }
+  });
+});
+
 </script>
-    
+
+<script>
+  function updateRequestCount() {
+  fetch(`/api/friend_requests/${userId}`)
+    .then(response => response.json())
+    .then(data => {
+      const count = data.length;
+      const badge = document.getElementById('requestCount');
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    })
+    .catch(err => {
+      console.error('Error loading request count:', err);
+    });
+}
+
+</script>
+
 {% endblock %}
