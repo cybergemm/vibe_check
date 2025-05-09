@@ -26,13 +26,12 @@ def add_test_data():
         db.session.commit()
         
         # Create friendship between users
-        friendship1 = Friendship(user_id=test_user1.id, friend_id=test_user2.id)
-        friendship2 = Friendship(user_id=test_user2.id, friend_id=test_user1.id)
-        db.session.add_all([friendship1, friendship2])
+        friendship = Friendship(user_id=test_user1.username, friend_id=test_user2.username)
+        db.session.add(friendship)
 
         # Create friend request from test_user3 to test_user1
-        friend_request1 = FriendRequest(sender_id=test_user3.id, receiver_id=test_user1.id, status='pending')
-        friend_request2 = FriendRequest(sender_id=test_user4.id, receiver_id=test_user1.id, status='pending')
+        friend_request1 = FriendRequest(sender_id=test_user3.username, receiver_id=test_user1.username, status='pending')
+        friend_request2 = FriendRequest(sender_id=test_user4.username, receiver_id=test_user1.username, status='pending')
         db.session.add_all([friend_request1, friend_request2])
         
         # Create comprehensive mood data for test_user1
@@ -48,24 +47,41 @@ def add_test_data():
         end_date = datetime.now()
         start_date = end_date - timedelta(days=30)
         
-        # Define mood patterns for days of the week
+        # Define mood patterns for different days
         mood_patterns = {
-            'Monday': 'tired',    # Tired on Mondays
-            'Tuesday': 'happy',   # Happy on Tuesdays
-            'Wednesday': 'sad',   # Sad on Wednesdays
-            'Thursday': 'angry',  # Angry on Thursdays
-            'Friday': 'happy',    # Happy on Fridays
-            'Saturday': 'happy',  # Happy on Saturdays
-            'Sunday': 'tired'     # Tired on Sundays
+            'Monday': 'tired',
+            'Tuesday': 'happy',
+            'Wednesday': 'sad',
+            'Thursday': 'happy',
+            'Friday': 'happy',
+            'Saturday': 'happy',
+            'Sunday': 'tired'
         }
         
-        # Define activity patterns
+        # Define activity patterns for different moods
         activity_patterns = {
-            'happy': ["Went outside", "Had good food or drinks", "Socialised", "Listened to music"],
-            'sad': ["Rested", "Had bad food or drinks", "School/work/study/productivity"],
-            'angry': ["School/work/study/productivity", "Did errands", "Had bad food or drinks"],
-            'tired': ["Rested", "Did errands", "School/work/study/productivity"],
-            'scared': ["Rested", "Read", "Did art"]
+            'happy': [
+                "Went outside",
+                "Had good food or drinks",
+                "Socialised",
+                "Listened to music",
+                "Watched a film or television show",
+                "Took care of their health",
+                "Played video games"
+            ],
+            'sad': [
+                "Rested",
+                "Had bad food or drinks",
+                "School/work/study/productivity",
+                "Did errands"
+            ],
+            'tired': [
+                "Rested",
+                "Did errands",
+                "School/work/study/productivity",
+                "Watched a film or television show",
+                "Read"
+            ]
         }
         
         current_date = start_date
@@ -90,7 +106,7 @@ def add_test_data():
                     mood=mood_type,
                     reasons=str(selected_reasons).replace("'", '"'),
                     timestamp=mood_time,
-                    user_id=test_user1.id
+                    user_id=test_user1.username
                 )
                 db.session.add(mood)
             
@@ -101,14 +117,14 @@ def add_test_data():
             mood='happy',
             reasons='["Went outside", "Had good food or drinks", "Socialised"]',
             timestamp=datetime.now(),
-            user_id=test_user2.id
+            user_id=test_user2.username
         )
         
         mood2 = Mood(
             mood='tired',
             reasons='["Rested", "Did errands"]',
             timestamp=datetime.now(),
-            user_id=test_user2.id
+            user_id=test_user2.username
         )
         
         db.session.add_all([mood1, mood2])

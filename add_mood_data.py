@@ -78,7 +78,7 @@ def add_mood_data():
                         mood=mood_type,
                         reasons=str(reasons).replace("'", '"'),  # Convert to JSON string format
                         timestamp=mood_time,
-                        user_id=user.id
+                        user_id=user.username
                     )
                     db.session.add(mood)
             

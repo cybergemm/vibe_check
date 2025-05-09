@@ -6,23 +6,24 @@ import json
 
 class Friendship(db.Model):
     __tablename__ = 'friendships'
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    friend_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    user_id = db.Column(db.String(30), db.ForeignKey('user.username'), primary_key=True)
+    friend_id = db.Column(db.String(30), db.ForeignKey('user.username'), primary_key=True)
     
 class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(30), primary_key=True)
     password = db.Column(db.String(100))
-    username = db.Column(db.String(30), nullable=False, unique=True)
+    privacy_setting = db.Column(db.String(20), default='friends')  # Can be 'public', 'friends', or 'private'
     moods = db.relationship('Mood', backref='user', lazy=True)
-    privacy_setting = db.Column(db.String(20), default='friends')  # 'friends' or 'nobody'
-    
     friends = db.relationship(
         'User',
         secondary='friendships',
-        primaryjoin=id==Friendship.user_id,
-        secondaryjoin=id==Friendship.friend_id,
+        primaryjoin=username==Friendship.user_id,
+        secondaryjoin=username==Friendship.friend_id,
         backref='friend_of'
     )
+
+    def get_id(self):
+        return self.username
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -32,8 +33,8 @@ class User(UserMixin, db.Model):
     
 class FriendRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    sender_id = db.Column(db.String(30), db.ForeignKey('user.username'), nullable=False)
+    receiver_id = db.Column(db.String(30), db.ForeignKey('user.username'), nullable=False)
     status = db.Column(db.String(20), default='pending')  
     timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
@@ -45,7 +46,7 @@ class Mood(db.Model):
     mood = db.Column(db.String(50), nullable=False)
     reasons = db.Column(db.String(500), nullable=True)  # JSON string of selected reasons
     timestamp = db.Column(db.DateTime, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.String(30), db.ForeignKey('user.username'), nullable=False)
 
     @staticmethod
     def get_all_reasons():
