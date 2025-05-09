@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
 from flask_login import login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User, Mood, Friendship, FriendRequest, db
 from datetime import datetime, timedelta
 
@@ -65,6 +66,27 @@ def user_settings():
         current_user.privacy_setting = setting
         db.session.commit()
         return jsonify({'message': 'Settings updated successfully'})
+    
+@bp.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        current = request.form.get('current_password')
+        new = request.form.get('new_password')
+        confirm = request.form.get('confirm_new_password')
+
+        if not check_password_hash(current_user.password, current):
+            flash('Current password is incorrect.', 'danger')
+        elif new != confirm:
+            flash('New passwords do not match.', 'warning')
+        else:
+            current_user.password = generate_password_hash(new)
+            db.session.commit()
+            flash('Your password has been updated.', 'success')
+            return redirect(url_for('main.home'))
+
+    return render_template('changepassword.html')
+
 # @bp.route('/search_users')
 # @login_required
 # def search_users():
