@@ -14,6 +14,7 @@ def index():
 @bp.route('/home')
 @login_required
 def home():
+    
     # Get today's date
     today = datetime.now().date()
     today_start = datetime.combine(today, datetime.min.time())
@@ -21,7 +22,7 @@ def home():
     
     # Check if user has already submitted a mood today
     today_mood = Mood.query.filter(
-        Mood.username == current_user.username,
+        Mood.user_id == current_user.id,
         Mood.timestamp >= today_start,
         Mood.timestamp <= today_end
     ).first()
@@ -30,11 +31,12 @@ def home():
     friends = []
     for friend in current_user.friends:
         friend_mood = Mood.query.filter(
-            Mood.username == friend.username,
+            Mood.user_id == friend.id,
             Mood.timestamp >= today_start,
             Mood.timestamp <= today_end
         ).first()
         friends.append({
+            'id': friend.id,
             'username': friend.username,
             'today_mood': friend_mood
         })
@@ -42,7 +44,7 @@ def home():
     return render_template('home.html',
                          today_mood=today_mood,
                          friends=friends,
-                         reasons=Mood.get_all_reasons())
+                         reasons=Mood.get_all_reasons(), user_id=current_user.id)
 
 @bp.route('/settings')
 @login_required
@@ -63,20 +65,55 @@ def user_settings():
         current_user.privacy_setting = setting
         db.session.commit()
         return jsonify({'message': 'Settings updated successfully'})
+# @bp.route('/search_users')
+# @login_required
+# def search_users():
+#     query = request.args.get('q', '')
+#     if query:
+#         users = User.query.filter(
+#             (User.username.ilike(f'%{query}%')) |
+#             (User.full_name.ilike(f'%{query}%'))
+#         ).filter(User.id != current_user.id).all()
+#     else:
+#         users = []
+    
+#     friend_ids = {f.friend_id for f in Friendship.query.filter_by(user_id=current_user.id).all()}
+    
+#     return render_template('main/search_users.html', users=users, friend_ids=friend_ids)
 
-@bp.route('/api/friend_requests/<username>', methods=['GET'])
+# send friend request
+# @bp.route('/api/friend_request', methods=['POST'])
+# @login_required
+# def send_friend_request():
+#     data = request.get_json()
+#     sender_id = data['sender_id']
+#     receiver_id = data['receiver_id']
+
+#     existing_request = FriendRequest.query.filter_by(sender_id=sender_id, receiver_id=receiver_id).first()
+#     if existing_request:
+#         return jsonify({'message': 'Request already sent'}), 400
+
+#     new_request = FriendRequest(sender_id=sender_id, receiver_id=receiver_id)
+#     db.session.add(new_request)
+#     db.session.commit()
+#     return jsonify({'message': 'Friend request sent'}), 200
+
+# get friend requests for logged-in user
+@bp.route('/api/friend_requests/<int:user_id>', methods=['GET'])
 @login_required
-def get_friend_requests(username):
-    requests = FriendRequest.query.filter_by(receiver_username=username, status='pending').all()
+def get_friend_requests(user_id):
+    requests = FriendRequest.query.filter_by(receiver_id=user_id, status='pending').all()
     result = [
         {
             'request_id': fr.id,
-            'sender_username': fr.sender_username,
+            'sender_id': fr.sender_id,
+            'sender_username': fr.sender.username, 
         }
         for fr in requests
     ]
     return jsonify(result)
 
+# accept friend request
 @bp.route('/api/friend_request/accept/<int:request_id>', methods=['POST'])
 @login_required
 def accept_friend_request(request_id):
@@ -87,12 +124,13 @@ def accept_friend_request(request_id):
     fr.status = 'accepted'
 
     db.session.execute("""
-        INSERT INTO friendships (username, friend_username) VALUES (:u1, :u2), (:u2, :u1)
-    """, {'u1': fr.sender_username, 'u2': fr.receiver_username})
+        INSERT INTO friendships (user_id, friend_id) VALUES (:u1, :u2), (:u2, :u1)
+    """, {'u1': fr.sender_id, 'u2': fr.receiver_id})
 
     db.session.commit()
     return jsonify({'message': 'Friend request accepted'})
 
+# decline friend request
 @bp.route('/api/friend_request/decline/<int:request_id>', methods=['POST'])
 @login_required
 def decline_friend_request(request_id):
@@ -104,6 +142,7 @@ def decline_friend_request(request_id):
     db.session.commit()
     return jsonify({'message': 'Friend request declined'})
 
+# search for users
 @bp.route('/api/search_users')
 @login_required
 def search_users():
@@ -112,48 +151,72 @@ def search_users():
         return jsonify([])
 
     # Get current user's existing friends and pending requests
-    friend_usernames = db.session.query(Friendship.friend_username).filter_by(username=current_user.username)
-    sent_requests = db.session.query(FriendRequest.receiver_username).filter_by(sender_username=current_user.username, status='pending')
-    excluded_usernames = friend_usernames.union(sent_requests)
+    friend_ids = db.session.query(Friendship.friend_id).filter_by(user_id=current_user.id)
+    sent_requests = db.session.query(FriendRequest.receiver_id).filter_by(sender_id=current_user.id, status='pending')
+    excluded_ids = friend_ids.union(sent_requests)
 
     users = User.query.filter(
         User.username.ilike(f"%{query}%"),
-        User.username != current_user.username,
-        ~User.username.in_(excluded_usernames)
+        User.id != current_user.id,
+        ~User.id.in_(excluded_ids)
     ).all()
 
-    return jsonify([{'username': user.username} for user in users])
+    return jsonify([{'id': user.id, 'username': user.username} for user in users])
 
-@bp.route('/api/send_friend_request/<receiver_username>', methods=['POST'])
+# send friend request
+@bp.route('/api/send_friend_request/<int:receiver_id>', methods=['POST'])
 @login_required
-def send_friend_request(receiver_username):
-    if receiver_username == current_user.username:
+def send_friend_request(receiver_id):
+    if receiver_id == current_user.id:
         return jsonify({'error': 'You cannot send a request to yourself'}), 400
 
-    existing = FriendRequest.query.filter_by(sender_username=current_user.username, receiver_username=receiver_username, status='pending').first()
+    existing = FriendRequest.query.filter_by(sender_id=current_user.id, receiver_id=receiver_id, status='pending').first()
     if existing:
         return jsonify({'error': 'Request already sent'}), 400
 
     # Optional: Check if already friends
-    already_friends = Friendship.query.filter_by(username=current_user.username, friend_username=receiver_username).first()
+    already_friends = Friendship.query.filter_by(user_id=current_user.id, friend_id=receiver_id).first()
     if already_friends:
         return jsonify({'error': 'Already friends'}), 400
 
-    new_request = FriendRequest(sender_username=current_user.username, receiver_username=receiver_username, status='pending')
+    new_request = FriendRequest(sender_id=current_user.id, receiver_id=receiver_id, status='pending')
     db.session.add(new_request)
     db.session.commit()
     return jsonify({'message': 'Friend request sent'})
 
-@bp.route('/remove_friend/<friend_username>', methods=['POST'])
+# @bp.route('/add_friend/<int:friend_id>', methods=['POST'])
+# @login_required
+# def add_friend(friend_id):
+#     if friend_id == current_user.id:
+#         flash("You can't add yourself as a friend!")
+#         return redirect(url_for('main.search_users'))
+    
+#     existing = Friendship.query.filter_by(
+#         user_id=current_user.id,
+#         friend_id=friend_id
+#     ).first()
+    
+#     if not existing:
+#         friendship1 = Friendship(user_id=current_user.id, friend_id=friend_id)
+#         friendship2 = Friendship(user_id=friend_id, friend_id=current_user.id)
+#         db.session.add_all([friendship1, friendship2])
+#         db.session.commit()
+#         flash("Friend added successfully!")
+#     else:
+#         flash("You are already friends with this user!")
+    
+#     return redirect(url_for('main.search_users'))
+
+@bp.route('/remove_friend/<int:friend_id>', methods=['POST'])
 @login_required
-def remove_friend(friend_username):
+def remove_friend(friend_id):
     Friendship.query.filter_by(
-        username=current_user.username,
-        friend_username=friend_username
+        user_id=current_user.id,
+        friend_id=friend_id
     ).delete()
     Friendship.query.filter_by(
-        username=friend_username,
-        friend_username=current_user.username
+        user_id=friend_id,
+        friend_id=current_user.id
     ).delete()
     db.session.commit()
     flash("Friend removed successfully!")
@@ -174,7 +237,7 @@ def submit_mood():
     today_end = datetime.combine(today, datetime.max.time())
     
     existing_entry = Mood.query.filter(
-        Mood.username == current_user.username,
+        Mood.user_id == current_user.id,
         Mood.timestamp >= today_start,
         Mood.timestamp <= today_end
     ).first()
@@ -187,7 +250,7 @@ def submit_mood():
     entry = Mood(
         mood=mood,
         timestamp=datetime.now(),
-        username=current_user.username
+        user_id=current_user.id
     )
     entry.set_reasons(reasons)
     db.session.add(entry)
@@ -198,38 +261,38 @@ def submit_mood():
 @bp.route('/get_moods')
 @login_required
 def get_moods():
-    entries = Mood.query.filter_by(username=current_user.username).all()
+    entries = Mood.query.filter_by(user_id=current_user.id).all()
     return jsonify([entry.to_dict() for entry in entries])
 
-@bp.route('/get_friend_moods/<friend_username>')
+@bp.route('/get_friend_moods/<int:friend_id>')
 @login_required
-def get_friend_moods(friend_username):
+def get_friend_moods(friend_id):
     friendship = Friendship.query.filter_by(
-        username=current_user.username,
-        friend_username=friend_username
+        user_id=current_user.id,
+        friend_id=friend_id
     ).first()
     
     if not friendship:
         return jsonify({'error': 'Not friends with this user'}), 403
     
-    entries = Mood.query.filter_by(username=friend_username).all()
+    entries = Mood.query.filter_by(user_id=friend_id).all()
     return jsonify([entry.to_dict() for entry in entries])
 
-@bp.route('/calendar/<username>')
+@bp.route('/calendar/<int:user_id>')
 @login_required
-def calendar_view(username):
+def calendar_view(user_id):
     # Get the user
-    user = User.query.get_or_404(username)
+    user = User.query.get_or_404(user_id)
 
     if user.privacy_setting == 'nobody' and user != current_user:
         flash("This user's mood analysis is private.")
         return redirect(url_for('main.home'))
     
     # Check if the user is a friend
-    if username != current_user.username:
+    if user_id != current_user.id:
         friendship = Friendship.query.filter_by(
-            username=current_user.username,
-            friend_username=username
+            user_id=current_user.id,
+            friend_id=user_id
         ).first()
         if not friendship:
             flash("You can only view calendars of your friends")
@@ -254,8 +317,8 @@ def calendar_view(username):
         current_date += timedelta(days=1)
     
     # Get moods for both views
-    week_moods = Mood.get_moods_for_date_range(username, week_start, week_end)
-    month_moods = Mood.get_moods_for_date_range(username, month_start, month_end)
+    week_moods = Mood.get_moods_for_date_range(user_id, week_start, week_end)
+    month_moods = Mood.get_moods_for_date_range(user_id, month_start, month_end)
     
     return render_template('calendar.html',
                          user=user,
@@ -264,17 +327,17 @@ def calendar_view(username):
                          week_moods=week_moods,
                          month_moods=month_moods)
 
-@bp.route('/analysis/<username>')
+@bp.route('/analysis/<int:user_id>')
 @login_required
-def analysis(username):
+def analysis(user_id):
     # Get the user
-    user = User.query.get_or_404(username)
+    user = User.query.get_or_404(user_id)
     
     # Check if the user is a friend or the current user
-    if username != current_user.username:
+    if user_id != current_user.id:
         friendship = Friendship.query.filter_by(
-            username=current_user.username,
-            friend_username=username
+            user_id=current_user.id,
+            friend_id=user_id
         ).first()
         if not friendship:
             flash("You can only view analysis of your friends")
@@ -292,14 +355,14 @@ def analysis(username):
     
     # Get moods for the week
     week_moods = Mood.query.filter(
-        Mood.username == username,
+        Mood.user_id == user_id,
         Mood.timestamp >= week_start,
         Mood.timestamp <= week_end
     ).all()
     
     # Get moods for the month
     month_moods = Mood.query.filter(
-        Mood.username == username,
+        Mood.user_id == user_id,
         Mood.timestamp >= month_start,
         Mood.timestamp <= month_end
     ).all()
