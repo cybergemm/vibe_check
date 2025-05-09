@@ -223,15 +223,19 @@ def calendar_view(user_id):
     # Get the user
     user = User.query.get_or_404(user_id)
     
-    # Check if the user is a friend
+    # Check privacy settings
     if user_id != current_user.username:
-        friendship = Friendship.query.filter_by(
-            user_id=current_user.username,
-            friend_id=user_id
-        ).first()
-        if not friendship:
-            flash("You can only view calendars of your friends")
+        if user.privacy_setting == 'private':
+            flash("This user's data is private")
             return redirect(url_for('main.home'))
+        elif user.privacy_setting == 'friends':
+            friendship = Friendship.query.filter_by(
+                user_id=current_user.username,
+                friend_id=user_id
+            ).first()
+            if not friendship:
+                flash("You can only view calendars of your friends")
+                return redirect(url_for('main.home'))
     
     # Get the date ranges
     today = datetime.now().date()
@@ -268,15 +272,19 @@ def analysis(user_id):
     # Get the user
     user = User.query.get_or_404(user_id)
     
-    # Check if the user is a friend or the current user
+    # Check privacy settings
     if user_id != current_user.username:
-        friendship = Friendship.query.filter_by(
-            user_id=current_user.username,
-            friend_id=user_id
-        ).first()
-        if not friendship:
-            flash("You can only view analysis of your friends")
+        if user.privacy_setting == 'private':
+            flash("This user's data is private")
             return redirect(url_for('main.home'))
+        elif user.privacy_setting == 'friends':
+            friendship = Friendship.query.filter_by(
+                user_id=current_user.username,
+                friend_id=user_id
+            ).first()
+            if not friendship:
+                flash("You can only view analysis of your friends")
+                return redirect(url_for('main.home'))
     
     # Get the date ranges
     today = datetime.now().date()
@@ -446,4 +454,17 @@ def analyze_monthly_moods(moods):
     return {
         'mood_days': filtered_mood_days,
         'frequent_activities': frequent_activities if frequent_activities else ['none']
-    } 
+    }
+
+@bp.route('/update_privacy', methods=['POST'])
+@login_required
+def update_privacy():
+    privacy_setting = request.form.get('privacy_setting')
+    if privacy_setting not in ['public', 'friends', 'private']:
+        flash('Invalid privacy setting')
+        return redirect(url_for('main.home'))
+    
+    current_user.privacy_setting = privacy_setting
+    db.session.commit()
+    flash('Privacy settings updated successfully')
+    return redirect(url_for('main.home')) 
