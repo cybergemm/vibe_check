@@ -12,6 +12,7 @@ class Friendship(db.Model):
 class User(UserMixin, db.Model):
     username = db.Column(db.String(30), primary_key=True)
     password = db.Column(db.String(100))
+    privacy_setting = db.Column(db.String(20), default='friends')  # Can be 'public', 'friends', or 'private'
     moods = db.relationship('Mood', backref='user', lazy=True)
     friends = db.relationship(
         'User',
