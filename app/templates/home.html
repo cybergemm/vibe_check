@@ -70,13 +70,8 @@
                 <div class="card-header">
                     <h4>Friends' Moods</h4>
                     <div id="friend-requests-tab">
-                        <!-- <h3>Friend Requests</h3>
-                        <ul id="friend-requests-list"></ul> -->
-                        <button id="openFriendTab">
-                          👥 Friend Requests <span id="requestCount" class="badge bg-danger ms-1">0</span>
-                        </button>
-                        
-                      </div>
+                        <button id="openFriendModal">👥 Friend Requests</button>
+                    </div>
                 </div>
                 <div class="card-body">
                     {% if friends %}
@@ -86,7 +81,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="mb-0">
-                                            <a href="{{ url_for('main.calendar_view', user_id=friend.id) }}" class="text-decoration-none">
+                                            <a href="{{ url_for('main.calendar_view', user_id=friend.username) }}" class="text-decoration-none">
                                                 {{ friend.username }}
                                             </a>
                                         </h6>
@@ -105,7 +100,7 @@
                                                 {{ friend.today_mood.mood }}
                                             </span>
                                         {% endif %}
-                                        <a href="{{ url_for('main.analysis', user_id=friend.id) }}" class="btn btn-sm btn-outline-primary ms-2">
+                                        <a href="{{ url_for('main.analysis', user_id=friend.username) }}" class="btn btn-sm btn-outline-primary ms-2">
                                             Analysis
                                         </a>
                                     </div>
@@ -121,119 +116,52 @@
         </div>
     </div>
     <!-- /* Modal for Friend Requests */ -->
-    <!-- <div id="friendModal" class="modal">
+    <div id="friendModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <div class="mb-3">
-                <div class="mb-3 d-flex gap-2">
-                    <button id="viewRequestsBtn" class="btn btn-outline-secondary">View Requests</button>
-                    <button id="addFriendBtn" class="btn btn-outline-secondary">Add Friend</button>
-                  </div>
                 <ul id="friend-requests-list" class="list-group"></ul>
-             
             </div>
         </div>
-            <div id="viewRequestsPage" class="hidden">
-                <ul id="friend-requests-list" class="list-group"></ul>
-            
-            </div>
-            <div id="addFriendPage" class="hidden">
-              <div class="mb-3 position-relative">
-                <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search username..." oninput="searchUsers()" autocomplete="off">
-                <ul id="searchResults" class="list-group position-absolute w-100" style="z-index: 1000;"></ul>
-              </div>
-              
+        <div id="viewRequestsPage" class="hidden">
+            <ul id="friend-requests-list" class="list-group"></ul>
+        </div>
     </div>
-</div> -->
-<div id="friendSection" class="mt-3">
-  <span class="close">&times;</span>
-  <!-- Tab Navigation -->
-  <ul class="nav nav-tabs">
-      <li class="nav-item">
-          <button class="nav-link active" id="viewRequestsTab" onclick="switchTab('viewRequestsPage')">View Requests</button>
-      </li>
-      <li class="nav-item">
-          <button class="nav-link" id="addFriendTab" onclick="switchTab('addFriendPage')">Add Friend</button>
-      </li>
-  </ul>
-
-  <!-- Tab Content -->
-  <div id="viewRequestsPage" class="tab-content mt-3">
-      <ul id="friend-requests-list" class="list-group"></ul>
-  </div>
-  <div id="addFriendPage" class="tab-content mt-3 hidden">
-      <div class="mb-3 position-relative">
-          <input type="text" id="searchInput" class="form-control mb-2" placeholder="Search username..." oninput="searchUsers()" autocomplete="off">
-          
-          <ul id="searchResults" class="list-group position-absolute w-100" style="z-index: 1000;"></ul>
-      </div>
-  </div>
 </div>
-
-</div>
-
 
 <style>
-#friendSection {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1100;
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 600px;
-  width: 90%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  display: none;
-}
-
-#friendSection .close {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 24px;
-  cursor: pointer;
-}
 .bg-happy-subtle { background-color: #d1e7dd; color: #0f5132; }
 .bg-sad-subtle { background-color: #f8d7da; color: #842029; }
 .bg-excited-subtle { background-color: #fff3cd; color: #664d03; }
 .bg-calm-subtle { background-color: #cff4fc; color: #055160; }
 .bg-anxious-subtle { background-color: #e2e3e5; color: #41464b; }
 .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      display: none; /* Hidden by default */
-      justify-content: center;
-      align-items: center;
-    }
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+}
 
-    /* .modal-content {
-      background-color: white;
-      padding: 20px;
-      border-radius: 5px;
-      max-width: 500px;
-      width: 100%;
-    }
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    max-width: 500px;
+    width: 100%;
+}
 
-    .close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      font-size: 24px;
-      cursor: pointer;
-    }
-  .hidden {
-    display: none;
-  } */
-  .hidden {
-  display: none;
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
 }
 </style>
 
@@ -265,258 +193,89 @@ document.getElementById('moodForm').addEventListener('submit', async (e) => {
         alert('Failed to submit mood');
     }
 });
-// Load friend requests when the page loads
 
-
-// const userId = {{user_id}};
 const userId = "{{user_id}}";
 
 document.addEventListener('DOMContentLoaded', () => {
     if (userId !== null) {
-      loadFriendRequests();
-      updateRequestCount();      // for button badge
-  
+        loadFriendRequests();
     }
-  });
+});
 
-  function loadFriendRequests() {
+function loadFriendRequests() {
     fetch(`/api/friend_requests/${userId}`)
-      .then(response => {
-        if (!response.ok) throw new Error("Failed to load requests");
-        return response.json();
-      })
-      .then(data => {
-        console.log("Friend Requests:", data);
-        const list = document.getElementById('friend-requests-list');
-        list.innerHTML = ''; // Clear previous entries
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to load requests");
+            return response.json();
+        })
+        .then(data => {
+            console.log("Friend Requests:", data);
+            const list = document.getElementById('friend-requests-list');
+            list.innerHTML = ''; // Clear previous entries
 
-        if (data.length === 0) {
-          list.innerHTML = '<li>No friend requests</li>';
-          return;
-        }
+            if (data.length === 0) {
+                list.innerHTML = '<li class="list-group-item">No friend requests</li>';
+                return;
+            }
 
-        data.forEach(req => {
-          const li = document.createElement('li');
-          li.innerHTML = `
-            <strong>${req.sender_username}</strong>
-            <button onclick="respondToRequest(${req.request_id}, true)">✅ Accept</button>
-            <button onclick="respondToRequest(${req.request_id}, false)">❌ Decline</button>
-          `;
-          list.appendChild(li);
+            data.forEach(req => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.innerHTML = `
+                    <strong>${req.sender_username}</strong>
+                    <div>
+                        <button class="btn btn-sm btn-success me-2" onclick="respondToRequest(${req.request_id}, true)">✅ Accept</button>
+                        <button class="btn btn-sm btn-danger" onclick="respondToRequest(${req.request_id}, false)">❌ Decline</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        })
+        .catch(err => {
+            console.error('Error loading friend requests:', err);
+            const list = document.getElementById('friend-requests-list');
+            list.innerHTML = '<li class="list-group-item text-danger">Error loading friend requests</li>';
         });
-      })
-      .catch(err => {
-        console.error('Error loading friend requests:', err);
-      });
-  }
+}
 
-  function respondToRequest(requestId, accept) {
+function respondToRequest(requestId, accept) {
     fetch(`/api/friend_request/${accept ? 'accept' : 'decline'}/${requestId}`, {
-      method: 'POST' 
+        method: 'POST' 
     })
     .then(response => {
-      if (!response.ok) throw new Error("Failed to respond to request");
-      return response.json();
+        if (!response.ok) throw new Error("Failed to respond to request");
+        return response.json();
     })
     .then(result => {
-      console.log(result.message); // Optionally show toast or alert
-      loadFriendRequests(); // Refresh list
+        console.log(result.message);
+        loadFriendRequests();
+        // Reload the page to update the friends list
+        window.location.reload();
     })
     .catch(err => {
-      console.error('Error responding to request:', err);
-    });
-  }
-
-</script>
-<!-- <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const openModalBtn = document.getElementById("openFriendModal");
-      const modal = document.getElementById("friendModal");
-      const closeBtn = modal.querySelector(".close");
-    
-
-        openModalBtn.addEventListener("click", function() {
-        modal.style.display = "flex";  // Show the modal
-      });
-    
-
-
-        closeBtn.addEventListener("click", function() {
-        modal.style.display = "none";  // Hide the modal
-      });
-    
-      // Optional: ESC key to close modal
-      document.addEventListener('keydown', (e) => {
-        if (e.key === "Escape") {modal.style.display = "none"; };
-      });
-    });
-</script> -->
-<!-- <script>
-    function searchUsers() {
-  const query = document.getElementById('searchInput').value;
-  console.log("Searching for users with query:", query);
-  if (!query) return;
-
-  fetch(`/api/search_users?q=${encodeURIComponent(query)}`)
-    .then(response => response.json())
-    .then(users => {
-      const results = document.getElementById('searchResults');
-      results.innerHTML = '';
-
-      if (users.length === 0) {
-        results.innerHTML = '<li class="list-group-item text-muted">No users found</li>';
-        return;
-      }
-
-      users.forEach(user => {
-        const li = document.createElement('li');
-        li.className = 'list-group-item d-flex justify-content-between align-items-center';
-        li.innerHTML = `
-          <span>${user.username}</span>
-          <button class="btn btn-sm btn-primary" onclick="sendFriendRequest(${user.id})">Send Request</button>
-        `;
-        results.appendChild(li);
-      });
+        console.error('Error responding to request:', err);
+        alert('Failed to respond to friend request');
     });
 }
--->
-<script>
-function sendFriendRequest(userId) {
-  fetch(`/api/send_friend_request/${userId}`, {
-    method: 'POST'
-  })
-  .then(response => response.json())
-  .then(data => {
-    alert(data.message || data.error);
-    searchUsers();  // Refresh search results
-  })
-  .catch(err => {
-    console.error('Error sending friend request:', err);
-  });
-}
-</script> 
-<script>
-  let searchTimeout;
-  
-  function searchUsers() {
-    clearTimeout(searchTimeout);
-    const query = document.getElementById('searchInput').value.trim();
-  
-    if (!query) {
-      document.getElementById('searchResults').innerHTML = '';
-      return;
-    }
-  
-    searchTimeout = setTimeout(() => {
-      fetch(`/api/search_users?q=${encodeURIComponent(query)}`)
-        .then(response => response.json())
-        .then(users => {
-          const results = document.getElementById('searchResults');
-          results.innerHTML = '';
-          console.log("Search results:", users);
-          if (users.length === 0) {
-            results.innerHTML = '<li class="list-group-item text-muted">No users found</li>';
-            return;
-          }
-  
-          users.forEach(user => {
-            const li = document.createElement('li');
-            li.className = 'list-group-item d-flex justify-content-between align-items-center';
-            li.innerHTML = `
-              <span>${user.username}</span>
-              <button class="btn btn-sm btn-primary" onclick="sendFriendRequest(${user.id})">Send Request</button>
-            `;
-            results.appendChild(li);
-          });
-        });
-    }, 300); // debounce delay in ms
-  }
-  </script>
-<!-- <script>
-    document.addEventListener('DOMContentLoaded', () => {
-  const viewRequestsBtn = document.getElementById("viewRequestsTab");
-  const addFriendBtn = document.getElementById("addFriendTab");
-  const viewRequestsPage = document.getElementById("viewRequestsPage");
-  const addFriendPage = document.getElementById("addFriendPage");
 
-  viewRequestsBtn.addEventListener("click", () => {
-    viewRequestsPage.classList.remove("hidden");
-    addFriendPage.classList.add("hidden");
-    loadFriendRequests();
-  });
-
-  addFriendBtn.addEventListener("click", () => {
-    viewRequestsPage.classList.add("hidden");
-    addFriendPage.classList.remove("hidden");
-    searchUsers();
-  });
-});
-</script> -->
-
-<!-- new code for tab instead of modal -->
-<script>
-  function switchTab(tabId) {
-    // Hide all tab content
-    document.getElementById('viewRequestsPage').classList.add('hidden');
-    document.getElementById('addFriendPage').classList.add('hidden');
-  
-    // Remove 'active' class from all tabs
-    document.getElementById('viewRequestsTab').classList.remove('active');
-    document.getElementById('addFriendTab').classList.remove('active');
-  
-    // Show the selected tab and activate its button
-    document.getElementById(tabId).classList.remove('hidden');
-    if (tabId === 'viewRequestsPage') {
-        document.getElementById('viewRequestsTab').classList.add('active');
-    } else {
-        document.getElementById('addFriendTab').classList.add('active');
-    }
-  }
-  </script>
- <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const openTabBtn = document.getElementById("openFriendTab");
-  const friendSection = document.getElementById("friendSection");
-  const closeTabBtn = friendSection.querySelector(".close");
+    const openModalBtn = document.getElementById("openFriendModal");
+    const modal = document.getElementById("friendModal");
+    const closeBtn = modal.querySelector(".close");
 
-  openTabBtn.addEventListener("click", () => {
-    friendSection.style.display = "block";  // Show the nav tab
-    switchTab('viewRequestsPage');          // Default tab
-    loadFriendRequests();                   // Load requests immediately
-  });
-
-  closeTabBtn.addEventListener("click", () => {
-    friendSection.style.display = "none";   // Hide the nav tab
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === "Escape") {
-      friendSection.style.display = "none";
-    }
-  });
-});
-
-</script>
-
-<script>
-  function updateRequestCount() {
-  fetch(`/api/friend_requests/${userId}`)
-    .then(response => response.json())
-    .then(data => {
-      const count = data.length;
-      const badge = document.getElementById('requestCount');
-      if (count > 0) {
-        badge.textContent = count;
-        badge.style.display = 'inline-block';
-      } else {
-        badge.style.display = 'none';
-      }
-    })
-    .catch(err => {
-      console.error('Error loading request count:', err);
+    openModalBtn.addEventListener("click", function() {
+        modal.style.display = "flex";
     });
-}
 
+    closeBtn.addEventListener("click", function() {
+        modal.style.display = "none";
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") {
+            modal.style.display = "none";
+        }
+    });
+});
 </script>
-
 {% endblock %}
