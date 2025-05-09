@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
 from flask_login import login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User, Mood, Friendship, FriendRequest, db
 from datetime import datetime, timedelta
 
@@ -46,21 +47,68 @@ def home():
                          reasons=Mood.get_all_reasons(), 
                          user_id=current_user.username)
 
-@bp.route('/search_users')
+# @bp.route('/search_users')
+# @login_required
+# def search_users():
+#     query = request.args.get('q', '')
+#     if query:
+#         users = User.query.filter(
+#             (User.username.ilike(f'%{query}%')) |
+#             (User.full_name.ilike(f'%{query}%'))
+#         ).filter(User.id != current_user.id).all()
+#     else:
+# <<<<<<< settings-page-privacy-settings-and-change-password
+#         data = request.get_json()
+#         setting = data.get('privacy_setting')
+#         if setting not in ['friends', 'nobody']:
+#             return jsonify({'error': 'Invalid setting'}), 400
+
+#         current_user.privacy_setting = setting
+#         db.session.commit()
+#         return jsonify({'message': 'Settings updated successfully'})
+    
+@bp.route('/change_password', methods=['GET', 'POST'])
 @login_required
-def search_users():
-    query = request.args.get('q', '')
-    if query:
-        users = User.query.filter(
-            (User.username.ilike(f'%{query}%')) |
-            (User.full_name.ilike(f'%{query}%'))
-        ).filter(User.id != current_user.id).all()
-    else:
-        users = []
+def change_password():
+    if request.method == 'POST':
+        current = request.form.get('current_password')
+        new = request.form.get('new_password')
+        confirm = request.form.get('confirm_new_password')
+
+        if not check_password_hash(current_user.password, current):
+            flash('Current password is incorrect.', 'danger')
+        elif new != confirm:
+            flash('New passwords do not match.', 'warning')
+        else:
+            current_user.password = generate_password_hash(new)
+            db.session.commit()
+            flash('Your password has been updated.', 'success')
+            return redirect(url_for('main.home'))
+
+    return render_template('changepassword.html')
+
+# @bp.route('/search_users')
+# @login_required
+# def search_users():
+#     query = request.args.get('q', '')
+#     if query:
+#         users = User.query.filter(
+#             (User.username.ilike(f'%{query}%')) |
+#             (User.full_name.ilike(f'%{query}%'))
+#         ).filter(User.id != current_user.id).all()
+#     else:
+#         users = []
     
-    friend_ids = {f.friend_id for f in Friendship.query.filter_by(user_id=current_user.id).all()}
+#     friend_ids = {f.friend_id for f in Friendship.query.filter_by(user_id=current_user.id).all()}
     
-    return render_template('main/search_users.html', users=users, friend_ids=friend_ids)
+#     return render_template('main/search_users.html', users=users, friend_ids=friend_ids)
+# =======
+#         users = []
+    
+#     friend_ids = {f.friend_id for f in Friendship.query.filter_by(user_id=current_user.id).all()}
+    
+#     return render_template('main/search_users.html', users=users, friend_ids=friend_ids)
+# >>>>>>> main
 
 # send friend request
 @bp.route('/api/friend_request', methods=['POST'])
