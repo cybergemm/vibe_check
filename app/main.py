@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
 from flask_login import login_required, current_user
-from app.models import User, Mood, Friendship, FriendRequest, db
+from app.models import User, Mood, Friendship, db
 from datetime import datetime, timedelta
 
 bp = Blueprint('main', __name__)
@@ -14,7 +14,6 @@ def index():
 @bp.route('/home')
 @login_required
 def home():
-    
     # Get today's date
     today = datetime.now().date()
     today_start = datetime.combine(today, datetime.min.time())
@@ -44,7 +43,7 @@ def home():
     return render_template('home.html',
                          today_mood=today_mood,
                          friends=friends,
-                         reasons=Mood.get_all_reasons(), user_id=current_user.id)
+                         reasons=Mood.get_all_reasons())
 
 @bp.route('/search_users')
 @login_required
@@ -61,67 +60,6 @@ def search_users():
     friend_ids = {f.friend_id for f in Friendship.query.filter_by(user_id=current_user.id).all()}
     
     return render_template('main/search_users.html', users=users, friend_ids=friend_ids)
-
-# send friend request
-@bp.route('/api/friend_request', methods=['POST'])
-@login_required
-def send_friend_request():
-    data = request.get_json()
-    sender_id = data['sender_id']
-    receiver_id = data['receiver_id']
-
-    existing_request = FriendRequest.query.filter_by(sender_id=sender_id, receiver_id=receiver_id).first()
-    if existing_request:
-        return jsonify({'message': 'Request already sent'}), 400
-
-    new_request = FriendRequest(sender_id=sender_id, receiver_id=receiver_id)
-    db.session.add(new_request)
-    db.session.commit()
-    return jsonify({'message': 'Friend request sent'}), 200
-
-# get friend requests for logged-in user
-@bp.route('/api/friend_requests/<int:user_id>', methods=['GET'])
-@login_required
-def get_friend_requests(user_id):
-    requests = FriendRequest.query.filter_by(receiver_id=user_id, status='pending').all()
-    result = [
-        {
-            'request_id': fr.id,
-            'sender_id': fr.sender_id,
-            'sender_username': fr.sender.username, 
-        }
-        for fr in requests
-    ]
-    return jsonify(result)
-
-# accept friend request
-@bp.route('/api/friend_request/accept/<int:request_id>', methods=['POST'])
-@login_required
-def accept_friend_request(request_id):
-    fr = FriendRequest.query.get(request_id)
-    if not fr or fr.status != 'pending':
-        return jsonify({'message': 'Invalid request'}), 404
-
-    fr.status = 'accepted'
-
-    db.session.execute("""
-        INSERT INTO friendships (user_id, friend_id) VALUES (:u1, :u2), (:u2, :u1)
-    """, {'u1': fr.sender_id, 'u2': fr.receiver_id})
-
-    db.session.commit()
-    return jsonify({'message': 'Friend request accepted'})
-
-# decline friend request
-@bp.route('/api/friend_request/decline/<int:request_id>', methods=['POST'])
-@login_required
-def decline_friend_request(request_id):
-    fr = FriendRequest.query.get(request_id)
-    if not fr or fr.status != 'pending':
-        return jsonify({'message': 'Invalid request'}), 404
-
-    fr.status = 'declined'
-    db.session.commit()
-    return jsonify({'message': 'Friend request declined'})
 
 @bp.route('/add_friend/<int:friend_id>', methods=['POST'])
 @login_required
