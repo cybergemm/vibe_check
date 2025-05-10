@@ -531,9 +531,9 @@ def update_privacy():
     privacy_setting = request.form.get('privacy_setting')
     if privacy_setting not in ['public', 'friends', 'private']:
         flash('Invalid privacy setting')
-        return redirect(url_for('main.home'))
+        return redirect(url_for('main.change_password'))
     
     current_user.privacy_setting = privacy_setting
     db.session.commit()
     flash('Privacy settings updated successfully')
-    return redirect(url_for('main.home')) 
+    return redirect(url_for('main.change_password')) 
