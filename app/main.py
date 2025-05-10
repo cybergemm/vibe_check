@@ -87,6 +87,27 @@ def change_password():
 
     return render_template('changepassword.html')
 
+@bp.route('/delete_account', methods=['POST'])
+@login_required
+def delete_account():
+    # Delete all user's moods
+    Mood.query.filter_by(user_id=current_user.username).delete()
+    
+    # Delete all friendships
+    Friendship.query.filter_by(user_id=current_user.username).delete()
+    Friendship.query.filter_by(friend_id=current_user.username).delete()
+    
+    # Delete all friend requests
+    FriendRequest.query.filter_by(sender_id=current_user.username).delete()
+    FriendRequest.query.filter_by(receiver_id=current_user.username).delete()
+    
+    # Delete the user
+    db.session.delete(current_user)
+    db.session.commit()
+    
+    flash('Your account has been deleted successfully.', 'success')
+    return redirect(url_for('auth.login'))
+
 # @bp.route('/search_users')
 # @login_required
 # def search_users():
