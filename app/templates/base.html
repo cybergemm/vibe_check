@@ -37,10 +37,10 @@
                             <a class="nav-link" href="{{ url_for('main.home') }}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.calendar_view', user_id=current_user.id) }}">Calendar</a>
+                            <a class="nav-link" href="{{ url_for('main.calendar_view', user_id=current_user.username) }}">Calendar</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.analysis', user_id=current_user.id) }}">Analysis</a>
+                            <a class="nav-link" href="{{ url_for('main.analysis', user_id=current_user.username) }}">Analysis</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('main.change_password') }}">Settings</a>
