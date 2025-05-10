@@ -6,55 +6,54 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
-            <h2 class="mb-4">Mood Analysis for {{ user.username }}</h2>
-            
-            <!-- Weekly Analysis -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h4>Weekly Analysis</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5>Mood Distribution</h5>
-                            <div class="chart-container-large">
-                                <canvas id="weeklyMoodChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <h5>Activities Distribution</h5>
-                            <div class="chart-container-large">
-                                <canvas id="weeklyActivitiesChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Monthly Analysis -->
             <div class="card">
-                <div class="card-header">
-                    <h4>Monthly Analysis</h4>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">Mood Analysis for {{ user.username }}</h2>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-primary active" id="weekView">Week</button>
+                        <button type="button" class="btn btn-outline-primary" id="monthView">Month</button>
+                    </div>
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5>Mood Distribution</h5>
-                            <div class="chart-container-large">
-                                <canvas id="monthlyMoodChart"></canvas>
+                    <!-- Weekly Analysis -->
+                    <div id="weekAnalysis">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Mood Distribution</h4>
+                                <div class="chart-container-large">
+                                    <canvas id="weeklyMoodChart"></canvas>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <h5>Activities Distribution</h5>
-                            <div class="chart-container-large">
-                                <canvas id="monthlyActivitiesChart"></canvas>
+                            <div class="col-md-6">
+                                <h4>Activities Distribution</h4>
+                                <div class="chart-container-large">
+                                    <canvas id="weeklyActivitiesChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <h5>Mood Frequency by Day of Week</h5>
-                            <div id="moodBarCharts"></div>
+
+                    <!-- Monthly Analysis -->
+                    <div id="monthAnalysis" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Mood Distribution</h4>
+                                <div class="chart-container-large">
+                                    <canvas id="monthlyMoodChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Activities Distribution</h4>
+                                <div class="chart-container-large">
+                                    <canvas id="monthlyActivitiesChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h4>Mood Frequency by Day of Week</h4>
+                                <div id="moodBarCharts"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -84,8 +83,7 @@
      data-weekly-activities='{{ weekly_activities|tojson }}'
      data-monthly-mood='{{ monthly_mood_data|tojson }}'
      data-monthly-activities='{{ monthly_activities|tojson }}'
-     data-monthly-days='{{ monthly_days_data|tojson }}'
-     data-moods-per-day='{{ moods_per_day|tojson }}'>
+     data-monthly-days='{{ monthly_days_data|tojson }}'>
 </div>
 
 <script>
@@ -134,7 +132,15 @@ function createRadialOptions() {
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                display: false // Hide legend
+                display: true,
+                position: 'right',
+                labels: {
+                    color: '#111',
+                    font: {
+                        size: 14,
+                        weight: 'bold'
+                    }
+                }
             }
         },
         layout: {
@@ -163,7 +169,14 @@ function createSingleBarOptions(mood) {
                 padding: { top: 10, bottom: 10 }
             },
             tooltip: {
-                enabled: false // Disable tooltips
+                enabled: true,
+                mode: 'index',
+                intersect: false,
+                callbacks: {
+                    label: function(context) {
+                        return `${context.dataset.label}: ${context.raw} times`;
+                    }
+                }
             }
         },
         scales: {
@@ -171,7 +184,7 @@ function createSingleBarOptions(mood) {
                 beginAtZero: true,
                 ticks: {
                     stepSize: 1,
-                    color: '#111', // black font for y axis
+                    color: '#111',
                     font: { size: 14, weight: 'bold' }
                 },
                 grid: { display: false }
@@ -179,7 +192,7 @@ function createSingleBarOptions(mood) {
             x: {
                 grid: { display: false },
                 ticks: {
-                    color: '#111', // black font for x axis
+                    color: '#111',
                     font: { size: 16, weight: 'bold' },
                     autoSkip: false,
                     maxRotation: 0,
@@ -199,10 +212,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const weeklyActivitiesData = JSON.parse(chartData.dataset.weeklyActivities);
     const monthlyMoodData = JSON.parse(chartData.dataset.monthlyMood);
     const monthlyActivitiesData = JSON.parse(chartData.dataset.monthlyActivities);
-    const moodsPerDay = JSON.parse(chartData.dataset.moodsPerDay);
+    const monthlyDaysData = JSON.parse(chartData.dataset.monthlyDays);
 
     // Set chart.js defaults
-    Chart.defaults.color = '#ffffff';
+    Chart.defaults.color = '#111';
     Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
 
     // Weekly Mood Chart
@@ -253,32 +266,57 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Render a separate bar chart for each mood
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const moodNames = Object.keys(moodsPerDay).sort();
     const moodBarChartsDiv = document.getElementById('moodBarCharts');
-    moodNames.forEach((mood, idx) => {
-        // Create a container and canvas for each mood
-        const container = document.createElement('div');
-        container.className = 'chart-container-bar';
-        const canvas = document.createElement('canvas');
-        canvas.id = `moodBarChart_${mood}`;
-        container.appendChild(canvas);
-        moodBarChartsDiv.appendChild(container);
-        // Render the chart
-        new Chart(canvas.getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: daysOfWeek,
-                datasets: [{
-                    data: daysOfWeek.map(day => moodsPerDay[mood][day] || 0),
-                    backgroundColor: moodColors[mood] || activityColors[idx % activityColors.length],
-                    borderRadius: 5,
-                    borderWidth: 2,
-                    borderColor: '#1a1a1a',
-                }]
-            },
-            options: createSingleBarOptions(mood)
-        });
+    
+    // Clear any existing charts
+    moodBarChartsDiv.innerHTML = '';
+    
+    // Create charts for each mood type
+    Object.keys(moodColors).forEach(mood => {
+        if (mood !== 'No Data') {
+            const container = document.createElement('div');
+            container.className = 'chart-container-bar';
+            const canvas = document.createElement('canvas');
+            canvas.id = `moodBarChart_${mood}`;
+            container.appendChild(canvas);
+            moodBarChartsDiv.appendChild(container);
+            
+            // Get data for this mood
+            const moodData = daysOfWeek.map(day => monthlyDaysData[day][mood] || 0);
+            
+            // Create chart regardless of data (to show empty state)
+            new Chart(canvas.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: daysOfWeek,
+                    datasets: [{
+                        label: mood.charAt(0).toUpperCase() + mood.slice(1),
+                        data: moodData,
+                        backgroundColor: moodColors[mood],
+                        borderRadius: 5,
+                        borderWidth: 2,
+                        borderColor: '#1a1a1a',
+                    }]
+                },
+                options: createSingleBarOptions(mood)
+            });
+        }
     });
+});
+
+// View switcher functionality
+document.getElementById('weekView').addEventListener('click', function() {
+    document.getElementById('weekAnalysis').style.display = 'block';
+    document.getElementById('monthAnalysis').style.display = 'none';
+    this.classList.add('active');
+    document.getElementById('monthView').classList.remove('active');
+});
+
+document.getElementById('monthView').addEventListener('click', function() {
+    document.getElementById('weekAnalysis').style.display = 'none';
+    document.getElementById('monthAnalysis').style.display = 'block';
+    this.classList.add('active');
+    document.getElementById('weekView').classList.remove('active');
 });
 </script>
 {% endblock %} 
