@@ -3,14 +3,18 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from config import Config
 import os
+from flask_wtf import CSRFProtect
+
 
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
+csrf = CSRFProtect(app)
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
+    csrf = CSRFProtect(app)
     
     # Initialize extensions
     db.init_app(app)
