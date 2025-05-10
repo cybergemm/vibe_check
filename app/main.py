@@ -415,22 +415,20 @@ def analysis(user_id):
     
     # Prepare data for mood distribution by day of week
     monthly_days_data = {
-        'Monday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0},
-        'Tuesday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0},
-        'Wednesday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0},
-        'Thursday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0},
-        'Friday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0},
-        'Saturday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0},
-        'Sunday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0}
+        'Monday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0, 'angry': 0, 'tired': 0, 'scared': 0},
+        'Tuesday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0, 'angry': 0, 'tired': 0, 'scared': 0},
+        'Wednesday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0, 'angry': 0, 'tired': 0, 'scared': 0},
+        'Thursday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0, 'angry': 0, 'tired': 0, 'scared': 0},
+        'Friday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0, 'angry': 0, 'tired': 0, 'scared': 0},
+        'Saturday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0, 'angry': 0, 'tired': 0, 'scared': 0},
+        'Sunday': {'happy': 0, 'sad': 0, 'excited': 0, 'calm': 0, 'anxious': 0, 'angry': 0, 'tired': 0, 'scared': 0}
     }
     
-    # Calculate average moods per day
-    moods_per_day = {}
+    # Count mood frequencies by day of week
+    days_of_week = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     for mood in month_moods:
-        day = mood.timestamp.strftime('%Y-%m-%d')
-        if day not in moods_per_day:
-            moods_per_day[day] = []
-        moods_per_day[day].append(mood.mood)
+        day_of_week = days_of_week[mood.timestamp.weekday()]
+        monthly_days_data[day_of_week][mood.mood] += 1
     
     return render_template('analysis.html',
                          user=user,
@@ -438,8 +436,7 @@ def analysis(user_id):
                          weekly_activities=weekly_activities,
                          monthly_mood_data=monthly_mood_data,
                          monthly_activities=monthly_activities,
-                         monthly_days_data=monthly_days_data,
-                         moods_per_day=moods_per_day)
+                         monthly_days_data=monthly_days_data)
 
 def analyze_weekly_moods(moods):
     """Analyze weekly mood data to find most frequent mood and activities occurring more than 3 times."""
