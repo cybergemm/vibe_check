@@ -2,26 +2,6 @@
 
 {% block content %}
 <div class="container mt-4">
-    <!-- Privacy Settings -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5>Privacy Settings</h5>
-        </div>
-        <div class="card-body">
-            <form action="{{ url_for('main.update_privacy') }}" method="POST">
-                <div class="form-group">
-                    <label for="privacy_setting">Who can view your data?</label>
-                    <select class="form-control" id="privacy_setting" name="privacy_setting">
-                        <option value="public" {% if current_user.privacy_setting == 'public' %}selected{% endif %}>Everyone</option>
-                        <option value="friends" {% if current_user.privacy_setting == 'friends' %}selected{% endif %}>Friends Only</option>
-                        <option value="private" {% if current_user.privacy_setting == 'private' %}selected{% endif %}>No One</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary mt-2">Update Privacy Settings</button>
-            </form>
-        </div>
-    </div>
-
     <div class="row">
         <!-- Main content -->
         <div class="col-md-8">
@@ -69,17 +49,6 @@
                         
                         <button type="submit" class="btn btn-primary">Submit Mood</button>
                     </form>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h4>Your Mood History</h4>
-                </div>
-                <div class="card-body">
-                    <div id="moodHistory">
-                        <!-- Mood history will be populated here -->
-                    </div>
                 </div>
             </div>
         </div>
