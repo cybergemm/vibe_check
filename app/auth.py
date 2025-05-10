@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
-from flask_login import login_user, current_user
+from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask_login import login_required, login_user, current_user, logout_user
 from app import db
 from app.forms import LoginForm  # Import the LoginForm class
 from app.forms import SignupForm  # Import SignupForm
@@ -58,7 +58,9 @@ def signup():
     
     return render_template('signup.html', form=form)  # Pass form to template
 
+@login_required
 @bp.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for('main.index')) 
+    flash("You have been logged out.")
+    return redirect(url_for('auth.login'))

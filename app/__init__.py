@@ -5,31 +5,30 @@ from config import Config
 import os
 from flask_wtf import CSRFProtect
 
-
 db = SQLAlchemy()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
-csrf = CSRFProtect(app)
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
-    csrf = CSRFProtect(app)
-    
+
+    csrf = CSRFProtect(app)  # moved here to use app context directly
+
     # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
-    
+
     # Register blueprints
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp)
-    
+
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
-    
+
     # Create instance directory for database
     os.makedirs(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'instance'), exist_ok=True)
-    
+
     from app.models import User, Mood, Friendship
 
     @login_manager.user_loader
