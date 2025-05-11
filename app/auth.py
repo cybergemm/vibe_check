@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, login_user, current_user, logout_user
+from werkzeug.urls import url_parse
 from app import db
 from app.forms import LoginForm  # Import the LoginForm class
 from app.forms import SignupForm  # Import SignupForm
