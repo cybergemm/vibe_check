@@ -47,25 +47,6 @@ def home():
                          reasons=Mood.get_all_reasons(), 
                          user_id=current_user.username)
 
-# @bp.route('/search_users')
-# @login_required
-# def search_users():
-#     query = request.args.get('q', '')
-#     if query:
-#         users = User.query.filter(
-#             (User.username.ilike(f'%{query}%')) |
-#             (User.full_name.ilike(f'%{query}%'))
-#         ).filter(User.id != current_user.id).all()
-#     else:
-# <<<<<<< settings-page-privacy-settings-and-change-password
-#         data = request.get_json()
-#         setting = data.get('privacy_setting')
-#         if setting not in ['friends', 'nobody']:
-#             return jsonify({'error': 'Invalid setting'}), 400
-
-#         current_user.privacy_setting = setting
-#         db.session.commit()
-#         return jsonify({'message': 'Settings updated successfully'})
     
 @bp.route('/change_password', methods=['GET', 'POST'])
 @login_required
@@ -132,21 +113,67 @@ def delete_account():
 # >>>>>>> main
 
 # send friend request
-@bp.route('/api/friend_request', methods=['POST'])
+# @bp.route('/api/friend_request', methods=['POST'])
+# @login_required
+# def send_friend_request():
+#     data = request.get_json()
+#     sender_username = data['sender_username']
+#     receiver_username = data['receiver_username']
+
+#     existing_request = FriendRequest.query.filter_by(sender_id=sender_username, receiver_id=receiver_username).first()
+#     if existing_request:
+#         return jsonify({'message': 'Request already sent'}), 400
+
+#     new_request = FriendRequest(sender_id=sender_username, receiver_id=receiver_username)
+#     db.session.add(new_request)
+#     db.session.commit()
+#     return jsonify({'message': 'Friend request sent'}), 200
+
+# search for users
+@bp.route('/api/search_users')
 @login_required
-def send_friend_request():
-    data = request.get_json()
-    sender_username = data['sender_username']
-    receiver_username = data['receiver_username']
+def search_users():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return jsonify([])
 
-    existing_request = FriendRequest.query.filter_by(sender_id=sender_username, receiver_id=receiver_username).first()
-    if existing_request:
-        return jsonify({'message': 'Request already sent'}), 400
+    # Get current user's existing friends and pending requests
+    friend_ids = db.session.query(Friendship.friend_id).filter_by(user_id=current_user.username)
+    sent_requests = db.session.query(FriendRequest.receiver_id).filter_by(sender_id=current_user.username, status='pending')
+    excluded_ids = friend_ids.union(sent_requests)
 
-    new_request = FriendRequest(sender_id=sender_username, receiver_id=receiver_username)
+    users = User.query.filter(
+        User.username.ilike(f"%{query}%"),
+        User.username != current_user.username,
+        ~User.username.in_(excluded_ids)
+    ).all()
+
+    return jsonify([{'username': user.username} for user in users])
+
+
+# send friend request
+@bp.route('/api/send_friend_request/<receiver_id>', methods=['POST'])
+@login_required
+def send_friend_request(receiver_id):
+    print(f"Receiver ID: {receiver_id}")
+    print(f"Current User: {current_user.username}")
+    if receiver_id == current_user.username:
+        return jsonify({'error': 'You cannot send a request to yourself'}), 400
+
+    existing = FriendRequest.query.filter_by(sender_id=current_user.username, receiver_id=receiver_id, status='pending').first()
+    if existing:
+        return jsonify({'error': 'Request already sent'}), 400
+
+    # Optional: Check if already friends
+    already_friends = Friendship.query.filter_by(user_id=current_user.username, friend_id=receiver_id).first()
+    if already_friends:
+        return jsonify({'error': 'Already friends'}), 400
+
+    new_request = FriendRequest(sender_id=current_user.username, receiver_id=receiver_id, status='pending')
     db.session.add(new_request)
     db.session.commit()
-    return jsonify({'message': 'Friend request sent'}), 200
+    return jsonify({'message': 'Friend request sent'})
+
 
 # get friend requests for logged-in user
 @bp.route('/api/friend_requests/<user_id>', methods=['GET'])
@@ -192,43 +219,9 @@ def decline_friend_request(request_id):
     db.session.commit()
     return jsonify({'message': 'Friend request declined'})
 
-@bp.route('/add_friend/<int:friend_id>', methods=['POST'])
-@login_required
-def add_friend(friend_id):
-    if friend_id == current_user.id:
-        flash("You can't add yourself as a friend!")
-        return redirect(url_for('main.search_users'))
-    
-    existing = Friendship.query.filter_by(
-        user_id=current_user.id,
-        friend_id=friend_id
-    ).first()
-    
-    if not existing:
-        friendship1 = Friendship(user_id=current_user.id, friend_id=friend_id)
-        friendship2 = Friendship(user_id=friend_id, friend_id=current_user.id)
-        db.session.add_all([friendship1, friendship2])
-        db.session.commit()
-        flash("Friend added successfully!")
-    else:
-        flash("You are already friends with this user!")
-    
-    return redirect(url_for('main.search_users'))
 
-@bp.route('/remove_friend/<friend_id>', methods=['POST'])
-@login_required
-def remove_friend(friend_id):
-    Friendship.query.filter_by(
-        user_id=current_user.username,
-        friend_id=friend_id
-    ).delete()
-    Friendship.query.filter_by(
-        user_id=friend_id,
-        friend_id=current_user.username
-    ).delete()
-    db.session.commit()
-    flash("Friend removed successfully!")
-    return redirect(url_for('main.home'))
+
+
 
 @bp.route('/submit_mood', methods=['POST'])
 @login_required
