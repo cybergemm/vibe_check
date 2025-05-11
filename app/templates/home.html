@@ -11,43 +11,44 @@
                 </div>
                 <div class="card-body">
                     <form id="moodForm">
-                        <div class="mb-3">
-                            <label class="form-label">Mood</label>
-                            <div class="btn-group w-100" role="group">
-                                <input type="radio" class="btn-check" name="mood" id="happy" value="happy" required>
-                                <label class="btn btn-outline-success" for="happy">Happy</label>
-                                
-                                <input type="radio" class="btn-check" name="mood" id="sad" value="sad">
-                                <label class="btn btn-outline-danger" for="sad">Sad</label>
-                                
-                                <input type="radio" class="btn-check" name="mood" id="excited" value="excited">
-                                <label class="btn btn-outline-warning" for="excited">Excited</label>
-                                
-                                <input type="radio" class="btn-check" name="mood" id="calm" value="calm">
-                                <label class="btn btn-outline-info" for="calm">Calm</label>
-                                
-                                <input type="radio" class="btn-check" name="mood" id="anxious" value="anxious">
-                                <label class="btn btn-outline-secondary" for="anxious">Anxious</label>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Reasons</label>
-                            <div class="row">
-                                {% for reason in reasons %}
-                                <div class="col-md-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="reasons" value="{{ reason }}" id="reason{{ loop.index }}">
-                                        <label class="form-check-label" for="reason{{ loop.index }}">
-                                            {{ reason }}
-                                        </label>
-                                    </div>
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <div class="mb-3">
+                                <label class="form-label">Mood</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="mood" id="happy" value="happy" required>
+                                    <label class="btn btn-outline-success" for="happy">Happy</label>
+                                    
+                                    <input type="radio" class="btn-check" name="mood" id="sad" value="sad">
+                                    <label class="btn btn-outline-danger" for="sad">Sad</label>
+                                    
+                                    <input type="radio" class="btn-check" name="mood" id="excited" value="excited">
+                                    <label class="btn btn-outline-warning" for="excited">Excited</label>
+                                    
+                                    <input type="radio" class="btn-check" name="mood" id="calm" value="calm">
+                                    <label class="btn btn-outline-info" for="calm">Calm</label>
+                                    
+                                    <input type="radio" class="btn-check" name="mood" id="anxious" value="anxious">
+                                    <label class="btn btn-outline-secondary" for="anxious">Anxious</label>
                                 </div>
-                                {% endfor %}
                             </div>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary">Submit Mood</button>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Reasons</label>
+                                <div class="row">
+                                    {% for reason in reasons %}
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="reasons" value="{{ reason }}" id="reason{{ loop.index }}">
+                                            <label class="form-check-label" for="reason{{ loop.index }}">
+                                                {{ reason }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Submit Mood</button>
                     </form>
                 </div>
             </div>
@@ -161,12 +162,15 @@ document.getElementById('moodForm').addEventListener('submit', async (e) => {
     const formData = new FormData(e.target);
     const mood = formData.get('mood');
     const reasons = formData.getAll('reasons');
+    const csrfToken = formData.get('csrf_token');
+
     
     try {
         const response = await fetch('/submit_mood', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken  // 🔐 ADD THIS LINE
             },
             body: JSON.stringify({ mood, reasons })
         });
