@@ -1,4 +1,8 @@
-from flask_wtf import FlaskForm
+try:
+    from flask_wtf import FlaskForm
+except ImportError:
+    class FlaskForm(object):
+        pass
 from wtforms import StringField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, EqualTo, Length
 
