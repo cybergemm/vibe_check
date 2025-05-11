@@ -3,7 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from config import Config
 import os
-from flask_wtf import CSRFProtect
+try:
+    from flask_wtf import CSRFProtect
+    csrf_available = True
+except ImportError:
+    csrf_available = False
+    print("WARNING: flask_wtf is not installed. CSRF protection is disabled.")
 
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -13,7 +18,8 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    csrf = CSRFProtect(app)  # moved here to use app context directly
+    if csrf_available:
+        csrf = CSRFProtect(app)  # moved here to use app context directly
 
     # Initialize extensions
     db.init_app(app)
