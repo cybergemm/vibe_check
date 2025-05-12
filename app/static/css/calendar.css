@@ -1,0 +1,27 @@
+.mood-cell {
+    height: 100px;
+    padding: 8px;
+    vertical-align: top;
+}
+
+.mood-indicator {
+    font-size: 1.1em;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.reasons-list {
+    font-size: 0.8em;
+}
+
+.reasons-list .badge {
+    margin: 2px;
+    display: inline-block;
+}
+
+.bg-happy-subtle { background-color: #d1e7dd; color: #0f5132; }
+.bg-sad-subtle { background-color: #f8d7da; color: #842029; }
+.bg-excited-subtle { background-color: #fff3cd; color: #664d03; }
+.bg-calm-subtle { background-color: #cff4fc; color: #055160; }
+.bg-anxious-subtle { background-color: #e2e3e5; color: #41464b; }
