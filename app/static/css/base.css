@@ -1,0 +1,24 @@
+.mood-indicator {
+     padding: 0.25rem 0.5rem;
+     border-radius: 0.25rem;
+     font-size: 0.875rem;
+ }
+
+ .mood-happy {
+     background-color: #d4edda;}
+
+ .mood-sad {
+     background-color: #f8d7da;
+ }
+
+ .mood-neutral {
+     background-color: #e2e3e5;
+ }
+
+ .mood-excited {
+     background-color: #fff3cd;
+ }
+
+ .mood-angry {
+     background-color: #f8d7da;
+ }
