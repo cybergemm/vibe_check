@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block title %}Mood Analysis - {{ user.username }}{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/analysis.css') }}">
+{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -61,21 +64,6 @@
         </div>
     </div>
 </div>
-
-<style>
-.chart-container-large {
-    position: relative;
-    height: 420px;
-    width: 100%;
-    margin-bottom: 20px;
-}
-.chart-container-bar {
-    position: relative;
-    height: 220px;
-    width: 100%;
-    margin-bottom: 40px;
-}
-</style>
 
 <!-- Store data in hidden elements -->
 <div id="chartData" style="display: none;"
