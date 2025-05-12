@@ -7,6 +7,10 @@ from datetime import datetime, timedelta
 bp = Blueprint('main', __name__)
 
 @bp.route('/')
+def intro():
+    # Redirect to the home page
+    return render_template('intropage.html')
+
 @bp.route('/index')
 @login_required
 def index():
