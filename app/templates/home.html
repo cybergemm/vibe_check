@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
 {% block content %}
 <div class="container mt-4">
     <div class="row">
@@ -119,41 +121,6 @@
     </div>
 </div>
 
-<style>
-.bg-happy-subtle { background-color: #d1e7dd; color: #0f5132; }
-.bg-sad-subtle { background-color: #f8d7da; color: #842029; }
-.bg-excited-subtle { background-color: #fff3cd; color: #664d03; }
-.bg-calm-subtle { background-color: #cff4fc; color: #055160; }
-.bg-anxious-subtle { background-color: #e2e3e5; color: #41464b; }
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    display: none; /* Hidden by default */
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    max-width: 500px;
-    width: 100%;
-}
-
-.close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 24px;
-    cursor: pointer;
-}
-</style>
 
 <script>
 document.getElementById('moodForm').addEventListener('submit', async (e) => {
