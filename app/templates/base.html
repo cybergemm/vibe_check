@@ -14,7 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     {% block head %}{% endblock %}
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <!-- Navigation -->
 <nav class="navbar navbar-expand-md navbar-dark custom-navbar">
   <div class="container py-3">
@@ -74,7 +74,7 @@
     </div>
 
     <!-- Main Content -->
-     <main class="container mt-4">
+     <main class="container mt-4 flex-fill">
         {% block content %}{% endblock %}
     </main>
     <!-- Footer -->

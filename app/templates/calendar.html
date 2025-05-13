@@ -7,12 +7,12 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
-            <div class="card">
+            <div class="card border-0 shadow-sm rounded-4 bg-light-subtle">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4>{{ user.username }}'s Mood Calendar</h4>
                     <div class="btn-group">
-                        <button type="button" class="btn btn-outline-primary" id="weekView">Week</button>
-                        <button type="button" class="btn btn-outline-primary active" id="monthView">Month</button>
+                        <button type="button" class="btn btn-outline-theme" id="weekView">Week</button>
+                        <button type="button" class="btn btn-outline-theme active" id="monthView">Month</button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -69,7 +69,7 @@
                                         <td class="mood-cell" data-date="{{ day.strftime('%Y-%m-%d') }}">
                                             {% set mood = month_moods.get(day.strftime('%Y-%m-%d')) %}
                                             {% if mood %}
-                                            <div class="mood-indicator bg-{{ mood.mood }}-subtle">
+                                            <div class="mood-indicator bg-{{ mood.mood }}-subtle rounded-3 p-2 text-dark fw-semibold">
                                                 {{ mood.mood }}
                                                 <div class="reasons-list">
                                                     {% for reason in mood.get_reasons() %}
@@ -78,7 +78,7 @@
                                                 </div>
                                             </div>
                                             {% else %}
-                                            <div class="text-muted">No mood recorded</div>
+                                            <div class="text-muted fst-italic">No mood recorded</div>
                                             {% endif %}
                                         </td>
                                         {% endfor %}

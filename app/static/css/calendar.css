@@ -2,13 +2,21 @@
     height: 100px;
     padding: 8px;
     vertical-align: top;
+    background-color: #fff;
+    transition: background-color 0.2s ease-in-out;
 }
-
+.mood-cell:hover {
+  background-color: #f0ede4;
+  cursor: pointer;
+}
 .mood-indicator {
     font-size: 1.1em;
     padding: 4px 8px;
     border-radius: 4px;
     margin-bottom: 8px;
+    background-color: #f9f8f4;
+    border-left: 4px solid #325243;
+    font-family: 'Open Sans', sans-serif;
 }
 
 .reasons-list {
@@ -18,6 +26,44 @@
 .reasons-list .badge {
     margin: 2px;
     display: inline-block;
+}
+/* Card titles */
+.card-header h4 {
+  font-family: 'Poppins', sans-serif;
+  color: #325243;
+  margin: 0;
+}
+
+/* Button toggle highlight */
+.btn-outline-theme {
+  color: #F78F8F;
+  border-color: #F78F8F;
+  background-color: transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-outline-theme:hover,
+.btn-outline-theme.active,
+.btn-outline-theme:focus {
+  background-color: #F78F8F;
+  color: white;
+  border-color: #F78F8F;
+}
+
+/* Calendar headers */
+.table thead th {
+  background-color: #f9f8f4;
+  color: #325243;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Responsiveness fix */
+@media (max-width: 768px) {
+  .table thead th, .table tbody td {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
 }
 
 .bg-happy-subtle { background-color: #d1e7dd; color: #0f5132; }
