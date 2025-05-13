@@ -31,3 +31,34 @@
     font-size: 24px;
     cursor: pointer;
 }
+
+/* Search functionality styles */
+#searchResults {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+}
+
+#searchResults .list-group-item {
+    border-left: none;
+    border-right: none;
+}
+
+#searchResults .list-group-item:first-child {
+    border-top: none;
+}
+
+#searchResults .list-group-item:last-child {
+    border-bottom: none;
+}
+
+#userSearch {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+#searchButton {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
