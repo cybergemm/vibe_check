@@ -61,48 +61,57 @@
             <div class="card">
                 <div class="card-header">
                     <h4>Friends' Moods</h4>
-                    <div id="friend-requests-tab">
-                        <button id="openFriendModal">👥 Friend Requests</button>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="input-group">
+                            <input type="text" id="userSearch" class="form-control" placeholder="Search users...">
+                            <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                        <button id="openFriendModal" class="btn btn-outline-primary ms-2">👥 Friend Requests</button>
                     </div>
                 </div>
                 <div class="card-body">
-                    {% if friends %}
-                        <div class="list-group">
-                            {% for friend in friends %}
-                            <div class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-0">
-                                            <a href="{{ url_for('main.calendar_view', user_id=friend.username) }}" class="text-decoration-none">
-                                                {{ friend.username }}
+                    <div id="searchResults" class="list-group" style="display: none;"></div>
+                    <div id="friendsList">
+                        {% if friends %}
+                            <div class="list-group">
+                                {% for friend in friends %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-0">
+                                                <a href="{{ url_for('main.calendar_view', user_id=friend.username) }}" class="text-decoration-none">
+                                                    {{ friend.username }}
+                                                </a>
+                                            </h6>
+                                            {% if friend.today_mood %}
+                                                <small class="text-muted">
+                                                    {{ friend.today_mood.mood }} - 
+                                                    {{ friend.today_mood.timestamp.strftime('%I:%M %p') }}
+                                                </small>
+                                            {% else %}
+                                                <small class="text-muted">No mood recorded today</small>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            {% if friend.today_mood %}
+                                                <span class="badge bg-{{ friend.today_mood.mood }}-subtle">
+                                                    {{ friend.today_mood.mood }}
+                                                </span>
+                                            {% endif %}
+                                            <a href="{{ url_for('main.analysis', user_id=friend.username) }}" class="btn btn-sm btn-outline-primary ms-2">
+                                                Analysis
                                             </a>
-                                        </h6>
-                                        {% if friend.today_mood %}
-                                            <small class="text-muted">
-                                                {{ friend.today_mood.mood }} - 
-                                                {{ friend.today_mood.timestamp.strftime('%I:%M %p') }}
-                                            </small>
-                                        {% else %}
-                                            <small class="text-muted">No mood recorded today</small>
-                                        {% endif %}
-                                    </div>
-                                    <div>
-                                        {% if friend.today_mood %}
-                                            <span class="badge bg-{{ friend.today_mood.mood }}-subtle">
-                                                {{ friend.today_mood.mood }}
-                                            </span>
-                                        {% endif %}
-                                        <a href="{{ url_for('main.analysis', user_id=friend.username) }}" class="btn btn-sm btn-outline-primary ms-2">
-                                            Analysis
-                                        </a>
+                                        </div>
                                     </div>
                                 </div>
+                                {% endfor %}
                             </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <p class="text-muted">No friends added yet.</p>
-                    {% endif %}
+                        {% else %}
+                            <p class="text-muted">No friends added yet.</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -237,5 +246,121 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+// Add search functionality
+document.getElementById('searchButton').addEventListener('click', performSearch);
+document.getElementById('userSearch').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        performSearch();
+    }
+});
+
+function performSearch() {
+    const query = document.getElementById('userSearch').value.trim();
+    const searchResults = document.getElementById('searchResults');
+    const friendsList = document.getElementById('friendsList');
+    
+    if (!query) {
+        searchResults.style.display = 'none';
+        friendsList.style.display = 'block';
+        return;
+    }
+
+    fetch(`/api/search_users?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(users => {
+            searchResults.innerHTML = '';
+            friendsList.style.display = 'none';
+            searchResults.style.display = 'block';
+            
+            if (users.length === 0) {
+                searchResults.innerHTML = '<div class="list-group-item">No users found</div>';
+            } else {
+                users.forEach(user => {
+                    const item = document.createElement('div');
+                    item.className = 'list-group-item';
+                    
+                    let actionButton = '';
+                    if (user.is_friend) {
+                        actionButton = `
+                            <div>
+                                <a href="/calendar/${user.username}" class="btn btn-sm btn-outline-primary me-2">
+                                    Calendar
+                                </a>
+                                <a href="/analysis/${user.username}" class="btn btn-sm btn-outline-primary">
+                                    Analysis
+                                </a>
+                            </div>`;
+                    } else if (user.request_pending) {
+                        actionButton = '<span class="badge bg-warning">Request Pending</span>';
+                    } else {
+                        actionButton = `<button class="btn btn-sm btn-primary" onclick="sendFriendRequest('${user.username}')">Add Friend</button>`;
+                    }
+                    
+                    item.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">
+                                    <a href="/calendar/${user.username}" class="text-decoration-none">
+                                        ${user.username}
+                                    </a>
+                                </h6>
+                                ${user.today_mood ? 
+                                    `<small class="text-muted">
+                                        ${user.today_mood.mood} - 
+                                        ${new Date(user.today_mood.timestamp).toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'})}
+                                    </small>` :
+                                    `<small class="text-muted">No mood recorded today</small>`
+                                }
+                            </div>
+                            <div>
+                                ${user.today_mood ? 
+                                    `<span class="badge bg-${user.today_mood.mood}-subtle me-2">
+                                        ${user.today_mood.mood}
+                                    </span>` : ''
+                                }
+                                ${actionButton}
+                            </div>
+                        </div>
+                    `;
+                    searchResults.appendChild(item);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error searching users:', error);
+            searchResults.innerHTML = 
+                '<div class="list-group-item text-danger">Error searching users</div>';
+            friendsList.style.display = 'none';
+            searchResults.style.display = 'block';
+        });
+}
+
+function sendFriendRequest(username) {
+    fetch('/api/friend_request', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            sender_username: '{{ current_user.username }}',
+            receiver_username: username
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message === 'Friend request sent') {
+            // Update the UI to show pending status
+            const button = event.target;
+            button.outerHTML = '<span class="badge bg-warning">Request Pending</span>';
+        } else {
+            alert(data.message || 'Failed to send friend request');
+        }
+    })
+    .catch(error => {
+        console.error('Error sending friend request:', error);
+        alert('Failed to send friend request');
+    });
+}
 </script>
 {% endblock %}
