@@ -2,7 +2,7 @@ main.container {
     margin-top: 0 !important;
 }
 
-.container {
+.login-container {
     flex: 1;
     display: flex;
     justify-content: center;
@@ -17,6 +17,7 @@ main.container {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     width: 100%;
     max-width: 400px;
+    margin: 0 auto; /* ensures it’s horizontally centered */
 
 }
 
