@@ -1,3 +1,60 @@
+/* Custom Navbar Styles */
+.custom-navbar {
+  background-color: #325243;
+  padding: 10px 20px;
+  border-bottom: 4px solid #F0EDE4;
+}
+
+.custom-navbar .navbar-brand h1 {
+  font-family: 'Poppins', sans-serif;
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.custom-navbar .nav-link {
+  color: #FFFFFF;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  padding: 8px 16px;
+  border-radius: 25px;
+  transition: background-color 0.3s;
+}
+
+.custom-navbar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.custom-navbar .signup-btn {
+  background-color: #F9AFAE;
+}
+
+.custom-navbar .signup-btn:hover {
+  background-color: #F78F8F;
+  color: #FFFFFF !important;
+}
+.custom-navbar .nav-item + .nav-item {
+  margin-left: 10px;
+}
+
+footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #325243;
+      color: #FFFFFF;
+      margin-top: 50px;
+    }
+    .social-icons a {
+      color: #F78F8F;
+      margin: 0 10px;
+      font-size: 1.5rem;
+      transition: color 0.3s;
+    }
+    .social-icons a:hover {
+      color: #A8BDB0;
+    }
+
 .mood-indicator {
      padding: 0.25rem 0.5rem;
      border-radius: 0.25rem;

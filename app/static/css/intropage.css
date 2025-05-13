@@ -123,19 +123,3 @@
       color: #555555;
       margin-top: 10px;
     }
-    .footer {
-      text-align: center;
-      padding: 20px;
-      background-color: #325243;
-      color: #FFFFFF;
-      margin-top: 50px;
-    }
-    .social-icons a {
-      color: #F78F8F;
-      margin: 0 10px;
-      font-size: 1.5rem;
-      transition: color 0.3s;
-    }
-    .social-icons a:hover {
-      color: #A8BDB0;
-    }
