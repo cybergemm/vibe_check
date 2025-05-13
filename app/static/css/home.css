@@ -3,34 +3,41 @@
 .bg-excited-subtle { background-color: #fff3cd; color: #664d03; }
 .bg-calm-subtle { background-color: #cff4fc; color: #055160; }
 .bg-anxious-subtle { background-color: #e2e3e5; color: #41464b; }
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    display: none; /* Hidden by default */
-    justify-content: center;
-    align-items: center;
-}
 
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    max-width: 500px;
-    width: 100%;
-}
 
-.close {
+.btn-close {
     position: absolute;
     top: 10px;
     right: 10px;
     font-size: 24px;
     cursor: pointer;
 }
+.btn-outline-success {
+  color: #325243;
+  border-color: #325243;
+}
+.btn-outline-success:hover {
+  background-color: #325243;
+  color: white;
+}
+
+.btn-outline-primary {
+  color: #F78F8F;
+  border-color: #F78F8F;
+}
+.btn-outline-primary:hover {
+  background-color: #F78F8F;
+  color: white;
+}
+.mood-label,
+.reason-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #325243;
+  margin-bottom: 8px;
+}
+
 
 /* Search functionality styles */
 #searchResults {
