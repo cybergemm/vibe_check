@@ -10,25 +10,25 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center rounded-top-4 px-4 py-3">
                     <h2 class="mb-0">Mood Analysis for {{ user.username }}</h2>
                     <div class="btn-group">
-                        <button type="button" class="btn btn-outline-primary active" id="weekView">Week</button>
-                        <button type="button" class="btn btn-outline-primary" id="monthView">Month</button>
+                        <button type="button" class="btn btn-outline-theme active" id="weekView">Week</button>
+                        <button type="button" class="btn btn-outline-theme" id="monthView">Month</button>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body px-4 py-4 bg-white rounded-bottom-4">
                     <!-- Weekly Analysis -->
                     <div id="weekAnalysis">
-                        <div class="row">
+                        <div class="row g-4">
                             <div class="col-md-6">
-                                <h4>Mood Distribution</h4>
+                                <h4 class="text-dark">Mood Distribution</h4>
                                 <div class="chart-container-large">
                                     <canvas id="weeklyMoodChart"></canvas>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <h4>Activities Distribution</h4>
+                                <h4 class="text-dark">Activities Distribution</h4>
                                 <div class="chart-container-large">
                                     <canvas id="weeklyActivitiesChart"></canvas>
                                 </div>
@@ -40,13 +40,13 @@
                     <div id="monthAnalysis" style="display: none;">
                         <div class="row">
                             <div class="col-md-6">
-                                <h4>Mood Distribution</h4>
+                                <h4 class="text-dark">Mood Distribution</h4>
                                 <div class="chart-container-large">
                                     <canvas id="monthlyMoodChart"></canvas>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <h4>Activities Distribution</h4>
+                                <h4 class="text-dark">Activities Distribution</h4>
                                 <div class="chart-container-large">
                                     <canvas id="monthlyActivitiesChart"></canvas>
                                 </div>
@@ -54,7 +54,7 @@
                         </div>
                         <div class="row mt-4">
                             <div class="col-12">
-                                <h4>Mood Frequency by Day of Week</h4>
+                                <h4 class="text-dark">Mood Frequency by Day of Week</h4>
                                 <div id="moodBarCharts"></div>
                             </div>
                         </div>
