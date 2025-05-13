@@ -3,132 +3,119 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 {% endblock %}
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <!-- Main content -->
-        <div class="col-md-8">
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h4>How are you feeling today?</h4>
-                </div>
-                <div class="card-body">
-                    <form id="moodForm">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <div class="mb-3">
-                                <label class="form-label">Mood</label>
-                                <div class="btn-group w-100" role="group">
-                                    <input type="radio" class="btn-check" name="mood" id="happy" value="happy" required>
-                                    <label class="btn btn-outline-success" for="happy">Happy</label>
-                                    
-                                    <input type="radio" class="btn-check" name="mood" id="sad" value="sad">
-                                    <label class="btn btn-outline-danger" for="sad">Sad</label>
-                                    
-                                    <input type="radio" class="btn-check" name="mood" id="excited" value="excited">
-                                    <label class="btn btn-outline-warning" for="excited">Excited</label>
-                                    
-                                    <input type="radio" class="btn-check" name="mood" id="calm" value="calm">
-                                    <label class="btn btn-outline-info" for="calm">Calm</label>
-                                    
-                                    <input type="radio" class="btn-check" name="mood" id="anxious" value="anxious">
-                                    <label class="btn btn-outline-secondary" for="anxious">Anxious</label>
-                                </div>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Reasons</label>
-                                <div class="row">
-                                    {% for reason in reasons %}
-                                    <div class="col-md-6">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="reasons" value="{{ reason }}" id="reason{{ loop.index }}">
-                                            <label class="form-check-label" for="reason{{ loop.index }}">
-                                                {{ reason }}
-                                            </label>
-                                        </div>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary">Submit Mood</button>
-                    </form>
-                </div>
-            </div>
+<div class="container my-5">
+  <div class="row">
+    <!-- Mood Form -->
+    <div class="col-lg-8 mb-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+          <h4 class="text-success" style="font-family: 'Poppins', sans-serif;">How are you feeling today?</h4>
         </div>
-        
-        <!-- Friends sidebar -->
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Friends' Moods</h4>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="input-group">
-                            <input type="text" id="userSearch" class="form-control" placeholder="Search users...">
-                            <button class="btn btn-outline-secondary" type="button" id="searchButton">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                        <button id="openFriendModal" class="btn btn-outline-primary ms-2">👥 Friend Requests</button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div id="searchResults" class="list-group" style="display: none;"></div>
-                    <div id="friendsList">
-                        {% if friends %}
-                            <div class="list-group">
-                                {% for friend in friends %}
-                                <div class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h6 class="mb-0">
-                                                <a href="{{ url_for('main.calendar_view', user_id=friend.username) }}" class="text-decoration-none">
-                                                    {{ friend.username }}
-                                                </a>
-                                            </h6>
-                                            {% if friend.today_mood %}
-                                                <small class="text-muted">
-                                                    {{ friend.today_mood.mood }} - 
-                                                    {{ friend.today_mood.timestamp.strftime('%I:%M %p') }}
-                                                </small>
-                                            {% else %}
-                                                <small class="text-muted">No mood recorded today</small>
-                                            {% endif %}
-                                        </div>
-                                        <div>
-                                            {% if friend.today_mood %}
-                                                <span class="badge bg-{{ friend.today_mood.mood }}-subtle">
-                                                    {{ friend.today_mood.mood }}
-                                                </span>
-                                            {% endif %}
-                                            <a href="{{ url_for('main.analysis', user_id=friend.username) }}" class="btn btn-sm btn-outline-primary ms-2">
-                                                Analysis
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <p class="text-muted">No friends added yet.</p>
-                        {% endif %}
-                    </div>
-                </div>
+        <div class="card-body">
+          <form id="moodForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <!-- Mood Selection -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold text-dark mood-label">Mood</label>
+              <div class="btn-group w-100" role="group">
+                {% set moods = [('happy', 'success'), ('sad', 'danger'), ('excited', 'warning'), ('calm', 'info'), ('anxious', 'secondary')] %}
+                {% for mood, color in moods %}
+                <input type="radio" class="btn-check" name="mood" id="{{ mood }}" value="{{ mood }}" required>
+                <label class="btn btn-outline-{{ color }}" for="{{ mood }}">{{ mood.capitalize() }}</label>
+                {% endfor %}
+              </div>
             </div>
+
+            <!-- Reasons Checkboxes -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold text-dark reason-label">What have you been up to today?</label>
+              <div class="row g-2 activity-checkboxes">
+                {% for reason in reasons %}
+                <div class="col-sm-6">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="reasons" value="{{ reason }}" id="reason{{ loop.index }}">
+                    <label class="form-check-label" for="reason{{ loop.index }}">{{ reason }}</label>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center">
+              <button type="submit" class="btn px-4" style="background-color: #F78F8F; color: white;">Submit Mood</button>
+            </div>
+          </form>
         </div>
+      </div>
     </div>
-    <!-- /* Modal for Friend Requests */ -->
-    <div id="friendModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div class="mb-3">
-                <ul id="friend-requests-list" class="list-group"></ul>
-            </div>
+
+    <!-- Friends Sidebar -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-white d-flex flex-column align-items-start">
+          <h5 class="text-success mb-3" style="font-family: 'Poppins', sans-serif;">Friends' Moods</h5>
+          <div class="input-group mb-2">
+            <input type="text" id="userSearch" class="form-control" placeholder="Search users...">
+            <button class="btn btn-outline-secondary" type="button" id="searchButton"><i class="fas fa-search"></i></button>
+          </div>
+          <button id="openFriendModal" class="btn btn-outline-success w-100" data-bs-toggle="modal" data-bs-target="#friendModal"><i class="bi bi-person-lines-fill"></i>
+Friend Requests</button>
         </div>
-        <div id="viewRequestsPage" class="hidden">
-            <ul id="friend-requests-list" class="list-group"></ul>
+        <div class="card-body">
+          <div id="searchResults" class="list-group mb-3" style="display: none;"></div>
+          <div id="friendsList">
+            {% if friends %}
+              <div class="list-group">
+                {% for friend in friends %}
+                <div class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">
+                        <a href="{{ url_for('main.calendar_view', user_id=friend.username) }}" class="text-decoration-none text-dark">{{ friend.username }}</a>
+                      </h6>
+                      {% if friend.today_mood %}
+                      <small class="text-muted">{{ friend.today_mood.mood }} — {{ friend.today_mood.timestamp.strftime('%I:%M %p') }}</small>
+                      {% else %}
+                      <small class="text-muted">No mood recorded today</small>
+                      {% endif %}
+                    </div>
+                    <div class="text-end">
+                      {% if friend.today_mood %}
+                      <span class="badge bg-{{ friend.today_mood.mood }}-subtle text-dark border">{{ friend.today_mood.mood }}</span>
+                      {% endif %}
+                      <a href="{{ url_for('main.analysis', user_id=friend.username) }}" class="btn btn-sm btn-outline-success ms-2">Analysis</a>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <p class="text-muted">No friends added yet.</p>
+            {% endif %}
+          </div>
         </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Friend Requests Modal -->
+  <div id="friendModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-3">
+        <div class="modal-header">
+          <h5 class="modal-title">Friend Requests</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ul id="friend-requests-list" class="list-group"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
 
 
 <script>
@@ -230,11 +217,11 @@ function respondToRequest(requestId, accept) {
 document.addEventListener('DOMContentLoaded', () => {
     const openModalBtn = document.getElementById("openFriendModal");
     const modal = document.getElementById("friendModal");
-    const closeBtn = modal.querySelector(".close");
+    const closeBtn = modal.querySelector(".btn-close");
 
-    openModalBtn.addEventListener("click", function() {
-        modal.style.display = "flex";
-    });
+    // openModalBtn.addEventListener("click", function() {
+    //     modal.style.display = "flex";
+    // });
 
     closeBtn.addEventListener("click", function() {
         modal.style.display = "none";
