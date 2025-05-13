@@ -537,4 +537,45 @@ def update_privacy():
     current_user.privacy_setting = privacy_setting
     db.session.commit()
     flash('Privacy settings updated successfully')
-    return redirect(url_for('main.change_password')) 
+    return redirect(url_for('main.change_password'))
+
+@bp.route('/api/search_users', methods=['GET'])
+@login_required
+def search_users():
+    query = request.args.get('q', '').strip()
+    if not query:
+        return jsonify([])
+    
+    # Get today's date range
+    today = datetime.now().date()
+    today_start = datetime.combine(today, datetime.min.time())
+    today_end = datetime.combine(today, datetime.max.time())
+    
+    # Search for users by username
+    users = User.query.filter(User.username.ilike(f'%{query}%')).all()
+    
+    # Get current user's friends and pending requests
+    current_friends = {f.username for f in current_user.friends}
+    pending_requests = {
+        fr.receiver_id for fr in FriendRequest.query.filter_by(sender_id=current_user.username, status='pending').all()
+    }
+    
+    results = []
+    for user in users:
+        if user.username != current_user.username:  # Don't show current user
+            # Get today's mood for the user
+            today_mood = Mood.query.filter(
+                Mood.user_id == user.username,
+                Mood.timestamp >= today_start,
+                Mood.timestamp <= today_end
+            ).first()
+            
+            user_data = {
+                'username': user.username,
+                'is_friend': user.username in current_friends,
+                'request_pending': user.username in pending_requests,
+                'today_mood': today_mood.to_dict() if today_mood else None
+            }
+            results.append(user_data)
+    
+    return jsonify(results) 
