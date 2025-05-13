@@ -82,7 +82,7 @@ def change_password():
         if not check_password_hash(current_user.password, current):
             flash('Current password is incorrect.', 'danger')
         elif new != confirm:
-            flash('New passwords do not match.', 'warning')
+            flash('New passwords do not match.', 'danger')
         else:
             current_user.password = generate_password_hash(new)
             db.session.commit()
@@ -200,7 +200,7 @@ def decline_friend_request(request_id):
 @login_required
 def add_friend(friend_id):
     if friend_id == current_user.id:
-        flash("You can't add yourself as a friend!")
+        flash("You can't add yourself as a friend!", "danger")
         return redirect(url_for('main.search_users'))
     
     existing = Friendship.query.filter_by(
@@ -213,9 +213,9 @@ def add_friend(friend_id):
         friendship2 = Friendship(user_id=friend_id, friend_id=current_user.id)
         db.session.add_all([friendship1, friendship2])
         db.session.commit()
-        flash("Friend added successfully!")
+        flash("Friend added successfully!", "success")
     else:
-        flash("You are already friends with this user!")
+        flash("You are already friends with this user!", "warning")
     
     return redirect(url_for('main.search_users'))
 
@@ -231,7 +231,7 @@ def remove_friend(friend_id):
         friend_id=current_user.username
     ).delete()
     db.session.commit()
-    flash("Friend removed successfully!")
+    flash("Friend removed successfully!", "success")
     return redirect(url_for('main.home'))
 
 @bp.route('/submit_mood', methods=['POST'])
@@ -299,7 +299,7 @@ def calendar_view(user_id):
     # Check privacy settings
     if user_id != current_user.username:
         if user.privacy_setting == 'private':
-            flash("This user's data is private")
+            flash("This user's data is private", "warning")
             return redirect(url_for('main.home'))
         elif user.privacy_setting == 'friends':
             friendship = Friendship.query.filter_by(
@@ -307,7 +307,7 @@ def calendar_view(user_id):
                 friend_id=user_id
             ).first()
             if not friendship:
-                flash("You can only view calendars of your friends")
+                flash("You can only view calendars of your friends", "warning")
                 return redirect(url_for('main.home'))
     
     # Get the date ranges
@@ -348,7 +348,7 @@ def analysis(user_id):
     # Check privacy settings
     if user_id != current_user.username:
         if user.privacy_setting == 'private':
-            flash("This user's data is private")
+            flash("This user's data is private", "warning")
             return redirect(url_for('main.home'))
         elif user.privacy_setting == 'friends':
             friendship = Friendship.query.filter_by(
@@ -356,7 +356,7 @@ def analysis(user_id):
                 friend_id=user_id
             ).first()
             if not friendship:
-                flash("You can only view analysis of your friends")
+                flash("You can only view analysis of your friends", "warning")
                 return redirect(url_for('main.home'))
     
     # Get the date ranges
@@ -531,12 +531,12 @@ def analyze_monthly_moods(moods):
 def update_privacy():
     privacy_setting = request.form.get('privacy_setting')
     if privacy_setting not in ['public', 'friends', 'private']:
-        flash('Invalid privacy setting')
+        flash('Invalid privacy setting', "danger")
         return redirect(url_for('main.change_password'))
     
     current_user.privacy_setting = privacy_setting
     db.session.commit()
-    flash('Privacy settings updated successfully')
+    flash('Privacy settings updated successfully', "success")
     return redirect(url_for('main.change_password'))
 
 @bp.route('/api/search_users', methods=['GET'])

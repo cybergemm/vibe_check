@@ -23,7 +23,7 @@ def login():
         
         user = User.query.filter_by(username=username).first()
         if user is None or not user.check_password(password):
-            flash('Invalid username or password')
+            flash('Invalid username or password', "danger")
             return redirect(url_for('auth.login'))
         
         login_user(user, remember=remember)
@@ -46,7 +46,7 @@ def signup():
         remember = form.remember.data
         
         if User.query.filter_by(username=username).first():
-            flash('Username already taken.')
+            flash('Username already taken.', "warning")
             return redirect(url_for('auth.signup'))
         
         user = User(username=username)
@@ -54,7 +54,7 @@ def signup():
         db.session.add(user)
         db.session.commit()
         
-        flash('Registration successful! Please log in.')
+        flash('Registration successful! Please log in.', "success")
         return redirect(url_for('auth.login'))
     
     return render_template('signup.html', form=form)  # Pass form to template
@@ -63,5 +63,5 @@ def signup():
 @bp.route('/logout')
 def logout():
     logout_user()
-    flash("You have been logged out.")
+    flash("You have been logged out.", "success")
     return redirect(url_for('auth.login'))
