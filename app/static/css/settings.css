@@ -1,0 +1,16 @@
+.btn-outline-pink {
+    border: 2px solid #F78F8F;
+    color: #F78F8F;
+    background-color: transparent;
+    transition: 0.3s ease-in-out;
+}
+.btn-outline-pink:hover,
+.btn-outline-pink:active,
+.btn-outline-pink.active {
+    background-color: #F78F8F;
+    color: white;
+    border-color: #F78F8F;
+}
+h3, h4 {
+  font-family: 'Poppins', sans-serif;
+  color: #325243;}
