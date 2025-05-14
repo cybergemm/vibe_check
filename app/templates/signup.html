@@ -16,31 +16,25 @@
             <fieldset>
               {{ form.hidden_tag() }}
 
-              <div class="form-group mb-4">
-                <div class="input-group">
+              <div class="input-group form-group mb-4">
                   <span class="input-group-text"><i class="bi bi-person-circle"></i></span>
                   {{ form.username(class="form-control", id="username", placeholder="Username (between 1-30 characters)") }}
-                </div>
               </div>
 
-              <div class="form-group mb-4">
-                <div class="input-group">
+              <div class="input-group form-group mb-4">
                   <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
                   {{ form.password(class="form-control", id="password", placeholder="Password") }}
                   <span class="input-group-text">
                     <i class="bi bi-eye toggle-password" data-toggle="password" style="cursor: pointer;"></i>
                   </span>
-                </div>
               </div>
 
-              <div class="form-group mb-4">
-                <div class="input-group">
+              <div class="input-group form-group mb-4">
                   <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
                   {{ form.confirm_password(class="form-control", id="confirm_password", placeholder="Confirm password") }}
                   <span class="input-group-text">
                     <i class="bi bi-eye toggle-password" data-toggle="confirm_password" style="cursor: pointer;"></i>
                   </span>
-                </div>
               </div>
 
               <div class="form-check mb-4">

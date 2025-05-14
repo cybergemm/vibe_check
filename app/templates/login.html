@@ -15,21 +15,17 @@
               <fieldset>
               {{ form.hidden_tag() }}
               
-              <div class="mb-3">
-                <div class="input-group">
+              <div class="input-group mb-3">
                   <span class="input-group-text"><i class="bi bi-person-circle"></i></span>
                   {{ form.username(class="form-control", id="username", placeholder="Username") }}
-                </div>
               </div>
               
-              <div class="mb-3">
-                <div class="input-group">
+              <div class="input-group mb-3">
                   <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
                   {{ form.password(class="form-control", id="password", placeholder="Password") }}
                   <span class="input-group-text">
                     <i class="bi bi-eye toggle-password" data-toggle="password" style="cursor: pointer;"></i>
                   </span>
-                </div>
               </div>
 
               <div class="form-check mb-3">
