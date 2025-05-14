@@ -170,19 +170,44 @@ def get_friend_requests(user_id):
 @bp.route('/api/friend_request/accept/<int:request_id>', methods=['POST'])
 @login_required
 def accept_friend_request(request_id):
-    fr = FriendRequest.query.get(request_id)
-    if not fr or fr.status != 'pending':
-        return jsonify({'message': 'Invalid request'}), 404
+    try:
+        fr = FriendRequest.query.filter_by(id=request_id).first()
+        if not fr:
+            return jsonify({'message': 'Friend request not found'}), 404
+        
+        if fr.status != 'pending':
+            return jsonify({'message': 'Friend request is no longer pending'}), 400
+        
+        # Verify that the current user is the receiver of the request
+        if fr.receiver_id != current_user.username:
+            return jsonify({'message': 'Unauthorized'}), 403
 
-    fr.status = 'accepted'
+        # Check if friendship already exists
+        existing_friendship = Friendship.query.filter_by(
+            user_id=fr.sender_id,
+            friend_id=fr.receiver_id
+        ).first()
+        
+        if existing_friendship:
+            fr.status = 'accepted'
+            db.session.commit()
+            return jsonify({'message': 'Already friends'}), 200
 
-    # Create friendship using usernames
-    friendship1 = Friendship(user_id=fr.sender_id, friend_id=fr.receiver_id)
-    friendship2 = Friendship(user_id=fr.receiver_id, friend_id=fr.sender_id)
-    db.session.add_all([friendship1, friendship2])
-    db.session.commit()
-    
-    return jsonify({'message': 'Friend request accepted'})
+        # Update friend request status
+        fr.status = 'accepted'
+
+        # Create bidirectional friendship
+        friendship1 = Friendship(user_id=fr.sender_id, friend_id=fr.receiver_id)
+        friendship2 = Friendship(user_id=fr.receiver_id, friend_id=fr.sender_id)
+        
+        db.session.add_all([friendship1, friendship2])
+        db.session.commit()
+        
+        return jsonify({'message': 'Friend request accepted'}), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error accepting friend request: {str(e)}")  # Add logging
+        return jsonify({'message': 'Error accepting friend request'}), 500
 
 # decline friend request
 @bp.route('/api/friend_request/decline/<int:request_id>', methods=['POST'])
