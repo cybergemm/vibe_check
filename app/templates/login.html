@@ -25,7 +25,10 @@
             <div class="mb-3">
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                {{ form.password(class="form-control", id="password", placeholder="Password") }}
+                {{ form.password(class="form-control password-field", id="password", placeholder="Password") }}
+                <span class="input-group-text toggle-password" data-target="password">
+                  <i class="bi bi-eye-slash" id="toggle-password-icon-password"></i>
+                </span>
               </div>
             </div>
 
