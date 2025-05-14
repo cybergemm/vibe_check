@@ -7,7 +7,7 @@ main.container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px 20px;
+    padding: 20px;
 }
 
 .signup-card {
@@ -16,6 +16,7 @@ main.container {
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     width: 100%;
+    max-width: 450px;
     margin: 0 auto;
 }
 
@@ -37,18 +38,36 @@ main.container {
     display: inline-block;
 }
 
-.input-group .form-control {
-    border-left: none;
-    border-radius: 0 8px 8px 0;
+/* Attribute selector to target input fields */
+.input-group input[type="text"],
+.input-group input[type="password"] {
     background-color: #F9F8F4;
+    border: 1px solid #E3DED7;
     font-size: 1rem;
+    padding: 12px 15px;
 }
 
-.input-group .input-group-text {
+/* Rounded edges only at the ends */
+.input-group > .form-control:first-child {
+    border-radius: 8px 0 0 8px;  /* Left rounded corners */
+}
+
+.input-group > .form-control:last-child {
+    border-radius: 0 8px 8px 0;  /* Right rounded corners */
+}
+
+.input-group-text {
     background-color: #F9F8F4;
-    border-right: none;
-    border-radius: 8px 0 0 8px;
     border: 1px solid #E3DED7;
+    padding: 10px 14px;
+    font-size: 1.1rem;
+}
+
+/* Make icon clickable */
+.input-group-text i.toggle-password {
+    cursor: pointer;
+    color: #888;
+    font-size: 1.1rem;
 }
 
 .signup-card button {

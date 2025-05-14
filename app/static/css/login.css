@@ -7,7 +7,7 @@ main.container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px 20px;
+    padding: 20px;
 }
 
 .login-card {
@@ -28,18 +28,38 @@ main.container {
     text-align: center;
 }
 
-.input-group .form-control {
-    border-left: none;
-    border-radius: 0 8px 8px 0;
+/* Use attribute selector to style inputs inside .input-group only */
+.input-group input[type="text"],
+.input-group input[type="password"] {
     background-color: #F9F8F4;
+    border: 1px solid #E3DED7;
     font-size: 1rem;
+    padding: 12px 15px;
 }
 
-.input-group .input-group-text {
+/* Round edges only on ends */
+.input-group > .form-control:first-child {
+    border-radius: 8px 0 0 8px;  /* Left rounded corners */
+}
+
+.input-group > .form-control:last-child {
+    border-radius: 0 8px 8px 0;  /* Right rounded corners */
+}
+
+/* Round the group container */
+.input-group-text {
     background-color: #F9F8F4;
-    border-right: none;
-    border-radius: 8px 0 0 8px;
     border: 1px solid #E3DED7;
+    padding: 10px 14px;
+    font-size: 1.1rem;
+}
+
+/* Make eye icon pointer and vertically centered */
+.input-group-text i.toggle-password {
+    cursor: pointer;
+    margin-left: 5px;
+    color: #888;
+    font-size: 1.1rem;
 }
 
 .login-card button {

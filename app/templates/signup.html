@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
-<!-- Add Bootstrap Icons if not already in base.html -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 {% endblock %}
 
@@ -13,44 +12,45 @@
         <h2 class="text-center mb-4">
           Create New Account <i class="fa-solid fa-seedling icon"></i>
         </h2>
-        <fieldset>
-            <form method="POST">
-            {{ form.hidden_tag() }}
+          <form method="POST">
+            <fieldset>
+              {{ form.hidden_tag() }}
 
-            <div class="form-group mb-4">
-                <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-person-circle"></i></span>
-                {{ form.username(class="form-control", id="username", placeholder="Username (between 1-30 characters)") }}
-                </div>
-            </div>
+              <div class="input-group form-group mb-4">
+                  <span class="input-group-text"><i class="bi bi-person-circle"></i></span>
+                  {{ form.username(class="form-control", id="username", placeholder="Username (between 1-30 characters)") }}
+              </div>
 
-            <div class="form-group mb-4">
-                <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                {{ form.password(class="form-control", id="password", placeholder="Password") }}
-                </div>
-            </div>
+              <div class="input-group form-group mb-4">
+                  <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                  {{ form.password(class="form-control", id="password", placeholder="Password") }}
+                  <span class="input-group-text">
+                    <i class="bi bi-eye toggle-password" data-toggle="password" style="cursor: pointer;"></i>
+                  </span>
+              </div>
 
-            <div class="form-group mb-4">
-                <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                {{ form.confirm_password(class="form-control", id="confirm_password", placeholder="Confirm password") }}
-                </div>
-            </div>
+              <div class="input-group form-group mb-4">
+                  <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                  {{ form.confirm_password(class="form-control", id="confirm_password", placeholder="Confirm password") }}
+                  <span class="input-group-text">
+                    <i class="bi bi-eye toggle-password" data-toggle="confirm_password" style="cursor: pointer;"></i>
+                  </span>
+              </div>
 
-            <div class="form-check mb-4">
+              <div class="form-check mb-4">
                 {{ form.remember(class="form-check-input", id="remember") }}
                 <label class="form-check-label" for="remember">Remember me</label>
-            </div>
+              </div>
 
-            <div class="text-center">
+              <div class="text-center">
                 <button type="submit" class="btn btn-primary">Sign Up</button>
-            </div>
-            </form>
-        </fieldset>
+              </div>
+            </fieldset>
+          </form>
         <p class="mt-3">Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
       </div>
     </div>
   </div>
 </div>
+<script src="{{ url_for('static', filename='js/togglefeature.js') }}"></script>
 {% endblock %}
