@@ -33,11 +33,11 @@
                                         <td class="mood-cell" data-date="{{ day.strftime('%Y-%m-%d') }}">
                                             {% set mood = week_moods.get(day.strftime('%Y-%m-%d')) %}
                                             {% if mood %}
-                                            <div class="mood-indicator bg-{{ mood.mood }}-subtle">
+                                            <div class="mood-indicator bg-{{ mood.mood }}-subtle fw-bold">
                                                 {{ mood.mood }}
                                                 <div class="reasons-list">
                                                     {% for reason in mood.get_reasons() %}
-                                                    <span class="badge bg-secondary">{{ reason }}</span>
+                                                    <span class="badge reason-{{ mood.mood }}">{{ reason }}</span>
                                                     {% endfor %}
                                                 </div>
                                             </div>
@@ -69,11 +69,11 @@
                                         <td class="mood-cell" data-date="{{ day.strftime('%Y-%m-%d') }}">
                                             {% set mood = month_moods.get(day.strftime('%Y-%m-%d')) %}
                                             {% if mood %}
-                                            <div class="mood-indicator bg-{{ mood.mood }}-subtle rounded-3 p-2 text-dark fw-semibold">
+                                            <div class="mood-indicator bg-{{ mood.mood }}-subtle rounded-3 p-2 fw-bold">
                                                 {{ mood.mood }}
                                                 <div class="reasons-list">
                                                     {% for reason in mood.get_reasons() %}
-                                                    <span class="badge bg-secondary">{{ reason }}</span>
+                                                    <span class="reason-{{ mood.mood }} badge">{{ reason }}</span>
                                                     {% endfor %}
                                                 </div>
                                             </div>

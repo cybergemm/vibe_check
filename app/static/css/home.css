@@ -1,8 +1,8 @@
-.bg-happy-subtle { background-color: #d1e7dd; color: #0f5132; }
-.bg-sad-subtle { background-color: #f8d7da; color: #842029; }
-.bg-excited-subtle { background-color: #fff3cd; color: #664d03; }
-.bg-calm-subtle { background-color: #cff4fc; color: #055160; }
-.bg-anxious-subtle { background-color: #e2e3e5; color: #41464b; }
+.bg-happy-subtle { background-color: #fbfad9; color: #c0990a; }
+.bg-sad-subtle { background-color: #cedaf7; color: #0c1282; }
+.bg-angry-subtle { background-color: #ffcdcd; color: #bd1708; }
+.bg-tired-subtle { background-color: #dcebef; color: #78706f; }
+.bg-scared-subtle { background-color: #d1e7dd; color: #409242; }
 
 
 .btn-close {

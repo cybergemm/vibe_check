@@ -1,32 +1,34 @@
 .mood-cell {
-    height: 100px;
-    padding: 8px;
-    vertical-align: top;
-    background-color: #fff;
-    transition: background-color 0.2s ease-in-out;
+  height: 100px;
+  padding: 8px;
+  vertical-align: top;
+  background-color: #fff;
+  transition: background-color 0.2s ease-in-out;
 }
+
 .mood-cell:hover {
   background-color: #f0ede4;
   cursor: pointer;
 }
+
 .mood-indicator {
-    font-size: 1.1em;
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin-bottom: 8px;
-    background-color: #f9f8f4;
-    border-left: 4px solid #325243;
-    font-family: 'Open Sans', sans-serif;
+  font-size: 1.1em;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  background-color: #f9f8f4;
+  font-family: 'Open Sans', sans-serif;
 }
 
 .reasons-list {
-    font-size: 0.8em;
+  font-size: 0.8em;
 }
 
 .reasons-list .badge {
-    margin: 2px;
-    display: inline-block;
+  margin: 2px;
+  display: inline-block;
 }
+
 /* Card titles */
 .card-header h4 {
   font-family: 'Poppins', sans-serif;
@@ -60,14 +62,64 @@
 
 /* Responsiveness fix */
 @media (max-width: 768px) {
-  .table thead th, .table tbody td {
+
+  .table thead th,
+  .table tbody td {
     font-size: 0.9rem;
     padding: 8px;
   }
 }
 
-.bg-happy-subtle { background-color: #d1e7dd; color: #0f5132; }
-.bg-sad-subtle { background-color: #f8d7da; color: #842029; }
-.bg-excited-subtle { background-color: #fff3cd; color: #664d03; }
-.bg-calm-subtle { background-color: #cff4fc; color: #055160; }
-.bg-anxious-subtle { background-color: #e2e3e5; color: #41464b; }
+.bg-happy-subtle {
+  background-color: #fbfad9;
+  color: #c0990a;
+  border-left: 4px solid #c0990a;
+}
+
+.reason-happy {
+  background-color: #fffff4;
+  color: #d0ae34;
+  border: 1px solid #d0ae34;
+}
+.bg-sad-subtle {
+  background-color: #cedaf7;
+  color: #0c1282;
+  border-left: 4px solid #0c1282;
+}
+
+.reason-sad {
+  background-color: #e3eaf9;
+  color: #373b8a;
+  border: 1px solid #373b8a;
+}
+.bg-angry-subtle {
+  background-color: #ffcdcd;
+  color: #bd1708;
+  border-left: 4px solid #bd1708;
+}
+.reason-angry {
+  background-color: #ffebeb;
+  color: #b63d32;
+  border: 1px solid #b63d32;
+}
+.bg-tired-subtle {
+  background-color: #dcebef;
+  color: #78706f;
+  border-left: 4px solid #78706f;
+}
+.reason-tired {
+    background-color: #f4fdff;
+
+  color: #787878;
+  border: 1px solid #787878;
+}
+.bg-scared-subtle {
+  background-color: #d1e7dd;
+  color: #409242;
+  border-left: 4px solid #409242;
+}
+.reason-scared {
+  background-color: #ecf9f3;
+  color: #5b955c;
+  border: 1px solid #5b955c;
+}
