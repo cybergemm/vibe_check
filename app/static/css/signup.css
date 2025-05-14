@@ -43,19 +43,17 @@ main.container {
 .input-group input[type="password"] {
     background-color: #F9F8F4;
     border: 1px solid #E3DED7;
-    border-left: none;
-    border-right: none;
     font-size: 1rem;
     padding: 12px 15px;
 }
 
 /* Rounded edges only at the ends */
 .input-group > .form-control:first-child {
-    border-radius: 0 8px 8px 0;
+    border-radius: 8px 0 0 8px;  /* Left rounded corners */
 }
 
 .input-group > .form-control:last-child {
-    border-radius: 8px 0 0 8px;
+    border-radius: 0 8px 8px 0;  /* Right rounded corners */
 }
 
 .input-group-text {
@@ -101,25 +99,4 @@ main.container {
 
 .signup-card p a:hover {
     text-decoration: underline;
-}
-
-.input-group .form-control:first-child,
-.input-group .input-group-text:first-child {
-    border-top-left-radius: 8px;
-    border-bottom-left-radius: 8px;
-}
-
-.input-group .form-control:last-child,
-.input-group .input-group-text:last-child {
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
-
-.input-group .form-control {
-    border-left: none;
-}
-
-.input-group .input-group-text {
-    background-color: #F9F8F4;
-    border-right: none;
 }
