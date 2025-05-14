@@ -18,11 +18,17 @@
               <div class="input-group mb-3">
                   <span class="input-group-text"><i class="bi bi-person-circle"></i></span>
                   {{ form.username(class="form-control", id="username", placeholder="Username") }}
+                  {% for error in form.username.errors %}
+                  <div class="text-danger small">{{ error }}</div>
+                  {% endfor %}
               </div>
               
               <div class="input-group mb-3">
                   <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
                   {{ form.password(class="form-control", id="password", placeholder="Password") }}
+                  {% for error in form.password.errors %}
+                  <div class="text-danger small">{{ error }}</div>
+                  {% endfor %}
                   <span class="input-group-text">
                     <i class="bi bi-eye toggle-password" data-toggle="password" style="cursor: pointer;" title="Toggle password visibility" aria-label="Toggle password visibility"></i>
                   </span>
