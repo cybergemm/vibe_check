@@ -195,8 +195,13 @@ function loadFriendRequests() {
 }
 
 function respondToRequest(requestId, accept) {
+    const csrfToken = document.querySelector('input[name="csrf_token"]').value;
     fetch(`/api/friend_request/${accept ? 'accept' : 'decline'}/${requestId}`, {
-        method: 'POST' 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        }
     })
     .then(response => {
         if (!response.ok) throw new Error("Failed to respond to request");
