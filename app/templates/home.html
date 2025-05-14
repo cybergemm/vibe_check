@@ -19,7 +19,7 @@
             <div class="mb-4">
               <label class="form-label fw-semibold text-dark mood-label">Mood</label>
               <div class="btn-group w-100" role="group">
-                {% set moods = [('happy', 'success'), ('sad', 'danger'), ('excited', 'warning'), ('calm', 'info'), ('anxious', 'secondary')] %}
+                {% set moods = [('happy', 'success'), ('sad', 'danger'), ('angry', 'warning'), ('tired', 'info'), ('scared', 'secondary')] %}
                 {% for mood, color in moods %}
                 <input type="radio" class="btn-check" name="mood" id="{{ mood }}" value="{{ mood }}" required>
                 <label class="btn btn-outline-{{ color }}" for="{{ mood }}">{{ mood.capitalize() }}</label>
