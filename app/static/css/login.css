@@ -7,7 +7,7 @@ main.container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px 20px;
+    padding: 20px;
 }
 
 .login-card {
@@ -17,8 +17,7 @@ main.container {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     width: 100%;
     max-width: 400px;
-    margin: 0 auto; /* ensures it’s horizontally centered */
-
+    margin: 0 auto;
 }
 
 .login-card h2 {
@@ -29,15 +28,38 @@ main.container {
     text-align: center;
 }
 
-#username,
-#password {
-    width: 100%;
-    padding: 12px 15px;
-    margin: 10px 0;
-    border: 1px solid #E3DED7;
-    border-radius: 8px;
+/* Use attribute selector to style inputs inside .input-group only */
+.input-group input[type="text"],
+.input-group input[type="password"] {
     background-color: #F9F8F4;
+    border: 1px solid #E3DED7;
     font-size: 1rem;
+    padding: 12px 15px;
+}
+
+/* Round edges only on ends */
+.input-group > .form-control:first-child {
+    border-radius: 8px 0 0 8px;  /* Left rounded corners */
+}
+
+.input-group > .form-control:last-child {
+    border-radius: 0 8px 8px 0;  /* Right rounded corners */
+}
+
+/* Round the group container */
+.input-group-text {
+    background-color: #F9F8F4;
+    border: 1px solid #E3DED7;
+    padding: 10px 14px;
+    font-size: 1.1rem;
+}
+
+/* Make eye icon pointer and vertically centered */
+.input-group-text i.toggle-password {
+    cursor: pointer;
+    margin-left: 5px;
+    color: #888;
+    font-size: 1.1rem;
 }
 
 .login-card button {
@@ -51,7 +73,6 @@ main.container {
     font-size: 1.1rem;
     cursor: pointer;
     transition: background-color 0.3s;
-
 }
 
 .login-card button:hover {

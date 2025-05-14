@@ -82,9 +82,6 @@ const moodColors = {
     'angry': '#FF5722',
     'tired': '#9E9E9E',
     'scared': '#607D8B',
-    'excited': '#FFC107',
-    'calm': '#03A9F4',
-    'anxious': '#795548',
     'No Data': '#e2e3e5'
 };
 
@@ -120,7 +117,7 @@ function createRadialOptions() {
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                display: true,
+                display: false,
                 position: 'right',
                 labels: {
                     color: '#111',
@@ -208,9 +205,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Weekly Mood Chart
     const weeklyMoodCtx = document.getElementById('weeklyMoodChart').getContext('2d');
-    const weeklyMoodLabels = Object.keys(weeklyMoodData);
+    const weeklyMoodLabels = Object.keys(weeklyMoodData).map(mood => mood.charAt(0).toUpperCase() + mood.slice(1));
     const weeklyMoodValues = Object.values(weeklyMoodData);
-    const weeklyMoodColors = weeklyMoodLabels.map(mood => moodColors[mood] || '#e2e3e5');
+    const weeklyMoodColors = Object.keys(weeklyMoodData).map(mood => moodColors[mood] || '#e2e3e5');
     
     new Chart(weeklyMoodCtx, {
         type: 'polarArea',
@@ -231,9 +228,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Monthly Mood Chart
     const monthlyMoodCtx = document.getElementById('monthlyMoodChart').getContext('2d');
-    const monthlyMoodLabels = Object.keys(monthlyMoodData);
+    const monthlyMoodLabels = Object.keys(monthlyMoodData).map(mood => mood.charAt(0).toUpperCase() + mood.slice(1));
     const monthlyMoodValues = Object.values(monthlyMoodData);
-    const monthlyMoodColors = monthlyMoodLabels.map(mood => moodColors[mood] || '#e2e3e5');
+    const monthlyMoodColors = Object.keys(monthlyMoodData).map(mood => moodColors[mood] || '#e2e3e5');
     
     new Chart(monthlyMoodCtx, {
         type: 'polarArea',

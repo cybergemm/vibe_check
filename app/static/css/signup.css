@@ -7,7 +7,7 @@ main.container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px 20px;
+    padding: 20px;
 }
 
 .signup-card {
@@ -16,9 +16,8 @@ main.container {
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     width: 100%;
-    /* max-width: 400px; */
-    margin: 0 auto; /* ensures it’s horizontally centered */
-
+    max-width: 450px;
+    margin: 0 auto;
 }
 
 .signup-card h2 {
@@ -32,20 +31,43 @@ main.container {
     align-items: center;
     gap: 10px;
 }
-.icon{
+
+.icon {
     font-size: 0.8em;
     color: #F78F8F;
     display: inline-block;
 }
-#username,
-#password, #confirm_password {
-    width: 100%;
-    padding: 12px 15px;
-    margin: 10px 0;
-    border: 1px solid #E3DED7;
-    border-radius: 8px;
+
+/* Attribute selector to target input fields */
+.input-group input[type="text"],
+.input-group input[type="password"] {
     background-color: #F9F8F4;
+    border: 1px solid #E3DED7;
     font-size: 1rem;
+    padding: 12px 15px;
+}
+
+/* Rounded edges only at the ends */
+.input-group > .form-control:first-child {
+    border-radius: 8px 0 0 8px;  /* Left rounded corners */
+}
+
+.input-group > .form-control:last-child {
+    border-radius: 0 8px 8px 0;  /* Right rounded corners */
+}
+
+.input-group-text {
+    background-color: #F9F8F4;
+    border: 1px solid #E3DED7;
+    padding: 10px 14px;
+    font-size: 1.1rem;
+}
+
+/* Make icon clickable */
+.input-group-text i.toggle-password {
+    cursor: pointer;
+    color: #888;
+    font-size: 1.1rem;
 }
 
 .signup-card button {
@@ -59,7 +81,6 @@ main.container {
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.3s;
-
 }
 
 .signup-card button:hover {

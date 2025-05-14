@@ -19,7 +19,7 @@
             <div class="mb-4">
               <label class="form-label fw-semibold text-dark mood-label">Mood</label>
               <div class="btn-group w-100" role="group">
-                {% set moods = [('happy', 'success'), ('sad', 'danger'), ('excited', 'warning'), ('calm', 'info'), ('anxious', 'secondary')] %}
+                {% set moods = [('happy', 'success'), ('sad', 'danger'), ('angry', 'warning'), ('tired', 'info'), ('scared', 'secondary')] %}
                 {% for mood, color in moods %}
                 <input type="radio" class="btn-check" name="mood" id="{{ mood }}" value="{{ mood }}" required>
                 <label class="btn btn-outline-{{ color }}" for="{{ mood }}">{{ mood.capitalize() }}</label>
@@ -195,8 +195,13 @@ function loadFriendRequests() {
 }
 
 function respondToRequest(requestId, accept) {
+    const csrfToken = document.querySelector('input[name="csrf_token"]').value;
     fetch(`/api/friend_request/${accept ? 'accept' : 'decline'}/${requestId}`, {
-        method: 'POST' 
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        }
     })
     .then(response => {
         if (!response.ok) throw new Error("Failed to respond to request");

@@ -1,33 +1,66 @@
 {% extends "base.html" %}
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 {% endblock %}
+
 {% block content %}
-<div class="container  vh-100 d-flex justify-content-center align-items-center signup-container">
-     <div class="row w-100">
+<div class="container vh-100 d-flex justify-content-center align-items-center signup-container">
+  <div class="row w-100">
     <div class="col-12 col-sm-10 col-md-8 col-lg-5 mx-auto">
-    <div class="signup-card p-4 shadow rounded bg-white">
-    <h2 class="text-center mb-4">Create New Account <i class="fa-solid fa-seedling icon"></i></h2>
-    
-    <form method="POST">
-        {{ form.hidden_tag() }}  <!-- CSRF token -->
-        <div class="form-group mb-4">
-            {{ form.username(class="form-control", id="username", placeholder="Username (between 1-30 characters)") }}
-        </div>
-        <div class="form-group mb-4">
-            {{ form.password(class="form-control", id="password", placeholder="Password") }}
-        </div>
-        <div class="form-group mb-4">
-            {{ form.confirm_password(class="form-control", id="confirm_password", placeholder="Confirm password") }}
-        </div>
-        <div class="form-check mb-4">
-            {{ form.remember(class="form-check-input", id="remember") }}
-            <label class="form-check-label" for="remember">Remember me</label>
-        </div>
-        <div class="text-center">
-        <button type="submit" class="btn btn-primary">Sign Up</button>
-        </div>    
-        </form>
-    <p class="mt-3">Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+      <div class="signup-card p-4 shadow rounded bg-white">
+        <h2 class="text-center mb-4">
+          Create New Account <i class="fa-solid fa-seedling icon"></i>
+        </h2>
+          <form method="POST" id="signupForm">
+            <fieldset>
+              {{ form.hidden_tag() }}
+
+              <div class="input-group form-group mb-4">
+                  <span class="input-group-text"><i class="bi bi-person-circle"></i></span>
+                  {{ form.username(class="form-control", id="username", placeholder="Username (between 1-30 characters)") }}
+              </div>
+
+              <div class="input-group form-group mb-4">
+                  <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                  {{ form.password(class="form-control", id="password", placeholder="Password") }}
+                  <span class="input-group-text">
+                    <i class="bi bi-eye toggle-password" data-toggle="password" style="cursor: pointer;" title="Toggle password visibility" aria-label="Toggle password visibility"></i>
+                  </span>
+              </div>
+
+              <div class="input-group form-group mb-4">
+                  <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                  {{ form.confirm_password(class="form-control", id="confirm_password", placeholder="Confirm password") }}
+                  <span class="input-group-text">
+                    <i class="bi bi-eye toggle-password" data-toggle="confirm_password" style="cursor: pointer;" title="Toggle password visibility" aria-label="Toggle password visibility"></i>
+                  </span>
+              </div>
+
+              <div class="form-check mb-4">
+                {{ form.remember(class="form-check-input", id="remember") }}
+                <label class="form-check-label" for="remember">Remember me</label>
+              </div>
+
+              <div class="text-center">
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+              </div>
+            </fieldset>
+          </form>
+        <p class="mt-3">Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+      </div>
+    </div>
+  </div>
 </div>
+<script src="{{ url_for('static', filename='js/togglefeature.js') }}"></script>
+<script>
+document.getElementById('signupForm').addEventListener('submit', function(event) {
+    var newPassword = document.getElementById('password').value;
+    var confirmPassword = document.getElementById('confirm_password').value;
+    if (newPassword !== confirmPassword) {
+        event.preventDefault();
+        alert('New password and confirm password do not match.');
+    }
+});
+</script>
 {% endblock %}

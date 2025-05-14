@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User, Mood, Friendship, FriendRequest, db
 from datetime import datetime, timedelta
+from flask_wtf import FlaskForm
 
 bp = Blueprint('main', __name__)
 
@@ -89,28 +90,33 @@ def change_password():
             flash('Your password has been updated.', 'success')
             return redirect(url_for('main.home'))
 
-    return render_template('changepassword.html')
+    # Create a form object for CSRF protection
+    form = FlaskForm()
+    return render_template('changepassword.html', form=form)
 
 @bp.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
-    # Delete all user's moods
-    Mood.query.filter_by(user_id=current_user.username).delete()
-    
-    # Delete all friendships
-    Friendship.query.filter_by(user_id=current_user.username).delete()
-    Friendship.query.filter_by(friend_id=current_user.username).delete()
-    
-    # Delete all friend requests
-    FriendRequest.query.filter_by(sender_id=current_user.username).delete()
-    FriendRequest.query.filter_by(receiver_id=current_user.username).delete()
-    
-    # Delete the user
-    db.session.delete(current_user)
-    db.session.commit()
-    
-    flash('Your account has been deleted successfully.', 'success')
-    return redirect(url_for('auth.login'))
+    form = FlaskForm()  # Create form for CSRF protection
+    if form.validate_on_submit():
+        # Delete all user's moods
+        Mood.query.filter_by(user_id=current_user.username).delete()
+        
+        # Delete all friendships
+        Friendship.query.filter_by(user_id=current_user.username).delete()
+        Friendship.query.filter_by(friend_id=current_user.username).delete()
+        
+        # Delete all friend requests
+        FriendRequest.query.filter_by(sender_id=current_user.username).delete()
+        FriendRequest.query.filter_by(receiver_id=current_user.username).delete()
+        
+        # Delete the user
+        db.session.delete(current_user)
+        db.session.commit()
+        
+        flash('Your account has been deleted successfully.', 'success')
+        return redirect(url_for('auth.login'))
+    return redirect(url_for('main.change_password'))
 
 # @bp.route('/search_users')
 # @login_required
@@ -170,19 +176,44 @@ def get_friend_requests(user_id):
 @bp.route('/api/friend_request/accept/<int:request_id>', methods=['POST'])
 @login_required
 def accept_friend_request(request_id):
-    fr = FriendRequest.query.get(request_id)
-    if not fr or fr.status != 'pending':
-        return jsonify({'message': 'Invalid request'}), 404
+    try:
+        fr = FriendRequest.query.filter_by(id=request_id).first()
+        if not fr:
+            return jsonify({'message': 'Friend request not found'}), 404
+        
+        if fr.status != 'pending':
+            return jsonify({'message': 'Friend request is no longer pending'}), 400
+        
+        # Verify that the current user is the receiver of the request
+        if fr.receiver_id != current_user.username:
+            return jsonify({'message': 'Unauthorized'}), 403
 
-    fr.status = 'accepted'
+        # Check if friendship already exists
+        existing_friendship = Friendship.query.filter_by(
+            user_id=fr.sender_id,
+            friend_id=fr.receiver_id
+        ).first()
+        
+        if existing_friendship:
+            fr.status = 'accepted'
+            db.session.commit()
+            return jsonify({'message': 'Already friends'}), 200
 
-    # Create friendship using usernames
-    friendship1 = Friendship(user_id=fr.sender_id, friend_id=fr.receiver_id)
-    friendship2 = Friendship(user_id=fr.receiver_id, friend_id=fr.sender_id)
-    db.session.add_all([friendship1, friendship2])
-    db.session.commit()
-    
-    return jsonify({'message': 'Friend request accepted'})
+        # Update friend request status
+        fr.status = 'accepted'
+
+        # Create bidirectional friendship
+        friendship1 = Friendship(user_id=fr.sender_id, friend_id=fr.receiver_id)
+        friendship2 = Friendship(user_id=fr.receiver_id, friend_id=fr.sender_id)
+        
+        db.session.add_all([friendship1, friendship2])
+        db.session.commit()
+        
+        return jsonify({'message': 'Friend request accepted'}), 200
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error accepting friend request: {str(e)}")  # Add logging
+        return jsonify({'message': 'Error accepting friend request'}), 500
 
 # decline friend request
 @bp.route('/api/friend_request/decline/<int:request_id>', methods=['POST'])
@@ -529,14 +560,16 @@ def analyze_monthly_moods(moods):
 @bp.route('/update_privacy', methods=['POST'])
 @login_required
 def update_privacy():
-    privacy_setting = request.form.get('privacy_setting')
-    if privacy_setting not in ['public', 'friends', 'private']:
-        flash('Invalid privacy setting', "danger")
-        return redirect(url_for('main.change_password'))
-    
-    current_user.privacy_setting = privacy_setting
-    db.session.commit()
-    flash('Privacy settings updated successfully', "success")
+    form = FlaskForm()  # Create form for CSRF protection
+    if form.validate_on_submit():
+        privacy_setting = request.form.get('privacy_setting')
+        if privacy_setting not in ['public', 'friends', 'private']:
+            flash('Invalid privacy setting', "danger")
+            return redirect(url_for('main.change_password'))
+        
+        current_user.privacy_setting = privacy_setting
+        db.session.commit()
+        flash('Privacy settings updated successfully', "success")
     return redirect(url_for('main.change_password'))
 
 @bp.route('/api/search_users', methods=['GET'])
