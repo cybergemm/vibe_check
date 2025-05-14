@@ -114,3 +114,12 @@ main.container {
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
 }
+
+.input-group .form-control {
+    border-left: none;
+}
+
+.input-group .input-group-text {
+    background-color: #F9F8F4;
+    border-right: none;
+}
