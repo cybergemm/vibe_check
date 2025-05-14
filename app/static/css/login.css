@@ -28,18 +28,15 @@ main.container {
     text-align: center;
 }
 
-.input-group .form-control {
-    border-left: none;
-    border-radius: 0 8px 8px 0;
+#username,
+#password {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border: 1px solid #E3DED7;
+    border-radius: 8px;
     background-color: #F9F8F4;
     font-size: 1rem;
-}
-
-.input-group .input-group-text {
-    background-color: #F9F8F4;
-    border-right: none;
-    border-radius: 8px 0 0 8px;
-    border: 1px solid #E3DED7;
 }
 
 .login-card button {
@@ -87,4 +84,8 @@ main.container {
 
 .forgot-password a:hover {
     text-decoration: underline;
+}
+
+.toggle-password {
+    cursor: pointer;
 }
