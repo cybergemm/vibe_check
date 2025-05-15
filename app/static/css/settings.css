@@ -1,3 +1,11 @@
+/*
+  settings.css
+
+  Styles for the Settings page, including:
+  - Responsive width for settings buttons
+  - Custom outlined pink button variant with hover and active states
+  - Consistent typography styling for headings using the Poppins font and brand color
+*/
 .settings-button {
     width: 25%;
 }

@@ -1,3 +1,13 @@
+/*
+  intropage.css
+
+  Styles for the landing/introduction page, including:
+  - Page layout and typography using 'Open Sans' and 'Poppins'
+  - Header styling with navigation links and call-to-action button
+  - Smooth scrolling and animated arrow cue
+  - Responsive feature section with styled boxes and hover effects
+  - Visual consistency with subtle colors and rounded elements for a welcoming aesthetic
+*/
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@400;600&display=swap');
     html {
       scroll-behavior: smooth;

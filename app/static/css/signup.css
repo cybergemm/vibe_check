@@ -1,3 +1,14 @@
+/*
+  signup.css
+
+  Styles for the Signup page, including:
+  - Layout and centering for signup container and card
+  - Styling for headings and icons with brand colors and fonts
+  - Consistent styling for input groups with rounded edges
+  - Clickable toggle-password icon styling
+  - Styled signup button with hover effects
+  - Link and paragraph text styling within the signup card
+*/
 main.container {
     margin-top: 0 !important;
 }
