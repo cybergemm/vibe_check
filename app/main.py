@@ -1,3 +1,6 @@
+'''
+
+'''
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,16 +11,20 @@ from app.forms import ChangePasswordForm, PrivacyForm, DeleteAccountForm
 
 bp = Blueprint('main', __name__)
 
+# A default route to the intropage.html
 @bp.route('/')
 def intro():
     # Redirect to the home page
     return render_template('intropage.html')
 
+# A route into home.html after successful user log in.
 @bp.route('/index')
 @login_required
 def index():
     return redirect(url_for('main.home'))
 
+# displays the logged-in user's daily mood (if submitted), the moods of their friends for today, 
+# and a list of predefined mood reasons on the /home page.
 @bp.route('/home')
 @login_required
 def home():
@@ -52,7 +59,9 @@ def home():
                          friends=friends,
                          reasons=Mood.get_all_reasons(), 
                          user_id=current_user.username)
-    
+
+# This function securely handles user password changes by verifying the current password, 
+# confirming the new password, updating it if valid, and displaying success or error messages as appropriate.  
 @bp.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
@@ -65,6 +74,7 @@ def change_password():
         new = change_form.new_password.data
         confirm = change_form.confirm_new_password.data
 
+        # if password fields are incorrect (respective issue error messages)
         if not check_password_hash(current_user.password, current):
             flash('Current password is incorrect.', 'danger')
         elif new != confirm:
@@ -82,6 +92,8 @@ def change_password():
         delete_form=delete_form
     )
 
+# This function securely deletes the current user’s account and all associated data if they submit a valid deletion form, 
+# ensuring data cleanup and proper user feedback.
 @bp.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
@@ -108,7 +120,8 @@ def delete_account():
     flash('Form submission failed. Please try again.', 'danger')
     return redirect(url_for('main.change_password'))
 
-# send friend request
+# This function lets users send friend requests through an API call, ensures no duplicate requests are made, 
+# and responds appropriately with a success or error message.
 @bp.route('/api/friend_request', methods=['POST'])
 @login_required
 def send_friend_request():
@@ -125,7 +138,8 @@ def send_friend_request():
     db.session.commit()
     return jsonify({'message': 'Friend request sent'}), 200
 
-# get friend requests for logged-in user
+# This function returns a list of all pending friend requests for a given user in JSON format, 
+# including each request's ID and sender's username.
 @bp.route('/api/friend_requests/<user_id>', methods=['GET'])
 @login_required
 def get_friend_requests(user_id):
@@ -139,7 +153,8 @@ def get_friend_requests(user_id):
     ]
     return jsonify(result)
 
-# accept friend request
+# This function accepts a valid, pending friend request and creates a two-way friendship, 
+# while preventing duplicates and ensuring only the correct recipient can accept.
 @bp.route('/api/friend_request/accept/<int:request_id>', methods=['POST'])
 @login_required
 def accept_friend_request(request_id):
@@ -182,7 +197,8 @@ def accept_friend_request(request_id):
         print(f"Error accepting friend request: {str(e)}")  # Add logging
         return jsonify({'message': 'Error accepting friend request'}), 500
 
-# decline friend request
+# This function lets users decline a pending friend request by updating its status, 
+# ensuring only valid pending requests are processed.
 @bp.route('/api/friend_request/decline/<int:request_id>', methods=['POST'])
 @login_required
 def decline_friend_request(request_id):
@@ -194,6 +210,8 @@ def decline_friend_request(request_id):
     db.session.commit()
     return jsonify({'message': 'Friend request declined'})
 
+# This function manually adds a two-way friendship between users, 
+# with safeguards against self-addition and duplicate friendships.
 @bp.route('/add_friend/<int:friend_id>', methods=['POST'])
 @login_required
 def add_friend(friend_id):
@@ -217,6 +235,7 @@ def add_friend(friend_id):
     
     return redirect(url_for('main.search_users'))
 
+# This function cleanly removes the mutual friendship between two users and updates the database accordingly.
 @bp.route('/remove_friend/<friend_id>', methods=['POST'])
 @login_required
 def remove_friend(friend_id):
@@ -232,6 +251,7 @@ def remove_friend(friend_id):
     flash("Friend removed successfully!", "success")
     return redirect(url_for('main.home'))
 
+# It ensures users can only submit one mood per day, stores it with optional reasons, and confirms successful submission.
 @bp.route('/submit_mood', methods=['POST'])
 @login_required
 def submit_mood():
@@ -268,12 +288,14 @@ def submit_mood():
     
     return jsonify({'message': 'Mood recorded successfully', 'entry': entry.to_dict()})
 
+# It provides an API endpoint that retrieves and sends back all of the current user's mood history.
 @bp.route('/get_moods')
 @login_required
 def get_moods():
     entries = Mood.query.filter_by(user_id=current_user.username).all()
     return jsonify([entry.to_dict() for entry in entries])
 
+# It securely provides the mood history of a friend only if the current user has a friendship with that friend.
 @bp.route('/get_friend_moods/<friend_id>')
 @login_required
 def get_friend_moods(friend_id):
@@ -288,6 +310,8 @@ def get_friend_moods(friend_id):
     entries = Mood.query.filter_by(user_id=friend_id).all()
     return jsonify([entry.to_dict() for entry in entries])
 
+# It controls access to a user’s calendar page based on privacy: only the user themselves or their friends 
+# (if privacy allows) can view the calendar; otherwise, access is blocked with a flash message.
 @bp.route('/calendar/<user_id>')
 @login_required
 def calendar_view(user_id):
@@ -337,6 +361,8 @@ def calendar_view(user_id):
                          week_moods=week_moods,
                          month_moods=month_moods)
 
+# It ensures only authorized users (self or friends) can view a user’s mood analysis based on privacy settings, 
+# otherwise it denies access and redirects home.
 @bp.route('/analysis/<user_id>')
 @login_required
 def analysis(user_id):
@@ -440,8 +466,8 @@ def analysis(user_id):
                          monthly_activities=monthly_activities,
                          monthly_days_data=monthly_days_data)
 
+# Analyze weekly mood data to find most frequent mood and activities occurring more than 3 times
 def analyze_weekly_moods(moods):
-    """Analyze weekly mood data to find most frequent mood and activities occurring more than 3 times."""
     if not moods:
         return {
             'most_frequent_mood': None,
@@ -476,8 +502,8 @@ def analyze_weekly_moods(moods):
         'frequent_activities': frequent_activities if frequent_activities else ['none']
     }
 
+# Analyze monthly mood data to find days for each mood and frequent activities.
 def analyze_monthly_moods(moods):
-    """Analyze monthly mood data to find days for each mood and frequent activities."""
     if not moods:
         return {
             'mood_days': {},
@@ -524,6 +550,9 @@ def analyze_monthly_moods(moods):
         'frequent_activities': frequent_activities if frequent_activities else ['none']
     }
 
+# Handle POST request to update the current user's privacy setting; 
+# validates input, updates the setting if valid, commits to database, 
+# flashes success or error messages, then redirects to the change password page.
 @bp.route('/update_privacy', methods=['POST'])
 @login_required
 def update_privacy():
@@ -538,6 +567,10 @@ def update_privacy():
             flash('Invalid privacy setting', 'danger')
     return redirect(url_for('main.change_password'))
 
+# API endpoint to search users by username query (case-insensitive); 
+# excludes current user, returns list with each user's username, 
+# friendship status with current user, pending friend request status, 
+# and their mood entry for today if available.
 @bp.route('/api/search_users', methods=['GET'])
 @login_required
 def search_users():
