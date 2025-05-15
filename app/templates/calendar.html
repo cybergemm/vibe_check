@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+
 {% block head %}
+<!-- Link to calendar-specific CSS for styling -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/calendar.css') }}">
 {% endblock %}
 
@@ -7,21 +9,28 @@
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
+            <!-- Main card container for mood calendar -->
             <div class="card border-0 shadow-sm rounded-4 bg-light-subtle">
+                <!-- Card header with title and view toggle buttons -->
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4>{{ user.username }}'s Mood Calendar</h4>
+                    
                     <div class="btn-group">
+                        <!-- Button to switch to Week View -->
                         <button type="button" class="btn btn-outline-theme" id="weekView">Week</button>
+                        <!-- Button to switch to Month View (default active) -->
                         <button type="button" class="btn btn-outline-theme active" id="monthView">Month</button>
                     </div>
                 </div>
+
                 <div class="card-body">
-                    <!-- Week View -->
+                    <!-- Week View calendar (initially hidden) -->
                     <div id="weekCalendar" style="display: none;">
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
+                                        <!-- Display each day in the week header -->
                                         {% for day in week_dates %}
                                         <th>{{ day.strftime('%a, %b %d') }}</th>
                                         {% endfor %}
@@ -29,19 +38,23 @@
                                 </thead>
                                 <tbody>
                                     <tr>
+                                        <!-- Loop through each day to display mood cell -->
                                         {% for day in week_dates %}
                                         <td class="mood-cell" data-date="{{ day.strftime('%Y-%m-%d') }}">
                                             {% set mood = week_moods.get(day.strftime('%Y-%m-%d')) %}
                                             {% if mood %}
+                                            <!-- Mood indicator colored background by mood type -->
                                             <div class="mood-indicator bg-{{ mood.mood }}-subtle fw-bold">
                                                 {{ mood.mood }}
                                                 <div class="reasons-list">
+                                                    <!-- List badges for mood reasons -->
                                                     {% for reason in mood.get_reasons() %}
                                                     <span class="badge reason-{{ mood.mood }}">{{ reason }}</span>
                                                     {% endfor %}
                                                 </div>
                                             </div>
                                             {% else %}
+                                            <!-- Message if no mood recorded -->
                                             <div class="text-muted">No mood recorded</div>
                                             {% endif %}
                                         </td>
@@ -52,12 +65,13 @@
                         </div>
                     </div>
 
-                    <!-- Month View -->
+                    <!-- Month View calendar (initially visible) -->
                     <div id="monthCalendar">
                         <div class="table-responsive">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
+                                        <!-- Display each day in the month header -->
                                         {% for day in month_dates %}
                                         <th>{{ day.strftime('%b %d') }}</th>
                                         {% endfor %}
@@ -65,12 +79,15 @@
                                 </thead>
                                 <tbody>
                                     <tr>
+                                        <!-- Loop through each day to display mood cell -->
                                         {% for day in month_dates %}
                                         <td class="mood-cell" data-date="{{ day.strftime('%Y-%m-%d') }}">
                                             {% set mood = month_moods.get(day.strftime('%Y-%m-%d')) %}
                                             {% if mood %}
+                                            <!-- Mood indicator with styling for month view -->
                                             <div class="mood-indicator bg-{{ mood.mood }}-subtle rounded-3 p-2 fw-bold">
                                                 {{ mood.mood }}
+                                                <!-- Mood reasons badges -->
                                                 <div class="reasons-list">
                                                     {% for reason in mood.get_reasons() %}
                                                     <span class="reason-{{ mood.mood }} badge">{{ reason }}</span>
@@ -78,6 +95,7 @@
                                                 </div>
                                             </div>
                                             {% else %}
+                                            <!-- Message if no mood recorded -->
                                             <div class="text-muted fst-italic">No mood recorded</div>
                                             {% endif %}
                                         </td>
@@ -90,21 +108,27 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </div> 
+</div> 
 
 
 <script>
+// JS to toggle between week and month views
+
 document.getElementById('weekView').addEventListener('click', function() {
+    // Show week calendar, hide month calendar
     document.getElementById('weekCalendar').style.display = 'block';
     document.getElementById('monthCalendar').style.display = 'none';
+    // Update active button styling
     this.classList.add('active');
     document.getElementById('monthView').classList.remove('active');
 });
 
 document.getElementById('monthView').addEventListener('click', function() {
+    // Show month calendar, hide week calendar
     document.getElementById('weekCalendar').style.display = 'none';
     document.getElementById('monthCalendar').style.display = 'block';
+    // Update active button styling
     this.classList.add('active');
     document.getElementById('weekView').classList.remove('active');
 });
