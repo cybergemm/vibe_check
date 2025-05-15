@@ -637,7 +637,7 @@ def settings():
         flash('Your account has been deleted.', 'info')
         return redirect(url_for('main.index'))
 
-    return render_template('change_password.html',
+    return render_template('changepassword.html',
                            privacy_form=privacy_form,
                            password_form=password_form,
                            delete_form=delete_form)
