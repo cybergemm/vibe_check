@@ -42,6 +42,13 @@
                   <i class="bi bi-eye toggle-password" data-toggle="password" style="cursor: pointer;" title="Toggle password visibility" aria-label="Toggle password visibility"></i>
                 </span>
             </div>
+            {% if form.password.errors %}
+            <div class="alert alert-danger">
+                {% for error in form.password.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
 
             <!-- Confirm password input with visibility toggle -->
             <div class="input-group form-group mb-4">
