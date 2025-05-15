@@ -69,3 +69,7 @@
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
+
+#requestCount {
+  background-color: #f56d6d;
+}
