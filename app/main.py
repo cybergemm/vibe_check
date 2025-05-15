@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User, Mood, Friendship, FriendRequest, db
 from datetime import datetime, timedelta
 from flask_wtf import FlaskForm
+from app.forms import ChangePasswordForm
 
 bp = Blueprint('main', __name__)
 
@@ -75,10 +76,11 @@ def home():
 @bp.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
-    if request.method == 'POST':
-        current = request.form.get('current_password')
-        new = request.form.get('new_password')
-        confirm = request.form.get('confirm_new_password')
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        current = form.current_password.data
+        new = form.new_password.data
+        confirm = form.confirm_new_password.data
 
         if not check_password_hash(current_user.password, current):
             flash('Current password is incorrect.', 'danger')
@@ -90,8 +92,6 @@ def change_password():
             flash('Your password has been updated.', 'success')
             return redirect(url_for('main.home'))
 
-    # Create a form object for CSRF protection
-    form = FlaskForm()
     return render_template('changepassword.html', form=form)
 
 @bp.route('/delete_account', methods=['POST'])
