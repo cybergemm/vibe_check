@@ -27,6 +27,7 @@ def login():
             return redirect(url_for('auth.login'))
         
         login_user(user, remember=remember)
+        flash('Welcome', 'success')
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('main.index')
@@ -46,15 +47,15 @@ def signup():
         remember = form.remember.data
         
         if User.query.filter_by(username=username).first():
-            flash('Username already taken.', "warning")
-            return redirect(url_for('auth.signup'))
+            flash('Username already taken', "warning")
+            return render_template('signup.html', form=form)
         
         user = User(username=username)
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
         
-        flash('Registration successful! Please log in.', "success")
+        flash('Registration successful', "success")
         return redirect(url_for('auth.login'))
     
     return render_template('signup.html', form=form)  # Pass form to template
