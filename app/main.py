@@ -1,5 +1,14 @@
 '''
+main.py - Core Flask routes and view functions for the Mood Tracking app.
 
+Handles user authentication, mood submission, mood analysis, friend management 
+(friend requests, accept/decline, removal), privacy settings, password changes, 
+account deletion, and mood calendar display.
+
+Includes API endpoints for user search and mood data retrieval to support 
+frontend interactivity.
+
+All routes require user login to protect privacy and data integrity.
 '''
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
 from flask_login import login_required, current_user
