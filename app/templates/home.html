@@ -328,7 +328,7 @@ function performSearch() {
         });
 }
 
-function sendFriendRequest(username) {
+function sendFriendRequest(username, event) {
   const csrfToken = document.querySelector('input[name="csrf_token"]').value;
     fetch('/api/friend_request', {
         method: 'POST',
@@ -344,9 +344,8 @@ function sendFriendRequest(username) {
     .then(response => response.json())
     .then(data => {
         if (data.message === 'Friend request sent') {
-            // Update the UI to show pending status
-            //const button = event.target;
-            button.outerHTML = '<span class="badge bg-warning">Request Pending</span>';
+          const button = event.target;
+          button.outerHTML = '<span class="badge bg-warning">Request Pending</span>';
         } else {
             alert(data.message || 'Failed to send friend request');
         }
