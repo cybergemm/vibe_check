@@ -166,7 +166,6 @@ function loadFriendRequests() {
             return response.json();
         })
         .then(data => {
-            console.log("Friend Requests:", data);
             const list = document.getElementById('friend-requests-list');
             list.innerHTML = ''; // Clear previous entries
 
@@ -209,7 +208,6 @@ function respondToRequest(requestId, accept) {
         return response.json();
     })
     .then(result => {
-        console.log(result.message);
         loadFriendRequests();
         // Reload the page to update the friends list
         window.location.reload();
