@@ -90,7 +90,7 @@ def change_password():
             current_user.password = generate_password_hash(new)
             db.session.commit()
             flash('Your password has been updated.', 'success')
-            return redirect(url_for('main.home'))
+            return redirect(url_for('main.changepassword'))
 
     return render_template('changepassword.html', form=form)
 
