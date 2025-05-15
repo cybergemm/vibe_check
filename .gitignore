@@ -22,3 +22,9 @@ Thumbs.db       # Windows
 build/
 dist/
 *.egg-info/
+
+# Database
+instance/
+*.db
+*.sqlite
+*.sqlite3
