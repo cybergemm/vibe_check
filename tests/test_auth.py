@@ -47,3 +47,15 @@ def test_signup_failure(client, test_user):
     }, follow_redirects=True)
     assert response.status_code == 200
     assert b'Username already taken' in response.data # Expect error message
+
+def test_password_length_validation(client):
+    # Attempt signup with a password that's too short (less than 6 characters)
+    response = client.post('/signup', data={
+        'username': 'shortpassuser',
+        'password': 'short',
+        'confirm_password': 'short',
+        'remember': False
+    }, follow_redirects=True)
+    print(response.data)
+    assert response.status_code == 200
+    assert b'Field must be at least 6 characters long.' in response.data # Match the actual error message
