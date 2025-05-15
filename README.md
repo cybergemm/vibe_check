@@ -1,5 +1,5 @@
 ## VibeCheck; a Flask-based, web application for tracking users' moods, as well as possibly sharing them with other users.
-##By:
+## By:
 - Gemma Lock (23362049).
 - Nandana Mathiparambil Vinod (24103138).
 - Kamlesh Senthilkumar (24245674) 
