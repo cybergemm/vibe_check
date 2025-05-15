@@ -1,3 +1,9 @@
+"""
+test_seleneium.py
+
+End-to-end tests using Selenium WebDriver to automate browser interactions, 
+covering login success/failure, signup success, and mood entry functionality.
+"""
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -10,17 +16,19 @@ import string
 
 @pytest.fixture
 def driver():
+    # Setup Chrome WebDriver in headless mode for test automation
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')  # Run in headless mode
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     service = Service(executable_path='/opt/homebrew/bin/chromedriver')
     driver = webdriver.Chrome(service=service, options=options)
-    driver.implicitly_wait(10)  # Set implicit wait timeout
+    driver.implicitly_wait(10)  # Set implicit wait timeout 
     yield driver
-    driver.quit()
+    driver.quit()  # Cleanup after tests
 
 def test_login_success(driver):
+    # Test logging in with valid credentials redirects to /home and shows welcome
     driver.get('http://127.0.0.1:5000/login')
     username = driver.find_element(By.NAME, 'username')
     password = driver.find_element(By.NAME, 'password')
@@ -31,6 +39,7 @@ def test_login_success(driver):
     assert 'Welcome' in driver.page_source
 
 def test_login_failure(driver):
+    # Test login with invalid credentials shows error alert
     driver.get('http://127.0.0.1:5000/login')
     username = driver.find_element(By.NAME, 'username')
     password = driver.find_element(By.NAME, 'password')
@@ -40,6 +49,7 @@ def test_login_failure(driver):
     WebDriverWait(driver, 10).until(EC.text_to_be_present_in_element((By.CLASS_NAME, 'alert'), 'Invalid username or password'))
 
 def test_signup_success(driver):
+    # Test logging in and submitting a mood entry appears on the page
     random_username = ''.join(random.choices(string.ascii_lowercase, k=8))
     driver.get('http://127.0.0.1:5000/signup')
     username = driver.find_element(By.NAME, 'username')
