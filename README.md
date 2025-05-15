@@ -99,10 +99,15 @@ Note: 404 errors for favicon.ico in the console are normal and won't affect the 
      ```
    - Or download from: https://sites.google.com/chromium.org/driver/
 
-2. Run the tests:
-```bash
-pytest tests/
-```
+2. Add the test user to the database:
+   ```bash
+   python3 app/add_testuser.py
+   ```
+
+3. Run the tests:
+   ```bash
+   pytest tests/
+   ```
 
 ## Project structure:
 ```
