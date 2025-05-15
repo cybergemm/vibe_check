@@ -286,7 +286,7 @@ function performSearch() {
                     } else if (user.request_pending) {
                         actionButton = '<span class="badge bg-warning">Request Pending</span>';
                     } else {
-                        actionButton = `<button class="btn btn-sm btn-primary" onclick="sendFriendRequest('${user.username}')">Add Friend</button>`;
+                        actionButton = `<button class="btn btn-sm btn-primary" onclick="sendFriendRequest('${user.username}', event)">Add Friend</button>`;
                     }
                     
                     item.innerHTML = `
@@ -329,10 +329,12 @@ function performSearch() {
 }
 
 function sendFriendRequest(username) {
+  const csrfToken = document.querySelector('input[name="csrf_token"]').value;
     fetch('/api/friend_request', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
         },
         body: JSON.stringify({
             sender_username: '{{ current_user.username }}',
@@ -343,7 +345,7 @@ function sendFriendRequest(username) {
     .then(data => {
         if (data.message === 'Friend request sent') {
             // Update the UI to show pending status
-            const button = event.target;
+            //const button = event.target;
             button.outerHTML = '<span class="badge bg-warning">Request Pending</span>';
         } else {
             alert(data.message || 'Failed to send friend request');
