@@ -52,26 +52,6 @@ def home():
                          friends=friends,
                          reasons=Mood.get_all_reasons(), 
                          user_id=current_user.username)
-
-# @bp.route('/search_users')
-# @login_required
-# def search_users():
-#     query = request.args.get('q', '')
-#     if query:
-#         users = User.query.filter(
-#             (User.username.ilike(f'%{query}%')) |
-#             (User.full_name.ilike(f'%{query}%'))
-#         ).filter(User.id != current_user.id).all()
-#     else:
-# <<<<<<< settings-page-privacy-settings-and-change-password
-#         data = request.get_json()
-#         setting = data.get('privacy_setting')
-#         if setting not in ['friends', 'nobody']:
-#             return jsonify({'error': 'Invalid setting'}), 400
-
-#         current_user.privacy_setting = setting
-#         db.session.commit()
-#         return jsonify({'message': 'Settings updated successfully'})
     
 @bp.route('/change_password', methods=['GET', 'POST'])
 @login_required
@@ -127,29 +107,6 @@ def delete_account():
     
     flash('Form submission failed. Please try again.', 'danger')
     return redirect(url_for('main.change_password'))
-
-# @bp.route('/search_users')
-# @login_required
-# def search_users():
-#     query = request.args.get('q', '')
-#     if query:
-#         users = User.query.filter(
-#             (User.username.ilike(f'%{query}%')) |
-#             (User.full_name.ilike(f'%{query}%'))
-#         ).filter(User.id != current_user.id).all()
-#     else:
-#         users = []
-    
-#     friend_ids = {f.friend_id for f in Friendship.query.filter_by(user_id=current_user.id).all()}
-    
-#     return render_template('main/search_users.html', users=users, friend_ids=friend_ids)
-# =======
-#         users = []
-    
-#     friend_ids = {f.friend_id for f in Friendship.query.filter_by(user_id=current_user.id).all()}
-    
-#     return render_template('main/search_users.html', users=users, friend_ids=friend_ids)
-# >>>>>>> main
 
 # send friend request
 @bp.route('/api/friend_request', methods=['POST'])
