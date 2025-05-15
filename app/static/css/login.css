@@ -1,3 +1,14 @@
+/*
+  login.css
+
+  Styles for the login page, including:
+  - Centered login card layout with soft box shadows and rounded corners
+  - Input group styling for text/password fields with subtle background and borders
+  - Password visibility toggle icon styling
+  - Branded login button with hover effect
+  - Link styling for registration and forgot password sections
+  - Consistent use of fonts and spacing for a clean, friendly UI
+*/
 main.container {
     margin-top: 0 !important;
 }

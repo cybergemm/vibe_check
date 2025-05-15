@@ -1,3 +1,13 @@
+/*
+  home.css
+
+  Styles specific to the homepage interface, including:
+  - Subtle background colors for mood indicators
+  - Themed buttons for primary and success actions
+  - Labels for mood and reason inputs
+  - Search feature UI: input, results list, and button styling
+  - Request count badge color
+*/
 .bg-happy-subtle { background-color: #fbfad9; color: #c0990a; }
 .bg-sad-subtle { background-color: #cedaf7; color: #0c1282; }
 .bg-angry-subtle { background-color: #ffcdcd; color: #bd1708; }

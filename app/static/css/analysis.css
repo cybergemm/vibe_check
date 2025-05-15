@@ -1,3 +1,11 @@
+/* 
+  analysis.css
+
+  Styles for the mood analysis page, including:
+  - Chart container sizing for responsive display
+  - Custom themed toggle buttons for switching between week/month views
+  - Consistent heading styles using Poppins font and brand color
+*/
 .chart-container-large {
     position: relative;
     height: 420px;

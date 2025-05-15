@@ -1,3 +1,7 @@
+<!-- 
+  intropage.html
+  This template serves as the landing page, introducing the app and highlighting its key features.
+-->
 {% extends "base.html" %}
 
 {% block title %}Landing Page{% endblock %}
@@ -11,12 +15,14 @@
 {% endblock %}
 
 {% block content %}
-<!-- Main Content -->
+<!-- Hero section with headline and call-to-action button -->
 <div class="main-content text-center py-5 px-3">
   <div class="container">
     <h2 class="mb-3">Your journey to better wellness starts here</h2>
     <p class="mb-4">Track your emotions, and spot their trends. Connect with what truly matters. It's simple, intuitive, and causes real growth. Welcome to your next chapter.</p>
     <a href="#features">
+
+      <!-- CTA (call-to-action) scroll button to scroll down to the bottom of the page -->
       <button class="cta-button">
         Read more below <span class="arrow">↓</span>
       </button>
@@ -24,11 +30,13 @@
   </div>
 </div>
 
-<!-- Features Section -->
+<!-- Features section: highlights three core app features -->
 <section id="features" class="features-section py-5">
   <div class="container">
     <h2 class="text-center mb-4">Features Designed for You</h2>
     <div class="row g-4">
+
+      <!-- Feature 1: Mood Check-ins -->
       <div class="col-sm-12 col-md-6 col-lg-4">
         <div class="feature-box h-100">
           <i class="bi bi-emoji-smile fs-4 feature-icon"></i>
@@ -36,6 +44,8 @@
           <p class="feature-description">Capture your emotions in seconds to begin your wellbeing journey.</p>
         </div>
       </div>
+
+      <!-- Feature 2: Mood Trends -->
       <div class="col-sm-12 col-md-6 col-lg-4">
         <div class="feature-box h-100">
           <i class="bi bi-bar-chart-line fs-4 feature-icon"></i>
@@ -43,6 +53,8 @@
           <p class="feature-description">Visualize your emotional patterns over time, to allow you better understand your wellbeing.</p>
         </div>
       </div>
+
+      <!-- Feature 3: Social Sharing -->
       <div class="col-sm-12 col-md-6 col-lg-4">
         <div class="feature-box h-100">
           <i class="bi bi-people-fill fs-4 feature-icon"></i>

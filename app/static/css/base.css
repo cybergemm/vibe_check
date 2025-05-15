@@ -1,4 +1,12 @@
-/* Custom Navbar Styles */
+/*
+  base.css
+
+  Global styles for the VibeCheck app layout and branding, including:
+  - Custom navbar styling and hover effects
+  - Footer layout and social icon interactions
+  - Mood indicator color classes for different emotional states
+  - Body font and background color to match the overall theme
+*/
 body {
   background-color: #F5F5F3;
   font-family: 'Open Sans', sans-serif;

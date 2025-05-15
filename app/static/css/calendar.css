@@ -1,3 +1,12 @@
+/*
+  calendar.css
+
+  Styles for the mood calendar interface, including:
+  - Mood cell hover effects and mood-specific coloring
+  - Responsive adjustments for smaller screens
+  - Visual styles for reasons and subtle emotion indicators
+  - Consistent button and header styling with app-wide theme
+*/
 .mood-cell {
   height: 100px;
   padding: 8px;

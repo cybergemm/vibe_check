@@ -1,32 +1,40 @@
 {% extends "base.html" %}
 
 {% block title %}Mood Analysis - {{ user.username }}{% endblock %}
+<!-- Include custom styling specific to the analysis page -->
 {% block head %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/analysis.css') }}">
 {% endblock %}
 
+ <!-- Outer container for mood analysis content -->
 {% block content %}
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
             <div class="card">
+                <!-- Header with toggle buttons for week/month views -->
                 <div class="card-header bg-light d-flex justify-content-between align-items-center rounded-top-4 px-4 py-3">
                     <h2 class="mb-0">Mood Analysis for {{ user.username }}</h2>
                     <div class="btn-group">
+                        <!-- Toggle buttons to switch between week and month analysis -->
                         <button type="button" class="btn btn-outline-theme active" id="weekView">Week</button>
                         <button type="button" class="btn btn-outline-theme" id="monthView">Month</button>
                     </div>
                 </div>
+
+                <!-- Body containing charts for analysis -->
                 <div class="card-body px-4 py-4 bg-white rounded-bottom-4">
-                    <!-- Weekly Analysis -->
+                    <!-- Weekly Analysis Section (shown by default) -->
                     <div id="weekAnalysis">
                         <div class="row g-4">
+                            <!-- Weekly Mood Distribution Chart -->
                             <div class="col-md-6">
                                 <h4 class="text-dark">Mood Distribution</h4>
                                 <div class="chart-container-large">
                                     <canvas id="weeklyMoodChart"></canvas>
                                 </div>
                             </div>
+                            <!-- Weekly Activities Distribution Chart -->
                             <div class="col-md-6">
                                 <h4 class="text-dark">Activities Distribution</h4>
                                 <div class="chart-container-large">
@@ -36,15 +44,17 @@
                         </div>
                     </div>
 
-                    <!-- Monthly Analysis -->
+                    <!-- Monthly Analysis Section (hidden by default) -->
                     <div id="monthAnalysis" style="display: none;">
                         <div class="row">
+                            <!-- Monthly Mood Distribution Chart -->
                             <div class="col-md-6">
                                 <h4 class="text-dark">Mood Distribution</h4>
                                 <div class="chart-container-large">
                                     <canvas id="monthlyMoodChart"></canvas>
                                 </div>
                             </div>
+                            <!-- Monthly Activities Distribution Chart -->
                             <div class="col-md-6">
                                 <h4 class="text-dark">Activities Distribution</h4>
                                 <div class="chart-container-large">
@@ -52,6 +62,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- Mood Frequency Bar Charts by Day -->
                         <div class="row mt-4">
                             <div class="col-12">
                                 <h4 class="text-dark">Mood Frequency by Day of Week</h4>
@@ -65,7 +76,7 @@
     </div>
 </div>
 
-<!-- Store data in hidden elements -->
+<!-- Hidden div storing all chart data as JSON strings for use in JS -->
 <div id="chartData" style="display: none;"
      data-weekly-mood='{{ weekly_mood_data|tojson }}'
      data-weekly-activities='{{ weekly_activities|tojson }}'
