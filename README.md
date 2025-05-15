@@ -126,3 +126,5 @@ Note: 404 errors for favicon.ico in the console are normal and won't affect the 
 ├── requirements.txt
 └── README.md
 ```
+_Credits:_
+We acknowledge the use of AI assistance from ChatGPT by OpenAI in the development of Vibe Check.
