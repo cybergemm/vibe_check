@@ -1,9 +1,10 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models import User, Mood, Friendship, FriendRequest, db
 from datetime import datetime, timedelta
 from flask_wtf import FlaskForm
+from app.forms import PrivacyForm, ChangePasswordForm, DeleteAccountForm
 
 bp = Blueprint('main', __name__)
 
@@ -71,7 +72,8 @@ def home():
 #         current_user.privacy_setting = setting
 #         db.session.commit()
 #         return jsonify({'message': 'Settings updated successfully'})
-    
+'''  
+This is the old change password route.
 @bp.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
@@ -93,31 +95,55 @@ def change_password():
     # Create a form object for CSRF protection
     form = FlaskForm()
     return render_template('changepassword.html', form=form)
+'''
+
+'''
+Because the settings function has been unified into one route with CSRF changes, we do not need this any longer.
+#This is the new change password route with CSRF changes made.
+@bp.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    
+    if form.validate_on_submit():
+        current = form.current_password.data
+        new = form.new_password.data
+        
+        if not check_password_hash(current_user.password, current):
+            flash('Current password is incorrect.', 'danger')
+        else:
+            current_user.password = generate_password_hash(new)
+            db.session.commit()
+            flash('Your password has been updated.', 'success')
+            return redirect(url_for('main.home'))
+
+    return render_template('changepassword.html', form=form)
 
 @bp.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
-    form = FlaskForm()  # Create form for CSRF protection
+    form = FlaskForm()  # CSRF protection form
     if form.validate_on_submit():
-        # Delete all user's moods
+        # Delete moods
         Mood.query.filter_by(user_id=current_user.username).delete()
         
-        # Delete all friendships
+        # Delete friendships (both sides)
         Friendship.query.filter_by(user_id=current_user.username).delete()
         Friendship.query.filter_by(friend_id=current_user.username).delete()
         
-        # Delete all friend requests
+        # Delete friend requests (both sender and receiver)
         FriendRequest.query.filter_by(sender_id=current_user.username).delete()
         FriendRequest.query.filter_by(receiver_id=current_user.username).delete()
         
-        # Delete the user
+        # Delete user
         db.session.delete(current_user)
         db.session.commit()
         
         flash('Your account has been deleted successfully.', 'success')
         return redirect(url_for('auth.login'))
+    
     return redirect(url_for('main.change_password'))
-
+'''
 # @bp.route('/search_users')
 # @login_required
 # def search_users():
@@ -227,6 +253,7 @@ def decline_friend_request(request_id):
     db.session.commit()
     return jsonify({'message': 'Friend request declined'})
 
+# add friend
 @bp.route('/add_friend/<int:friend_id>', methods=['POST'])
 @login_required
 def add_friend(friend_id):
@@ -250,6 +277,7 @@ def add_friend(friend_id):
     
     return redirect(url_for('main.search_users'))
 
+#remove friend
 @bp.route('/remove_friend/<friend_id>', methods=['POST'])
 @login_required
 def remove_friend(friend_id):
@@ -556,7 +584,8 @@ def analyze_monthly_moods(moods):
         'mood_days': filtered_mood_days,
         'frequent_activities': frequent_activities if frequent_activities else ['none']
     }
-
+'''
+This is the old update privacy route
 @bp.route('/update_privacy', methods=['POST'])
 @login_required
 def update_privacy():
@@ -571,6 +600,47 @@ def update_privacy():
         db.session.commit()
         flash('Privacy settings updated successfully', "success")
     return redirect(url_for('main.change_password'))
+'''
+@bp.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settings():
+    privacy_form = PrivacyForm(prefix='privacy')
+    password_form = ChangePasswordForm(prefix='password')
+    delete_form = DeleteAccountForm(prefix='delete')
+
+    # Handle Privacy Settings Form
+    if privacy_form.submit.data and privacy_form.validate_on_submit():
+        new_setting = request.form.get('privacy_setting')
+        if new_setting in ['public', 'friends', 'private']:
+            current_user.privacy_setting = new_setting
+            db.session.commit()
+            flash('Privacy settings updated!', 'success')
+        else:
+            flash('Invalid privacy setting selected.', 'danger')
+        return redirect(url_for('main.settings'))
+
+    # Handle Change Password Form
+    if password_form.submit.data and password_form.validate_on_submit():
+        if not current_user.check_password(password_form.current_password.data):
+            flash('Current password is incorrect.', 'danger')
+        else:
+            current_user.set_password(password_form.new_password.data)
+            db.session.commit()
+            flash('Password changed successfully.', 'success')
+        return redirect(url_for('main.settings'))
+
+    # Handle Delete Account Form
+    if delete_form.submit.data and delete_form.validate_on_submit():
+        db.session.delete(current_user)
+        db.session.commit()
+        logout_user()
+        flash('Your account has been deleted.', 'info')
+        return redirect(url_for('main.index'))
+
+    return render_template('change_password.html',
+                           privacy_form=privacy_form,
+                           password_form=password_form,
+                           delete_form=delete_form)
 
 @bp.route('/api/search_users', methods=['GET'])
 @login_required

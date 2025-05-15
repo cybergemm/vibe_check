@@ -18,10 +18,17 @@ class SignupForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     remember = BooleanField('Remember Me')
 
+class PrivacyForm(FlaskForm):
+    submit = SubmitField('Update Settings')
+
 class ChangePasswordForm(FlaskForm):
     current_password = PasswordField('Current Password', validators=[DataRequired()])
     new_password = PasswordField('New Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm Password', validators=[
-        DataRequired(), EqualTo('new_password', message='Passwords must match.')
+    confirm_new_password = PasswordField('Confirm New Password', validators=[
+        DataRequired(),
+        EqualTo('new_password', message='Passwords must match')
     ])
     submit = SubmitField('Change Password')
+
+class DeleteAccountForm(FlaskForm):
+    submit = SubmitField('Yes, Delete')
