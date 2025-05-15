@@ -7,7 +7,10 @@ import pytest
 
 @pytest.fixture
 def driver():
-    driver = webdriver.Chrome()
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')  # Run in headless mode
+    driver = webdriver.Chrome(options=options)
+    driver.implicitly_wait(10)  # Set implicit wait timeout
     yield driver
     driver.quit()
 
