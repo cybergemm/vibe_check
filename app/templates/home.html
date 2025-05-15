@@ -61,7 +61,7 @@
             <button class="btn btn-outline-secondary" type="button" id="searchButton"><i class="fas fa-search"></i></button>
           </div>
           <button id="openFriendModal" class="btn btn-outline-success w-100" data-bs-toggle="modal" data-bs-target="#friendModal"><i class="bi bi-person-lines-fill"></i>
-Friend Requests</button>
+Friend Requests <span id="requestCount" class="badge bg-danger ms-1">0</span></button>
         </div>
         <div class="card-body">
           <div id="searchResults" class="list-group mb-3" style="display: none;"></div>
@@ -155,6 +155,7 @@ const userId = "{{user_id}}";
 document.addEventListener('DOMContentLoaded', () => {
     if (userId !== null) {
         loadFriendRequests();
+        updateRequestCount();
     }
 });
 
@@ -353,6 +354,23 @@ function sendFriendRequest(username, event) {
     .catch(error => {
         console.error('Error sending friend request:', error);
         alert('Failed to send friend request');
+    });
+}
+function updateRequestCount() {
+  fetch(`/api/friend_requests/${userId}`)
+    .then(response => response.json())
+    .then(data => {
+      const count = data.length;
+      const badge = document.getElementById('requestCount');
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    })
+    .catch(err => {
+      console.error('Error loading request count:', err);
     });
 }
 </script>
