@@ -39,6 +39,7 @@ def login():
         
         # Log the user in and redirect to the intended or default page.
         login_user(user, remember=remember)
+        flash('Welcome', 'success')
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('main.index')
@@ -64,8 +65,8 @@ def signup():
         
         # Check if username is taken; if so, flash warning and reload signup.
         if User.query.filter_by(username=username).first():
-            flash('Username already taken.', "warning")
-            return redirect(url_for('auth.signup'))
+            flash('Username already taken', "warning")
+            return render_template('signup.html', form=form)
         
         # Create new user, hash password, and add them to the database.
         user = User(username=username)
@@ -74,7 +75,7 @@ def signup():
         db.session.commit()
         
         # Confirm success and redirect user to login page.
-        flash('Registration successful! Please log in.', "success")
+        flash('Registration successful', "success")
         return redirect(url_for('auth.login'))
     
     # Render the signup page with the form.

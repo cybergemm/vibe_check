@@ -77,7 +77,7 @@ def change_password():
     change_form = ChangePasswordForm()
     privacy_form = PrivacyForm()
     delete_form = DeleteAccountForm()
-
+    privacy_form.privacy_setting.data = current_user.privacy_setting
     if change_form.validate_on_submit():
         current = change_form.current_password.data
         new = change_form.new_password.data
@@ -574,6 +574,7 @@ def update_privacy():
             flash('Privacy settings updated successfully', 'success')
         else:
             flash('Invalid privacy setting', 'danger')
+    db.session.refresh(current_user)
     return redirect(url_for('main.change_password'))
 
 # API endpoint to search users by username query (case-insensitive); 

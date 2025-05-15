@@ -18,3 +18,8 @@ class Config:
     
     # Disable tracking of object modifications to save resources.
     SQLALCHEMY_TRACK_MODIFICATIONS = False 
+
+class TestingConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    WTF_CSRF_ENABLED = False 

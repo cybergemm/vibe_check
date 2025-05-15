@@ -4,7 +4,9 @@ from app.models import User
 
 @pytest.fixture
 def app():
-    app = create_app('testing')
+    app = create_app('config.TestingConfig')
+    app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF protection for tests
+    app.config['TESTING'] = True  # Enable testing mode
     with app.app_context():
         db.create_all()
         yield app
