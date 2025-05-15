@@ -3,7 +3,7 @@ try:
 except ImportError:
     class FlaskForm(object):
         pass
-from wtforms import StringField, PasswordField, BooleanField
+from wtforms import StringField, PasswordField, BooleanField, SelectField
 from wtforms.validators import DataRequired, EqualTo, Length
 
 class LoginForm(FlaskForm):
@@ -17,7 +17,17 @@ class SignupForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     remember = BooleanField('Remember Me')
 
+class PrivacyForm(FlaskForm):
+    privacy_setting = SelectField('Privacy', choices=[
+        ('public', 'Everyone'),
+        ('friends', 'Friends Only'),
+        ('private', 'Private')
+    ], validators=[DataRequired()])
+
 class ChangePasswordForm(FlaskForm):
     current_password = PasswordField('Current Password', validators=[DataRequired()])
     new_password = PasswordField('New Password', validators=[DataRequired(), Length(min=6)])
-    confirm_new_password = PasswordField('Confirm New Password', validators=[DataRequired()])
+    confirm_new_password = PasswordField('Confirm New Password', validators=[DataRequired(), EqualTo('new_password')])
+
+class DeleteAccountForm(FlaskForm):
+    pass  # No fields needed, just CSRF
