@@ -7,6 +7,7 @@ instance folder and user loading mechanism for the Vibe Check web app.
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_migrate import Migrate
 from config import Config
 import os
 
@@ -20,6 +21,7 @@ except ImportError:
 
 # Initialize database and login manager; set the default login route.
 db = SQLAlchemy()
+migrate = Migrate()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 
@@ -34,6 +36,7 @@ def create_app(config_class=Config):
 
     # Initialize database and login manager with the app instance. 
     db.init_app(app)
+    migrate.init_app(app, db)
     login_manager.init_app(app)
 
     # Import and register authentication and main route blueprints. 
