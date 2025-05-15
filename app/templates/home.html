@@ -1,11 +1,19 @@
+<!-- 
+  home.html
+  Main dashboard page for logged-in users. Includes a mood submission form,
+  friends' moods sidebar, and a modal for managing friend requests.
+-->
 {% extends "base.html" %}
+
 {% block head %}
+<!-- Home page-specific CSS -->
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 {% endblock %}
 {% block content %}
 <div class="container my-5">
   <div class="row">
-    <!-- Mood Form -->
+
+    <!-- Mood Submission Form -->
     <div class="col-lg-8 mb-4">
       <div class="card shadow-sm border-0">
         <div class="card-header bg-white">
@@ -13,9 +21,9 @@
         </div>
         <div class="card-body">
           <form id="moodForm">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> <!-- CSRF token for security -->
 
-            <!-- Mood Selection -->
+            <!-- Mood radio button selection -->
             <div class="mb-4">
               <label class="form-label fw-semibold text-dark mood-label">Mood</label>
               <div class="btn-group w-100" role="group">
@@ -27,7 +35,7 @@
               </div>
             </div>
 
-            <!-- Reasons Checkboxes -->
+            <!-- Reasons checkbox selection -->
             <div class="mb-4">
               <label class="form-label fw-semibold text-dark reason-label">What have you been up to today?</label>
               <div class="row g-2 activity-checkboxes">
@@ -42,7 +50,7 @@
               </div>
             </div>
 
-            <!-- Submit Button -->
+            <!-- Submit button -->
             <div class="text-center">
               <button type="submit" class="btn px-4" style="background-color: #F78F8F; color: white;">Submit Mood</button>
             </div>
@@ -51,18 +59,26 @@
       </div>
     </div>
 
-    <!-- Friends Sidebar -->
+    <!-- Friends' Moods Sidebar -->
     <div class="col-lg-4">
       <div class="card shadow-sm border-0">
         <div class="card-header bg-white d-flex flex-column align-items-start">
           <h5 class="text-success mb-3" style="font-family: 'Poppins', sans-serif;">Friends' Moods</h5>
+          
+          <!-- User search input -->
           <div class="input-group mb-2">
             <input type="text" id="userSearch" class="form-control" placeholder="Search users...">
             <button class="btn btn-outline-secondary" type="button" id="searchButton"><i class="fas fa-search"></i></button>
           </div>
-          <button id="openFriendModal" class="btn btn-outline-success w-100" data-bs-toggle="modal" data-bs-target="#friendModal"><i class="bi bi-person-lines-fill"></i>
-Friend Requests <span id="requestCount" class="badge ms-1">0</span></button>
+
+          <!-- Friend requests button with modal trigger -->
+          <button id="openFriendModal" class="btn btn-outline-success w-100" data-bs-toggle="modal" data-bs-target="#friendModal">
+            <i class="bi bi-person-lines-fill"></i>Friend Requests 
+            <span id="requestCount" class="badge ms-1">0</span>
+          </button>
         </div>
+
+        <!-- Friend list display -->
         <div class="card-body">
           <div id="searchResults" class="list-group mb-3" style="display: none;"></div>
           <div id="friendsList">
@@ -72,6 +88,8 @@ Friend Requests <span id="requestCount" class="badge ms-1">0</span></button>
                 <div class="list-group-item">
                   <div class="d-flex justify-content-between align-items-center">
                     <div>
+                      
+                      <!-- Friend username and mood timestamp -->
                       <h6 class="mb-1">
                         <a href="{{ url_for('main.calendar_view', user_id=friend.username) }}" class="text-decoration-none text-dark">{{ friend.username }}</a>
                       </h6>
@@ -85,6 +103,8 @@ Friend Requests <span id="requestCount" class="badge ms-1">0</span></button>
                       {% if friend.today_mood %}
                       <span class="badge bg-{{ friend.today_mood.mood }}-subtle text-dark border">{{ friend.today_mood.mood }}</span>
                       {% endif %}
+                      
+                      <!-- Link to mood analysis -->
                       <a href="{{ url_for('main.analysis', user_id=friend.username) }}" class="btn btn-sm btn-outline-success ms-2">Analysis</a>
                     </div>
                   </div>
@@ -108,6 +128,8 @@ Friend Requests <span id="requestCount" class="badge ms-1">0</span></button>
           <h5 class="modal-title">Friend Requests</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+
+        <!-- Requests will be loaded into this list dynamically -->
         <div class="modal-body">
           <ul id="friend-requests-list" class="list-group"></ul>
         </div>
@@ -119,13 +141,14 @@ Friend Requests <span id="requestCount" class="badge ms-1">0</span></button>
 
 
 <script>
+// Handles mood submission form
 document.getElementById('moodForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behavior
     
     const formData = new FormData(e.target);
-    const mood = formData.get('mood');
-    const reasons = formData.getAll('reasons');
-    const csrfToken = formData.get('csrf_token');
+    const mood = formData.get('mood'); // Get selected mood
+    const reasons = formData.getAll('reasons'); // Get all selected reasons
+    const csrfToken = formData.get('csrf_token'); // Get CSRF token for security
 
     
     try {
@@ -133,15 +156,15 @@ document.getElementById('moodForm').addEventListener('submit', async (e) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken  // 🔐 ADD THIS LINE
+                'X-CSRFToken': csrfToken  // CSRF protection header
             },
-            body: JSON.stringify({ mood, reasons })
+            body: JSON.stringify({ mood, reasons }) // Send mood data as JSON
         });
         
         if (response.ok) {
-            window.location.reload();
+            window.location.reload(); // Reload page on success
         } else {
-            const data = await response.json();
+            const data = await response.json(); // Show error message
             alert(data.error || 'Failed to submit mood');
         }
     } catch (error) {
@@ -150,8 +173,10 @@ document.getElementById('moodForm').addEventListener('submit', async (e) => {
     }
 });
 
+// Store user ID from backend
 const userId = "{{user_id}}";
 
+// On page load, fetch friend requests and update count if user is logged in
 document.addEventListener('DOMContentLoaded', () => {
     if (userId !== null) {
         loadFriendRequests();
@@ -159,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Fetch and display pending friend requests
 function loadFriendRequests() {
     fetch(`/api/friend_requests/${userId}`)
         .then(response => {
@@ -167,13 +193,14 @@ function loadFriendRequests() {
         })
         .then(data => {
             const list = document.getElementById('friend-requests-list');
-            list.innerHTML = ''; // Clear previous entries
+            list.innerHTML = ''; // Clear existing requests
 
             if (data.length === 0) {
                 list.innerHTML = '<li class="list-group-item">No friend requests</li>';
                 return;
             }
 
+            // Render each request with Accept/Decline buttons
             data.forEach(req => {
                 const li = document.createElement('li');
                 li.className = 'list-group-item d-flex justify-content-between align-items-center';
@@ -194,13 +221,14 @@ function loadFriendRequests() {
         });
 }
 
+// Accept or decline a friend request
 function respondToRequest(requestId, accept) {
     const csrfToken = document.querySelector('input[name="csrf_token"]').value;
     fetch(`/api/friend_request/${accept ? 'accept' : 'decline'}/${requestId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
+            'X-CSRFToken': csrfToken // CSRF protection header
         }
     })
     .then(response => {
@@ -208,9 +236,8 @@ function respondToRequest(requestId, accept) {
         return response.json();
     })
     .then(result => {
-        loadFriendRequests();
-        // Reload the page to update the friends list
-        window.location.reload();
+        loadFriendRequests(); // Refresh the list
+        window.location.reload(); // Reload page to reflect new friend
     })
     .catch(err => {
         console.error('Error responding to request:', err);
@@ -218,14 +245,11 @@ function respondToRequest(requestId, accept) {
     });
 }
 
+// Modal behavior: close on "X" button or ESC key
 document.addEventListener('DOMContentLoaded', () => {
     const openModalBtn = document.getElementById("openFriendModal");
     const modal = document.getElementById("friendModal");
     const closeBtn = modal.querySelector(".btn-close");
-
-    // openModalBtn.addEventListener("click", function() {
-    //     modal.style.display = "flex";
-    // });
 
     closeBtn.addEventListener("click", function() {
         modal.style.display = "none";
@@ -238,14 +262,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Add search functionality
+// Attach search event handlers
 document.getElementById('searchButton').addEventListener('click', performSearch);
 document.getElementById('userSearch').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
-        performSearch();
+        performSearch(); // Trigger search on Enter key
     }
 });
 
+// Perform user search
 function performSearch() {
     const query = document.getElementById('userSearch').value.trim();
     const searchResults = document.getElementById('searchResults');
@@ -267,6 +292,7 @@ function performSearch() {
             if (users.length === 0) {
                 searchResults.innerHTML = '<div class="list-group-item">No users found</div>';
             } else {
+                // Render each user with relevant action buttons
                 users.forEach(user => {
                     const item = document.createElement('div');
                     item.className = 'list-group-item';
@@ -327,13 +353,14 @@ function performSearch() {
         });
 }
 
+// Send a friend request to a user
 function sendFriendRequest(username, event) {
   const csrfToken = document.querySelector('input[name="csrf_token"]').value;
     fetch('/api/friend_request', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken
+            'X-CSRFToken': csrfToken // CSRF protection header
         },
         body: JSON.stringify({
             sender_username: '{{ current_user.username }}',
@@ -343,6 +370,7 @@ function sendFriendRequest(username, event) {
     .then(response => response.json())
     .then(data => {
         if (data.message === 'Friend request sent') {
+          // Replace button with pending badge
           const button = event.target;
           button.outerHTML = '<span class="badge bg-warning">Request Pending</span>';
         } else {
@@ -354,6 +382,8 @@ function sendFriendRequest(username, event) {
         alert('Failed to send friend request');
     });
 }
+
+// Updates the friend request badge counter
 function updateRequestCount() {
   fetch(`/api/friend_requests/${userId}`)
     .then(response => response.json())
