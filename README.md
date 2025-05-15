@@ -16,6 +16,7 @@
 - Python 3.10, or higher.
 - pip (Python package manager).
 - Chrome browser (for its Selenium tests).
+- Flask-Migrate (for database setup; installed automatically with requirements.txt)
 
 ## Installation:
 1. Clone the repository:
@@ -26,7 +27,7 @@ cd <repository-name>
 
 2. Create and activate a virtual environment:
 ```bash
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate  # On Windows, use: venv\Scripts\activate
 ```
 
@@ -35,19 +36,20 @@ source venv/bin/activate  # On Windows, use: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-4. Set up the database:
+4. Set up the database (no migrations needed):
 ```bash
-flask db upgrade
+python3 create_db.py
 ```
 
 5. Add test data (optional):
 ```bash
-python add_test_data.py
+PYTHONPATH=. python3 app/add_testuser.py
 ```
 
 ## Running:
 1. Start the Flask development server:
 ```bash
+export FLASK_APP=app.py  # On Windows: set FLASK_APP=app.py
 flask run
 ```
 
@@ -57,22 +59,20 @@ http://127.0.0.1:5000
 ```
 
 ### Troubleshooting:
-If you get an error like `OSError: [Errno 48] Address already in use`:
-1. Find the process using port 5000:
-   ```bash
-   lsof -i :5000  # On macOS/Linux
-   netstat -ano | findstr :5000  # On Windows
-   ```
-2. Kill the process:
-   ```bash
-   kill <PID>  # On macOS/Linux
-   taskkill /PID <PID> /F  # On Windows
-   ```
-3. Try running `flask run` again
-
-Note: You may see a warning about using the development server in production. This is normal and can be ignored during development.
-
-Note: 404 errors for favicon.ico in the console are normal and won't affect the application's functionality.
+- If you get an error like `OSError: [Errno 48] Address already in use`:
+  1. Find the process using port 5000:
+     ```bash
+     lsof -i :5000  # On macOS/Linux
+     netstat -ano | findstr :5000  # On Windows
+     ```
+  2. Kill the process:
+     ```bash
+     kill <PID>  # On macOS/Linux
+     taskkill /PID <PID> /F  # On Windows
+     ```
+  3. Try running `flask run` again
+- If you see `ModuleNotFoundError: No module named 'app'`, make sure to set `PYTHONPATH=.` when running scripts or tests.
+- For Selenium tests, ensure you have ChromeDriver installed and it matches your Chrome version. See: https://sites.google.com/chromium.org/driver/
 
 ## API endpoints:
 ### Authentication:
@@ -101,30 +101,20 @@ Note: 404 errors for favicon.ico in the console are normal and won't affect the 
 
 2. Add the test user to the database:
    ```bash
-   python3 app/add_testuser.py
+   PYTHONPATH=. python3 app/add_testuser.py
    ```
 
-3. Run the tests:
+3. **Start the Flask server** (required for Selenium tests):
    ```bash
-   pytest tests/
+   export FLASK_APP=app.py
+   flask run
+   ```
+   (Leave this terminal running.)
+
+4. In a new terminal, run the tests:
+   ```bash
+   PYTHONPATH=. pytest tests/
    ```
 
 ## Project structure:
 ```
-├── app/
-│   ├── __init__.py
-│   ├── auth.py
-│   ├── main.py
-│   ├── models.py
-│   ├── forms.py
-│   ├── templates/
-│   └── static/
-├── instance/
-├── migrations/
-├── tests/
-├── config.py
-├── requirements.txt
-└── README.md
-```
-
-We acknowledge the use of AI assistance from ChatGPT by OpenAI in the development of VibeCheck.
