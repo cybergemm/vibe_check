@@ -4,7 +4,7 @@ from app.models import User
 
 @pytest.fixture
 def app():
-    app = create_app('testing')
+    app = create_app('config.TestingConfig')
     with app.app_context():
         db.create_all()
         yield app
