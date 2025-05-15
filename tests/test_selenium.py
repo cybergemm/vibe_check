@@ -74,3 +74,21 @@ def test_mood_entry(driver):
     mood_input.send_keys('Happy')
     mood_input.send_keys(Keys.RETURN)
     assert 'Happy' in driver.page_source 
+
+def test_logout(driver):
+    # Test that logout redirects to login page and shows success message
+    driver.get('http://127.0.0.1:5000/login')
+    username = driver.find_element(By.NAME, 'username')
+    password = driver.find_element(By.NAME, 'password')
+    username.send_keys('testuser')
+    password.send_keys('password123')
+    password.send_keys(Keys.RETURN)
+    WebDriverWait(driver, 10).until(EC.url_contains('/home'))
+    
+    # Click logout link
+    logout_link = driver.find_element(By.LINK_TEXT, 'Logout')
+    logout_link.click()
+    
+    # Verify redirect to login page and success message
+    WebDriverWait(driver, 10).until(EC.url_contains('/login'))
+    WebDriverWait(driver, 10).until(EC.text_to_be_present_in_element((By.CLASS_NAME, 'alert'), 'You have been logged out')) 
