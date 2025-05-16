@@ -147,3 +147,5 @@ http://127.0.0.1:5000
 ├── instructions.txt
 └── requirements.txt
 ```
+
+We acknowledge that we used ChatGPT in the completion of this project.
