@@ -73,6 +73,12 @@ http://127.0.0.1:5000
   3. Try running `flask run` again
 - If you see `ModuleNotFoundError: No module named 'app'`, make sure to set `PYTHONPATH=.` when running scripts or tests.
 - For Selenium tests, ensure you have ChromeDriver installed and it matches your Chrome version. See: https://sites.google.com/chromium.org/driver/
+- If you encounter issues with Flask-Migrate on Windows, ensure that your virtual environment is activated and that you have installed all dependencies correctly. Sometimes, running the following commands can help:
+  ```bash
+  pip uninstall flask-migrate
+  pip install flask-migrate
+  ```
+  Also, make sure that your terminal is running as an administrator if you encounter permission issues.
 
 ## API endpoints:
 ### Authentication:
