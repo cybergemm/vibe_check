@@ -118,3 +118,33 @@ http://127.0.0.1:5000
 
 ## Project structure:
 ```
+```
+.
+├── app/
+│   ├── __init__.py
+│   ├── models.py
+│   ├── routes.py
+│   ├── static/
+│   │   ├── css/
+│   │   │   ├── base.css
+│   │   │   └── intropage.css
+│   │   └── images/
+│   │       └── Vibe.png
+│   └── templates/
+│       ├── base.html
+│       └── index.html
+├── tests/
+│   ├── __init__.py
+│   └── test_app.py
+├── wireframes/
+├── migrations/
+├── .gitignore
+├── README.md
+├── add_mood_data.py
+├── add_test_data.py
+├── app.py
+├── config.py
+├── create_db.py
+├── instructions.txt
+└── requirements.txt
+```
