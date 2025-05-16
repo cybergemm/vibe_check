@@ -118,7 +118,6 @@ http://127.0.0.1:5000
 
 ## Project structure:
 ```
-```
 .
 ├── app/
 │   ├── __init__.py
