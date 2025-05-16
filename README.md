@@ -43,7 +43,7 @@ python3 create_db.py
 
 5. Add test data (optional):
 ```bash
-PYTHONPATH=. python3 app/add_testuser.py
+PYTHONPATH=. python3 app/add_testuser.py # On Windows, set PYTHONPATH=. && python app/add_testuser.py
 ```
 
 ## Running:
@@ -113,7 +113,7 @@ http://127.0.0.1:5000
 
 4. In a new terminal, run the tests:
    ```bash
-   PYTHONPATH=. pytest tests/
+   PYTHONPATH=. pytest tests/ # On Windows, $env:PYTHONPATH="."; pytest tests/
    ```
 
 ## Project structure:
